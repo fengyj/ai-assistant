@@ -44,6 +44,11 @@ export default function App() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
   
+  // 用户状态
+  const [user, setUser] = useState<{id: string, name: string, avatar?: string} | null>(null);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
+  const [showSettingsDialog, setShowSettingsDialog] = useState(false);
+  
   // 自动调整textarea高度
   const adjustTextareaHeight = (element: HTMLTextAreaElement) => {
     element.style.height = 'auto';
@@ -532,7 +537,7 @@ export default function App() {
     }, 0);
     
     // 模拟AI回复
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: generateAIResponse(currentMessage, currentFiles),
@@ -547,6 +552,51 @@ export default function App() {
       ));
       setIsLoading(false);
     }, 1000);
+    
+    // 保存超时ID以便可以取消
+    (window as any).currentRequestTimeout = timeoutId;
+  };
+  
+  // 取消请求
+  const cancelRequest = () => {
+    if ((window as any).currentRequestTimeout) {
+      clearTimeout((window as any).currentRequestTimeout);
+      (window as any).currentRequestTimeout = null;
+    }
+    setIsLoading(false);
+    
+    // 显示取消消息
+    showToast('已取消生成');
+  };
+  
+  // 处理用户状态栏点击
+  const handleUserStatusClick = () => {
+    if (user) {
+      setShowSettingsDialog(true);
+    } else {
+      setShowLoginDialog(true);
+    }
+  };
+  
+  // 处理登录
+  const handleLogin = (username: string, password: string) => {
+    // 模拟登录逻辑
+    if (username && password) {
+      setUser({
+        id: '1',
+        name: username,
+        avatar: `https://api.dicebear.com/7.x/avatars/svg?seed=${username}`
+      });
+      setShowLoginDialog(false);
+      showToast('登录成功');
+    }
+  };
+  
+  // 处理退出登录
+  const handleLogout = () => {
+    setUser(null);
+    setShowSettingsDialog(false);
+    showToast('已退出登录');
   };
   
   // 生成AI回复（模拟）
@@ -704,6 +754,169 @@ These diagrams help visualize the process flow!`
         </div>
       )}
       
+      {/* 登录对话框 */}
+      {showLoginDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-6 w-96 max-w-sm mx-4`}>
+            <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              登录
+            </h2>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              handleLogin(
+                formData.get('username') as string,
+                formData.get('password') as string
+              );
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    用户名
+                  </label>
+                  <input
+                    type="text"
+                    name="username"
+                    required
+                    className={`w-full px-3 py-2 border rounded-md ${
+                      isDarkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                    } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                    placeholder="请输入用户名"
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    密码
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    required
+                    className={`w-full px-3 py-2 border rounded-md ${
+                      isDarkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                    } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                    placeholder="请输入密码"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowLoginDialog(false)}
+                  className={`px-4 py-2 rounded-md ${
+                    isDarkMode 
+                      ? 'text-gray-300 hover:bg-gray-700' 
+                      : 'text-gray-700 hover:bg-gray-100'
+                  } transition-colors`}
+                >
+                  取消
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  登录
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      
+      {/* 设置对话框 */}
+      {showSettingsDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-6 w-96 max-w-sm mx-4`}>
+            <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              系统设置
+            </h2>
+            
+            {/* 用户信息 */}
+            {user && (
+              <div className="mb-6">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
+                    {user.avatar ? (
+                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className={`w-full h-full flex items-center justify-center text-lg font-medium ${
+                        isDarkMode ? 'bg-gray-600 text-white' : 'bg-gray-300 text-gray-700'
+                      }`}>
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {user.name}
+                    </p>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      ID: {user.id}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* 设置选项 */}
+            <div className="space-y-3 mb-6">
+              <div className={`flex items-center justify-between p-3 rounded-md ${
+                isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+              }`}>
+                <span className={`text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  深色模式
+                </span>
+                <button
+                  onClick={toggleTheme}
+                  className={`w-12 h-6 rounded-full p-1 ${
+                    isDarkMode ? 'bg-blue-600' : 'bg-gray-300'
+                  } transition-colors`}
+                >
+                  <div className={`w-4 h-4 rounded-full bg-white transform transition-transform ${
+                    isDarkMode ? 'translate-x-6' : 'translate-x-0'
+                  }`}></div>
+                </button>
+              </div>
+              
+              <button className={`w-full text-left p-3 rounded-md transition-colors ${
+                isDarkMode ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-50 text-gray-900'
+              }`}>
+                <span className="text-sm">数据导出</span>
+              </button>
+              
+              <button className={`w-full text-left p-3 rounded-md transition-colors ${
+                isDarkMode ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-50 text-gray-900'
+              }`}>
+                <span className="text-sm">清除缓存</span>
+              </button>
+            </div>
+            
+            <div className="flex justify-between">
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+              >
+                退出登录
+              </button>
+              <button
+                onClick={() => setShowSettingsDialog(false)}
+                className={`px-4 py-2 rounded-md ${
+                  isDarkMode 
+                    ? 'text-gray-300 hover:bg-gray-700' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                } transition-colors`}
+              >
+                关闭
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="flex h-screen">
         {/* 侧边栏 */}
         <div className={`${isSidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-r ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} flex flex-col`}>
@@ -712,12 +925,6 @@ These diagrams help visualize the process flow!`
               <h2 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
                 AI Assistant
               </h2>
-              <button
-                onClick={toggleTheme}
-                className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700 text-yellow-400' : 'bg-gray-100 text-gray-600'} hover:opacity-80`}
-              >
-                {isDarkMode ? '🌙' : '☀️'}
-              </button>
             </div>
             
             <div className="mt-4 flex flex-col flex-1 min-h-0">
@@ -782,6 +989,65 @@ These diagrams help visualize the process flow!`
                 )}
               </div>
             </div>
+            
+            {/* 用户状态栏 */}
+            <div 
+              className={`mt-auto border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-3 cursor-pointer transition-colors ${
+                isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+              }`}
+              onClick={handleUserStatusClick}
+            >
+              <div className="flex items-center space-x-3">
+                {user ? (
+                  <>
+                    <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
+                      {user.avatar ? (
+                        <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className={`w-full h-full flex items-center justify-center text-sm font-medium ${
+                          isDarkMode ? 'bg-gray-600 text-white' : 'bg-gray-300 text-gray-700'
+                        }`}>
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-medium truncate ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                        {user.name}
+                      </p>
+                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        已登录
+                      </p>
+                    </div>
+                    <svg className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </>
+                ) : (
+                  <>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <p className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                        请登录
+                      </p>
+                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        登录以同步数据
+                      </p>
+                    </div>
+                    <svg className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </div>
         
@@ -804,17 +1070,13 @@ These diagrams help visualize the process flow!`
                 </h1>
               </div>
               
-              <div className="flex items-center space-x-4">
-                <select
-                  value={selectedModel}
-                  onChange={(e) => setSelectedModel(e.target.value)}
-                  className={`px-3 py-2 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-700'} focus:ring-2 focus:ring-blue-500`}
-                >
-                  <option value="gpt-4">GPT-4</option>
-                  <option value="gpt-3.5">GPT-3.5 Turbo</option>
-                  <option value="claude">Claude</option>
-                </select>
-              </div>
+              {/* 主题切换按钮 */}
+              <button
+                onClick={toggleTheme}
+                className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700 text-yellow-400' : 'bg-gray-100 text-gray-600'} hover:opacity-80`}
+              >
+                {isDarkMode ? '🌙' : '☀️'}
+              </button>
             </div>
           </div>
           
@@ -859,155 +1121,248 @@ These diagrams help visualize the process flow!`
           </div>
           
           {/* 消息输入区域 */}
-          <div 
-            className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-t p-4 ${
-              isDragOver ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-            }`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
+          <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-t p-4`}>
             <div className="max-w-4xl mx-auto">
-              {/* 文件预览区域 */}
-              {selectedFiles.length > 0 && (
-                <div className="mb-4">
-                  <div className="flex flex-wrap gap-2">
+              {/* 整个输入区域的边框包装 */}
+              <div 
+                className={`border rounded-lg ${
+                  isDarkMode ? 'border-gray-600 bg-gray-800' : 'border-gray-300 bg-white'
+                } ${isDragOver ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20' : ''} transition-colors`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                {/* 1. 文件上传区域（上部 - 极致紧凑） */}
+                <div className={`px-4 py-0.5 ${
+                  selectedFiles.length > 0 || isDragOver ? 'border-b' : ''
+                } ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                  {/* 文件上传按钮和待上传文件列表 - 在一行显示，超出自动换行 */}
+                  <div className="flex items-center flex-wrap gap-x-1 gap-y-0.5">
+                    {/* 文件上传按钮 - 添加悬停高亮效果 */}
+                    <div className="relative">
+                      <input
+                        type="file"
+                        multiple
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          handleFileSelect(files);
+                          e.target.value = '';
+                        }}
+                        className="hidden"
+                        id="file-upload"
+                        accept="image/*,.pdf,.doc,.docx,.txt,.csv,.xlsx,.xls"
+                      />
+                      <label
+                        htmlFor="file-upload"
+                        className={`inline-flex items-center px-2 py-1 rounded cursor-pointer transition-colors ${
+                          isDarkMode 
+                            ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-700' 
+                            : 'text-gray-600 hover:text-gray-700 hover:bg-gray-100'
+                        }`}
+                        title="添加文件"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.64 16.2a2 2 0 11-2.83-2.83l8.49-8.49" />
+                        </svg>
+                      </label>
+                    </div>
+
+                    {/* 待上传文件列表 - 添加悬停高亮效果 */}
                     {selectedFiles.map((file, index) => (
                       <div 
                         key={index}
-                        className={`flex items-center space-x-2 px-3 py-2 rounded-lg border ${
+                        className={`flex items-center gap-x-0.5 px-2 py-1 rounded text-xs transition-colors ${
                           isDarkMode 
-                            ? 'bg-gray-700 border-gray-600 text-white' 
-                            : 'bg-gray-50 border-gray-200 text-gray-700'
+                            ? 'text-gray-300 hover:bg-gray-700' 
+                            : 'text-gray-600 hover:bg-gray-100'
                         }`}
                       >
-                        <span className="text-sm">{getFileIcon(file)}</span>
-                        <span className="text-sm font-medium truncate max-w-[120px]" title={file.name}>
+                        <span className="text-xs">{getFileIcon(file)}</span>
+                        <span className="font-medium truncate max-w-[80px]" title={file.name}>
                           {file.name}
                         </span>
-                        <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          ({(file.size / 1024).toFixed(1)}KB)
-                        </span>
+                        <span className={`text-[9px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>({(file.size / 1024).toFixed(0)}K)</span>
                         <button
                           onClick={() => removeFile(index)}
-                          className={`p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 hover:text-red-600`}
+                          className={`p-0.5 rounded text-red-500 hover:text-red-600 transition-colors ${
+                            isDarkMode 
+                              ? 'hover:bg-red-900/20' 
+                              : 'hover:bg-red-50'
+                          }`}
                           title="移除文件"
                         >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                           </svg>
                         </button>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-              
-              {/* 拖拽上传提示 */}
-              {isDragOver && (
-                <div className={`mb-4 p-6 border-2 border-dashed rounded-lg text-center ${
-                  isDarkMode 
-                    ? 'border-blue-400 bg-blue-900/20 text-blue-300' 
-                    : 'border-blue-400 bg-blue-50 text-blue-600'
-                }`}>
-                  <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                  <p className="text-sm font-medium">拖拽文件到此处上传</p>
-                  <p className="text-xs mt-1">支持图片、文档等多种格式，最大10MB</p>
-                </div>
-              )}
-              
-              <div className="flex space-x-3">
-                {/* 文件上传按钮 */}
-                <div className="relative">
-                  <input
-                    type="file"
-                    multiple
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files || []);
-                      handleFileSelect(files);
-                      e.target.value = ''; // 重置input
-                    }}
-                    className="hidden"
-                    id="file-upload"
-                    accept="image/*,.pdf,.doc,.docx,.txt,.csv,.xlsx,.xls"
-                  />
-                  <label
-                    htmlFor="file-upload"
-                    className={`p-3 rounded-lg cursor-pointer transition-colors self-end flex items-center justify-center w-12 h-12 ${
+
+                  {/* 拖拽上传提示 */}
+                  {isDragOver && (
+                    <div className={`mt-2 p-3 border-2 border-dashed rounded-lg text-center ${
                       isDarkMode 
-                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white' 
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-700'
-                    }`}
-                    title="上传文件"
-                  >
-                    {/* 更精确的回形针SVG图标 */}
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.64 16.2a2 2 0 11-2.83-2.83l8.49-8.49" />
-                    </svg>
-                  </label>
+                        ? 'border-blue-400 bg-blue-900/20 text-blue-300' 
+                        : 'border-blue-400 bg-blue-50 text-blue-600'
+                    }`}>
+                      <svg className="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <p className="text-xs font-medium">拖拽文件到此处上传</p>
+                      <p className="text-[10px] mt-0.5">支持图片、文档等多种格式，最大10MB</p>
+                    </div>
+                  )}
                 </div>
                 
-                <textarea
-                  value={message}
-                  onChange={handleMessageChange}
-                  onKeyDown={(e: any) => {
-                    if (e.key === 'Enter' && e.ctrlKey) {
-                      e.preventDefault();
-                      sendMessage();
-                    }
-                  }}
-                  placeholder="输入消息... (Ctrl+Enter 发送)"
-                  rows={1}
-                  className={`flex-1 px-4 py-3 rounded-lg border resize-none min-h-[3rem] max-h-[200px] overflow-y-auto ${
-                    isDarkMode 
-                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                      : 'bg-white border-gray-300 text-gray-700 placeholder-gray-500'
-                  } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                  disabled={isLoading}
-                />
+                {/* 2. 文字输入和发送按钮区域（中部 - 绿色框区域） */}
+                <div className="px-4 py-3">
+                  <div className="flex items-end space-x-3">
+                    <textarea
+                      value={message}
+                      onChange={handleMessageChange}
+                      onKeyDown={(e: any) => {
+                        if (e.key === 'Enter' && e.ctrlKey) {
+                          e.preventDefault();
+                          sendMessage();
+                        }
+                      }}
+                      placeholder="输入消息... (Ctrl+Enter 发送)"
+                      rows={1}
+                      className={`flex-1 px-0 py-2 resize-none min-h-[2rem] max-h-[200px] overflow-y-auto border-none outline-none ${
+                        isDarkMode 
+                          ? 'bg-transparent text-white placeholder-gray-400' 
+                          : 'bg-transparent text-gray-900 placeholder-gray-500'
+                      }`}
+                      disabled={isLoading}
+                    />
+                    
+                    {/* Send/Cancel 按钮 */}
+                    <button
+                      onClick={isLoading ? cancelRequest : sendMessage}
+                      disabled={!isLoading && (!message.trim() && selectedFiles.length === 0)}
+                      className={`p-2 rounded-md transition-colors ${
+                        !isLoading && (!message.trim() && selectedFiles.length === 0)
+                          ? isDarkMode ? 'text-gray-600' : 'text-gray-400'
+                          : isLoading
+                            ? isDarkMode 
+                              ? 'text-red-400 hover:text-red-300 hover:bg-gray-700' 
+                              : 'text-red-600 hover:text-red-700 hover:bg-gray-100'
+                            : isDarkMode 
+                              ? 'text-blue-400 hover:text-blue-300 hover:bg-gray-700' 
+                              : 'text-blue-600 hover:text-blue-700 hover:bg-gray-100'
+                      }`}
+                      title={isLoading ? "取消生成" : "发送消息"}
+                    >
+                      {isLoading ? (
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                          <rect x="6" y="6" width="12" height="12" rx="2" ry="2"/>
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                      )}
+                    </button>
+                    
+                    {/* New Chat 按钮 */}
+                    <button
+                      onClick={createNewConversation}
+                      className={`p-2 rounded-md transition-colors ${
+                        isDarkMode 
+                          ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      }`}
+                      title="新建对话"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
                 
-                {/* Send 按钮 */}
-                <button
-                  onClick={sendMessage}
-                  disabled={(!message.trim() && selectedFiles.length === 0) || isLoading}
-                  className={`p-3 rounded-lg transition-colors self-end ${
-                    (!message.trim() && selectedFiles.length === 0) || isLoading
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : isDarkMode 
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                        : 'bg-blue-500 hover:bg-blue-600 text-white'
-                  }`}
-                  title="发送消息"
-                >
-                  {isLoading ? (
-                    <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                  )}
-                </button>
-                
-                {/* New Chat 按钮 */}
-                <button
-                  onClick={createNewConversation}
-                  className={`p-3 rounded-lg transition-colors self-end ${
-                    isDarkMode 
-                      ? 'bg-green-600 hover:bg-green-700 text-white' 
-                      : 'bg-green-500 hover:bg-green-600 text-white'
-                  }`}
-                  title="新建对话"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </button>
+                {/* 3. 对话设置工具栏（底部） */}
+                <div className={`px-4 py-2 border-t ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} flex items-center justify-between`}>
+                  <div className="flex items-center space-x-2">
+                    {/* 模型选择下拉框 */}
+                    <select
+                      value={selectedModel}
+                      onChange={(e) => setSelectedModel(e.target.value)}
+                      className={`text-xs px-1.5 py-1 rounded border-none outline-none ${
+                        isDarkMode 
+                          ? 'bg-transparent text-gray-300 hover:bg-gray-700' 
+                          : 'bg-transparent text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <option value="gpt-4">Claude Sonnet 4</option>
+                      <option value="gpt-3.5">GPT-3.5 Turbo</option>
+                      <option value="claude">Claude</option>
+                    </select>
+                    
+                    {/* 模型设置按钮 */}
+                    <button
+                      className={`p-1 rounded-md transition-colors ${
+                        isDarkMode 
+                          ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      }`}
+                      title="模型设置"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </button>
+                    
+                    {/* 警告按钮 */}
+                    <button
+                      className={`p-1 rounded-md transition-colors ${
+                        isDarkMode 
+                          ? 'text-yellow-400 hover:text-yellow-300 hover:bg-gray-700' 
+                          : 'text-yellow-600 hover:text-yellow-700 hover:bg-gray-100'
+                      }`}
+                      title="注意事项"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    {/* 语音输入按钮（未来功能） */}
+                    <button
+                      className={`p-1 rounded-md transition-colors ${
+                        isDarkMode 
+                          ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      }`}
+                      title="语音输入"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                      </svg>
+                    </button>
+                    
+                    {/* 更多选项按钮 */}
+                    <button
+                      className={`p-1 rounded-md transition-colors ${
+                        isDarkMode 
+                          ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      }`}
+                      title="更多选项"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
               </div>
+              
+              {/* 使用提示 */}
               <p className={`text-xs mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                 支持拖拽文件上传 • 按 Enter 换行，按 Ctrl+Enter 发送消息 • 按 Ctrl+V 粘贴截图/文件
               </p>
