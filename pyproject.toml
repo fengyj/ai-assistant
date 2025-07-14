@@ -1,0 +1,46 @@
+[project]
+name = "assistant"
+version = "0.1.0"
+description = "A Python assistant project"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "Eric Feng", email = "fengyj@live.com"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "fastapi>=0.116.0",
+    "uvicorn>=0.30.0",
+    "pydantic>=2.0.0",
+    "pydantic[email]>=2.0.0",
+    "bcrypt>=4.0.0",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "pytest>=8.3.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "black>=22.0",
+    "flake8>=4.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["assistant-srv/src"]
+
+[tool.setuptools.package-dir]
+"" = "assistant-srv/src"
