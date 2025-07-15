@@ -257,8 +257,8 @@ export default function App() {
   // 简单的Markdown渲染函数
   const renderMarkdown = (text: string, isUserMessage = false) => {
     const codeClass = isUserMessage 
-      ? 'bg-blue-600/50 px-1 py-0.5 rounded text-sm font-mono'
-      : 'bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm font-mono';
+      ? 'bg-blue-600/50 px-1 py-0.5 rounded-sm text-sm font-mono'
+      : 'bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded-sm text-sm font-mono';
       
     const preClass = isUserMessage 
       ? 'bg-blue-600/50 p-3 rounded-lg mt-3 mb-3 overflow-x-auto'
@@ -444,7 +444,7 @@ export default function App() {
             container.innerHTML = svg;
           }
         } catch (error) {
-          container.innerHTML = `<div class="text-red-600 text-sm p-3 border border-red-200 rounded">Mermaid渲染错误: ${(error as Error).message}</div>`;
+          container.innerHTML = `<div class="text-red-600 text-sm p-3 border border-red-200 rounded-sm">Mermaid渲染错误: ${(error as Error).message}</div>`;
         }
       }
     };
@@ -921,7 +921,7 @@ These diagrams help visualize the process flow!`
         {/* 侧边栏 */}
         <div className={`${isSidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-r ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} flex flex-col`}>
           <div className="p-4 flex flex-col flex-1 min-h-0">
-            <div className="flex items-center justify-between mb-4 flex-shrink-0">
+            <div className="flex items-center justify-between mb-4 shrink-0">
               <h2 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
                 AI Assistant
               </h2>
@@ -950,7 +950,7 @@ These diagrams help visualize the process flow!`
                             className={`group px-3 py-2 rounded-md cursor-pointer transition-all duration-200 ${
                               currentConversationId === conv.id
                                 ? (isDarkMode ? 'bg-blue-900/40 border-blue-400/60 shadow-lg' : 'bg-blue-50 border-blue-200 shadow-md')
-                                : (isDarkMode ? 'hover:bg-gray-700 border-transparent hover:border-gray-600 hover:shadow-md' : 'hover:bg-gray-50 border-transparent hover:border-gray-300 hover:shadow-sm')
+                                : (isDarkMode ? 'hover:bg-gray-700 border-transparent hover:border-gray-600 hover:shadow-md' : 'hover:bg-gray-50 border-transparent hover:border-gray-300 hover:shadow-xs')
                             } border`}
                             onClick={() => setCurrentConversationId(conv.id)}
                           >
@@ -973,7 +973,7 @@ These diagrams help visualize the process flow!`
                                   e.stopPropagation();
                                   deleteConversation(conv.id);
                                 }}
-                                className={`p-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${isDarkMode ? 'hover:bg-gray-600 text-gray-400 hover:text-red-400' : 'hover:bg-gray-200 text-gray-500 hover:text-red-500'} flex-shrink-0`}
+                                className={`p-1.5 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${isDarkMode ? 'hover:bg-gray-600 text-gray-400 hover:text-red-400' : 'hover:bg-gray-200 text-gray-500 hover:text-red-500'} shrink-0`}
                                 title="删除对话"
                               >
                                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -1090,7 +1090,7 @@ These diagrams help visualize the process flow!`
                       msg.isUser 
                         ? 'bg-blue-500 text-white' 
                         : (isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800 border border-gray-200')
-                    } shadow-sm`}>
+                    } shadow-xs`}>
                       <div 
                         className={`${msg.isUser ? 'text-white' : (isDarkMode ? 'text-white' : 'text-gray-800')}`}
                         dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content, msg.isUser) }}
@@ -1106,7 +1106,7 @@ These diagrams help visualize the process flow!`
                 
                 {isLoading && (
                   <div className="flex justify-start">
-                    <div className={`max-w-xl px-4 py-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'} shadow-sm`}>
+                    <div className={`max-w-xl px-4 py-3 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'} shadow-xs`}>
                       <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
@@ -1229,7 +1229,7 @@ These diagrams help visualize the process flow!`
                       }}
                       placeholder="输入消息... (Ctrl+Enter 发送)"
                       rows={1}
-                      className={`flex-1 px-0 py-2 resize-none min-h-[2rem] max-h-[200px] overflow-y-auto border-none outline-none ${
+                      className={`flex-1 px-0 py-2 resize-none min-h-8 max-h-[200px] overflow-y-auto border-none outline-hidden ${
                         isDarkMode 
                           ? 'bg-transparent text-white placeholder-gray-400' 
                           : 'bg-transparent text-gray-900 placeholder-gray-500'
@@ -1289,7 +1289,7 @@ These diagrams help visualize the process flow!`
                     <select
                       value={selectedModel}
                       onChange={(e) => setSelectedModel(e.target.value)}
-                      className={`text-xs px-1.5 py-1 rounded border-none outline-none ${
+                      className={`text-xs px-1.5 py-1 rounded border-none outline-hidden ${
                         isDarkMode 
                           ? 'bg-transparent text-gray-300 hover:bg-gray-700' 
                           : 'bg-transparent text-gray-700 hover:bg-gray-100'
