@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
 
 interface Message {
@@ -16,8 +16,13 @@ interface Conversation {
 }
 
 export default function App() {
+  // 创建对textarea的引用
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
   // 主题状态
   const [isDarkMode, setIsDarkMode] = useState(false);
+  // 跟踪消息是否刚刚发送，用于自动聚焦
+  const [messageJustSent, setMessageJustSent] = useState(false);
   
   // 初始化Mermaid
   useEffect(() => {
@@ -39,6 +44,18 @@ export default function App() {
   // 消息输入状态
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // 消息发送后自动聚焦输入框
+  useEffect(() => {
+    if (messageJustSent && textareaRef.current && !isLoading) {
+      // 延迟一下再聚焦，确保DOM已更新
+      const focusTimer = setTimeout(() => {
+        textareaRef.current?.focus();
+        setMessageJustSent(false);
+      }, 100);
+      return () => clearTimeout(focusTimer);
+    }
+  }, [messageJustSent, isLoading]);
   
   // 文件上传状态
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -527,12 +544,12 @@ export default function App() {
     setMessage('');
     setSelectedFiles([]); // 清空已选文件
     setIsLoading(true);
+    setMessageJustSent(true); // 标记消息刚刚发送
     
     // 重置textarea高度
     setTimeout(() => {
-      const textarea = document.querySelector('textarea');
-      if (textarea) {
-        textarea.style.height = 'auto';
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
       }
     }, 0);
     
@@ -551,6 +568,7 @@ export default function App() {
           : conv
       ));
       setIsLoading(false);
+      setMessageJustSent(true); // 回复完成后标记，触发聚焦
     }, 1000);
     
     // 保存超时ID以便可以取消
@@ -564,6 +582,7 @@ export default function App() {
       (window as any).currentRequestTimeout = null;
     }
     setIsLoading(false);
+    setMessageJustSent(true); // 标记消息刚刚处理完成
     
     // 显示取消消息
     showToast('已取消生成');
@@ -1219,12 +1238,20 @@ These diagrams help visualize the process flow!`
                 <div className="px-4 py-3">
                   <div className="flex items-end space-x-3">
                     <textarea
+                      ref={textareaRef}
                       value={message}
                       onChange={handleMessageChange}
                       onKeyDown={(e: any) => {
                         if (e.key === 'Enter' && e.ctrlKey) {
                           e.preventDefault();
                           sendMessage();
+                        }
+                      }}
+                      onFocus={() => {
+                        // 这个回调函数可以帮助解决焦点问题
+                        // 当输入框获得焦点时，设置messageJustSent为false
+                        if (messageJustSent) {
+                          setMessageJustSent(false);
                         }
                       }}
                       placeholder="输入消息... (Ctrl+Enter 发送)"
