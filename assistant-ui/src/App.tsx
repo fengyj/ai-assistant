@@ -18,6 +18,7 @@ interface Conversation {
 export default function App() {
   // 创建对textarea的引用
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   
   // 主题状态
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -65,7 +66,22 @@ export default function App() {
   const [user, setUser] = useState<{id: string, name: string, avatar?: string} | null>(null);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [showSettingsDialog, setShowSettingsDialog] = useState(false);
-  
+
+  // 自动滚动到最新消息
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [currentConversationId, isLoading]);
+
+  // 当消息数量变化时也自动滚动
+  useEffect(() => {
+    const conversation = conversations.find(c => c.id === currentConversationId);
+    if (messagesContainerRef.current && conversation) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [conversations, currentConversationId]);
+
   // 自动调整textarea高度
   const adjustTextareaHeight = (element: HTMLTextAreaElement) => {
     element.style.height = 'auto';
@@ -750,7 +766,7 @@ sequenceDiagram
     S-->>U: 响应结果
 \`\`\`
 
-These diagrams help visualize the process flow!`
+这些图表有助于可视化流程！`
     ];
     
     return responses[Math.floor(Math.random() * responses.length)];
@@ -857,7 +873,7 @@ These diagrams help visualize the process flow!`
             {/* 用户信息 */}
             {user && (
               <div className="mb-6">
-                <div className="flex items-center space-x-3 mb-4">
+                <div className="flex items-center space-x-3 mb-4 shrink-0">
                   <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
                     {user.avatar ? (
                       <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
@@ -1100,7 +1116,7 @@ These diagrams help visualize the process flow!`
           </div>
           
           {/* 消息显示区域 */}
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-4" ref={messagesContainerRef}>
             {currentConversation && (
               <div className="max-w-4xl mx-auto space-y-4">
                 {currentConversation.messages.map((msg) => (
