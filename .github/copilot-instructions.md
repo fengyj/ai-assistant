@@ -1,10 +1,17 @@
-This project contains two parts: the backend and the frontend. The backend is a Python application that provides an API, while the frontend is a React application that consumes this API. The backend is built with FastAPI and the frontend uses Vite for development and build processes.
+This project consists of two parts: a FastAPI backend (folder: assistant-srv) and a React frontend (folder: assistant-ui) using Vite. The backend provides APIs in Python; the frontend consumes these APIs with TypeScript for type safety.
 
-The backend is located in the `assistant-srv` directory and the frontend in the `assistant-ui` directory. The project uses TypeScript for type safety in the frontend and Python for the backend logic.
+* Always run frontend scripts from the assistant-ui directory. For example, `cd {absolute path of project root folder}/assistant-ui && npm run dev`
+* Use the scripts in package.json for development, build, and linting.
 
-When starting the UI project, for example, `npm run dev`, please ensure that use the `assistant-ui` directory as the working directory. The `package.json` file in the `assistant-ui` directory contains the necessary scripts for development, build, and linting.
+When implementing features or fixing bugs:
 
-When I asking for help to implement some features, or fix bugs, please log a summary of the changes in a log file, such as `CHANGELOG.md`, and ensure that the code is well-documented with comments where necessary.
-Please also ensure that the code adheres to the project's coding standards and is tested before finalizing the changes. The markdown code should be formatted correctly.
+* Log a summary of changes in CHANGELOG.md.
+* Document code with clear comments as needed.
+* Ensure code meets project standards, is well-tested, and markdown is properly formatted in English.
 
-At last, please make sure the design and the code follows the SOLID principles, and please make the code secure and efficient. For the UI part, please ensure that the user experience is smooth and intuitive, with responsive design principles applied.
+For Git commits:
+
+* Use clear, concise, English messages summarizing the changes (e.g., "Fix: Corrected API endpoint for user authentication").
+Design and code must follow SOLID principles, be secure and efficient. The UI should be responsive, intuitive, and provide a smooth user experience.
+
+Design and code must follow SOLID principles, be secure and efficient. The UI should be responsive, intuitive, and provide a smooth user experience.

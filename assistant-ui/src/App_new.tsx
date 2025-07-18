@@ -137,7 +137,7 @@ export default function App() {
     setTimeout(() => {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: generateAIResponse(currentMessage, currentFiles, getFileIcon),
+        content: generateAIResponse(currentMessage, currentFiles),
         isUser: false,
         timestamp: new Date()
       };
