@@ -1,181 +1,349 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
-@plugin '@tailwindcss/typography';
+/* 配置Tailwind CSS v4的dark mode使用class策略 */
+@variant dark (&:where(.dark, .dark *));
 
-@custom-variant dark (&:is(.dark *));
+/* 基础样式重置 */
+* {
+  box-sizing: border-box;
+}
 
-@theme {
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 
-  --font-sans: Inter, system-ui, sans-serif;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-  --animate-bounce-delay: bounce-delay 1.4s infinite ease-in-out both;
+#root {
+  height: 100vh;
+  overflow: hidden;
+}
 
-  @keyframes bounce-delay {
-    0%,
-    80%,
-    100% {
-      transform: scale(0.8);
-      opacity: 0.5;
-    }
-    40% {
-      transform: scale(1);
-      opacity: 1;
-    }
+/* ===== 语义化组件样式 ===== */
+.app-container {
+  @apply min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200;
+}
+
+.main-layout {
+  @apply flex h-screen overflow-hidden;
+}
+
+.sidebar-container {
+  @apply flex-shrink-0 w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300 ease-in-out;
+}
+
+.sidebar-container.collapsed {
+  @apply w-16;
+}
+
+/* 移动端遮罩层 */
+.sidebar-overlay {
+  @apply fixed inset-0 bg-black/50 z-40 md:hidden;
+}
+
+/* 响应式侧边栏 */
+@media (max-width: 768px) {
+  .sidebar-container {
+    @apply w-64;
   }
 }
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+@media (max-width: 640px) {
+  .sidebar-container {
+    @apply absolute inset-y-0 left-0 z-50 w-64 transform -translate-x-full transition-transform duration-300;
+  }
+  
+  .sidebar-container.mobile-open {
+    @apply translate-x-0;
+  }
+  
+  .sidebar-container.collapsed {
+    @apply w-64; /* 移动端折叠时保持正常宽度 */
+  }
+  
+  .main-content {
+    @apply w-full;
   }
 }
 
-/* Custom scrollbar */
-@utility scrollbar-thin {
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(156, 163, 175, 0.5);
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(156, 163, 175, 0.8);
-  }
-
-  .dark &::-webkit-scrollbar-thumb {
-    background: rgba(75, 85, 99, 0.5);
-  }
-
-  .dark &::-webkit-scrollbar-thumb:hover {
-    background: rgba(75, 85, 99, 0.8);
-  }
+.main-content {
+  @apply flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900;
 }
-@utility dark {
-  & .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(75, 85, 99, 0.5);
-  }
 
-  & .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: rgba(75, 85, 99, 0.8);
-  }
-
-  & .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(75, 85, 99, 0.3);
-  }
-
-  & .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(75, 85, 99, 0.6);
-  }
-}
-@utility custom-scrollbar {
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(156, 163, 175, 0.3);
-    border-radius: 2px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(156, 163, 175, 0.6);
-  }
-
-  .dark &::-webkit-scrollbar-thumb {
-    background: rgba(75, 85, 99, 0.3);
-  }
-
-  .dark &::-webkit-scrollbar-thumb:hover {
-    background: rgba(75, 85, 99, 0.6);
-  }
-
-  /* 隐藏水平滚动条 */
-  &::-webkit-scrollbar:horizontal {
-    display: none;
-  }
+/* 消息组件 */
+.message-container {
+  @apply flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-900;
   scrollbar-width: thin;
-  scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+  scrollbar-color: rgb(156 163 175) transparent;
 }
 
-/* Animation improvements */
-@layer base {
-  * {
-    scroll-behavior: smooth;
-  }
-  
-  body {
-    font-family: 'Inter', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  /* 优化Markdown渲染中的列表间距 */
-  li {
-    margin-bottom: 0.25rem; /* 4px */
-  }
-  
-  li:last-child {
-    margin-bottom: 0;
-  }
+.message-container::-webkit-scrollbar {
+  width: 6px;
 }
 
-/* Custom bounce animation for loading dots */
-@keyframes bounce-delay {
-  0%, 80%, 100% {
-    transform: scale(0.8);
-    opacity: 0.5;
-  }
-  40% {
-    transform: scale(1);
-    opacity: 1;
-  }
+.message-container::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-/* Toast fade in animation */
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.message-container::-webkit-scrollbar-thumb {
+  background-color: rgb(156 163 175);
+  border-radius: 3px;
 }
 
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
+.message-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(107 114 128);
 }
+
+.message-bubble {
+  @apply max-w-2xl rounded-2xl p-4 shadow-sm transition-all duration-200 border;
+}
+
+.message-bubble-user {
+  @apply bg-blue-600 text-white ml-auto border-blue-600 shadow-lg;
+}
+
+.message-bubble-user:hover {
+  @apply bg-blue-700 border-blue-700 shadow-xl transform scale-[1.02];
+}
+
+.message-bubble-ai {
+  @apply bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 mr-auto shadow-md;
+}
+
+.message-bubble-ai:hover {
+  @apply bg-gray-50 dark:bg-gray-700 shadow-lg transform scale-[1.01];
+}
+
+/* 侧边栏组件 */
+.sidebar {
+  @apply bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full;
+}
+
+.sidebar-header {
+  @apply p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-between;
+}
+
+.sidebar-collapse-btn,
+.sidebar-menu-btn {
+  @apply p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+}
+
+.sidebar-title {
+  @apply text-lg font-semibold text-gray-900 dark:text-gray-100 flex-1 min-w-0 truncate ml-2;
+}
+
+/* 响应式显示控制 */
+.desktop-only {
+  @apply hidden md:flex;
+}
+
+.mobile-only {
+  @apply flex md:hidden;
+}
+
+/* 折叠状态下的侧边栏样式 */
+.sidebar.collapsed {
+  @apply items-center;
+}
+
+.sidebar.collapsed .sidebar-header {
+  @apply justify-center;
+}
+
+.sidebar.collapsed .user-status {
+  @apply p-2;
+}
+
+.sidebar.collapsed .user-status-content {
+  @apply justify-center px-2;
+}
+
+.sidebar-content {
+  @apply flex-1 overflow-y-auto p-3;
+}
+
+.conversation-item {
+  @apply flex items-center p-2 mx-1 mb-1 rounded-xl cursor-pointer transition-all duration-200 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700;
+}
+
+.conversation-item.active {
+  @apply bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-l-4 border-blue-500 ml-0 pl-4;
+}
+
+.user-status {
+  @apply p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900;
+}
+
+/* 聊天区域组件 */
+.chat-header {
+  @apply flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm;
+}
+
+.chat-input-container {
+  @apply border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4;
+}
+
+.chat-input-container-inner {
+  @apply max-w-4xl mx-auto;
+}
+
+/* 按钮组件 */
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md;
+}
+
+.btn-secondary {
+  @apply bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300 dark:border-gray-600;
+}
+
+.btn-icon {
+  @apply bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 p-2.5 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+}
+
+/* 侧边栏详细样式 */
+.sidebar-section-title {
+  @apply text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 px-2;
+}
+
+.conversation-group {
+  @apply mb-6;
+}
+
+.sidebar-group-title {
+  @apply text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 px-2 uppercase tracking-wide;
+}
+
+.conversation-list {
+  @apply space-y-1;
+}
+
+.conversation-info {
+  @apply flex-1 min-w-0;
+}
+
+.conversation-title {
+  @apply text-sm font-medium text-gray-900 dark:text-gray-100 truncate mb-1;
+}
+
+.conversation-time {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+.conversation-delete-btn {
+  @apply opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 ml-2 p-1 rounded;
+}
+
+.user-status-content {
+  @apply flex items-center space-x-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-3 rounded-xl transition-colors duration-200;
+}
+
+.user-avatar {
+  @apply w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center;
+}
+
+.user-info {
+  @apply flex-1 min-w-0;
+}
+
+.user-name {
+  @apply text-sm font-medium text-gray-900 dark:text-gray-100 truncate;
+}
+
+.user-status-text {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+/* 聊天区域详细样式 */
+.chat-title {
+  @apply text-xl font-semibold text-gray-900 dark:text-gray-100;
+}
+
+.message-wrapper {
+  @apply space-y-4 max-w-4xl mx-auto;
+}
+
+.message-actions {
+  @apply flex items-center justify-between mt-2 pt-1.5 border-t border-gray-100 dark:border-gray-600 transition-opacity duration-200;
+}
+
+.message-timestamp {
+  @apply text-xs text-gray-500 dark:text-gray-400 opacity-100;
+}
+
+.message-timestamp-user {
+  @apply text-xs text-blue-200 opacity-80;
+}
+
+.message-action-buttons {
+  @apply flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200;
+}
+
+.btn-action {
+  @apply p-1 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200;
+}
+
+/* 输入区域样式 */
+.chat-input-wrapper {
+  @apply border-2 border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 shadow-sm hover:border-gray-300 dark:hover:border-gray-500 transition-colors duration-200;
+}
+
+.chat-input-area {
+  @apply divide-y divide-gray-100 dark:divide-gray-700;
+}
+
+.chat-input-files {
+  @apply p-2 min-h-[32px];
+}
+
+.chat-input-files-content {
+  @apply flex items-center;
+}
+
+.file-upload-btn {
+  @apply p-1.5 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 rounded hover:bg-gray-50 dark:hover:bg-gray-700;
+}
+
+.chat-input-main {
+  @apply p-3;
+}
+
+.chat-input-field {
+  @apply w-full resize-none border-0 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-0 text-sm leading-relaxed;
+}
+
+.chat-input-toolbar {
+  @apply flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-b-lg;
+}
+
+.chat-input-tools-left {
+  @apply flex items-center space-x-2;
+}
+
+.chat-input-tools-right {
+  @apply flex items-center space-x-1.5;
+}
+
+.model-selector {
+  @apply text-xs bg-transparent border border-gray-200 dark:border-gray-600 rounded px-2 py-1 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent;
+}
+
+.tool-icon-btn {
+  @apply p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-all duration-200;
+}
+
+.send-btn {
+  @apply p-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded transition-colors duration-200 shadow-sm hover:shadow-md;
+}
+
+/* 输入框组件 */
+.form-input {
+  @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+

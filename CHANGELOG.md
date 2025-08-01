@@ -1,6 +1,53 @@
 # 变更日志
 
-## [未发布] - 2025-07-18
+## [未发布] - 2025-08-01
+
+### Bug 修复 🐛
+
+- **主题切换功能修复**: 解决了暗色/亮色主题切换不生效的问题
+  - 配置Tailwind CSS v4的dark mode使用class策略: `@variant dark (&:where(.dark, .dark *))`
+  - 优化ThemeContext实现，正确处理localStorage和系统偏好
+  - 添加防FOUC（Flash of Unstyled Content）脚本到HTML头部
+  - 确保主题状态正确应用到DOM元素
+
+### 代码清理 🧹
+
+- 移除临时调试文件和测试组件
+  - 删除 `debug.html`
+  - 删除 `SimpleThemeTest.tsx`
+  - 删除 `debug/` 组件目录
+
+## [未发布] - 2025-07-19
+
+### 样式架构重构 🎨
+
+#### 主要更新
+
+- **CSS架构重构**: 使用@apply指令创建语义化组件样式
+  - 将内联Tailwind类重构为语义化CSS类名
+  - 创建了100+个组件级样式类，提升代码可维护性
+  - 实现更好的样式组织和复用
+
+- **语义化样式系统**: 建立清晰的样式命名规范
+  - 布局组件: `.app-container`, `.main-layout`, `.sidebar-container`, `.main-content`
+  - 消息组件: `.message-bubble-user`, `.message-bubble-ai`, `.message-actions`
+  - 按钮组件: `.btn-primary`, `.btn-secondary`, `.btn-icon`, `.btn-action`
+  - 侧边栏组件: `.sidebar`, `.sidebar-header`, `.conversation-item`
+  - 输入组件: `.chat-input-container`, `.chat-input-area`, `.chat-input-field`
+
+- **组件更新**: 更新所有React组件使用新的语义化CSS类
+  - App.tsx: 使用`.app-container`替代内联类
+  - MainLayout.tsx: 使用`.main-layout`和`.sidebar-container`
+  - Sidebar.tsx: 使用完整的侧边栏样式系统
+  - ChatArea.tsx: 使用聊天区域专用样式类
+  - Button.tsx: 简化为语义化按钮类
+
+- **样式优化**: 改进的样式架构带来更好的开发体验
+  - 更清晰的样式组织结构
+  - 更好的样式复用和维护性
+  - 统一的设计系统实现
+
+## [2025-07-18] - 代码架构重构
 
 ### 重构优化 🎯
 
@@ -59,3 +106,9 @@
 
 - 解决了新消息到来后需要手动滚动才能看到的不便问题
 - 提升了聊天体验的流畅性和直观性
+
+## [2025-07-20] - Migrate PostCSS config to Vite
+
+- Removed postcss.config.js from assistant-ui
+- Integrated TailwindCSS PostCSS plugin directly in vite.config.ts
+- Now all PostCSS plugins are managed via Vite config
