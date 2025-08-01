@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from './context/ThemeContext.tsx';
 import { useTheme } from './hooks/useTheme';
 import { SidebarProvider } from './context/SidebarContext.tsx';
+import { ConversationProvider } from './context/ConversationContext.tsx';
 import { ChatPage } from './pages/ChatPage';
 
 const AppContent: React.FC = () => {
@@ -18,7 +19,9 @@ function App() {
   return (
     <ThemeProvider>
       <SidebarProvider>
-        <AppContent />
+        <ConversationProvider>
+          <AppContent />
+        </ConversationProvider>
       </SidebarProvider>
     </ThemeProvider>
   );

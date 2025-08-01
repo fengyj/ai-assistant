@@ -1,6 +1,8 @@
 import React from 'react';
 import { Button } from '../ui/Button';
 import { useSidebar } from '../../hooks/useSidebar';
+import { useConversation } from '../../hooks/useConversation';
+import { useChatInput } from '../../hooks/useChatInput';
 import { 
   SunIcon, 
   MoonIcon, 
@@ -25,32 +27,24 @@ interface ChatAreaProps {
 
 export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
   const { toggleMobileOpen } = useSidebar();
+  const { currentConversation, sendMessage, isLoading } = useConversation();
+  
+  // 使用聊天输入 Hook
+  const {
+    inputValue,
+    textareaRef,
+    canSend,
+    handleSend,
+    handleInputChange,
+    handleKeyDown,
+    handleCompositionStart,
+    handleCompositionEnd,
+  } = useChatInput({
+    onSend: sendMessage,
+  });
 
-  // 输入框自动高度逻辑
-  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
-  const handleInput = () => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }
-  };
-
-  // 模拟消息数据
-  const messages = [
-    {
-      id: '1',
-      role: 'user' as const,
-      content: '你好，我想了解一下React的useState Hook是如何工作的？',
-      timestamp: '10:30',
-    },
-    {
-      id: '2',
-      role: 'assistant' as const,
-      content: '你好！useState 是 React 中最基础也是最重要的 Hook 之一。\n\n它的主要作用是在函数组件中添加状态管理功能。基本语法如下：\n\n```javascript\nconst [state, setState] = useState(initialValue);\n```\n\n其中：\n- `state` 是当前的状态值\n- `setState` 是更新状态的函数\n- `initialValue` 是状态的初始值\n\n当你调用 `setState` 时，React 会重新渲染组件，并使用新的状态值。',
-      timestamp: '10:31',
-    },
-  ];
+  // 获取当前对话的消息，如果没有对话则显示空数组
+  const messages = currentConversation?.messages || [];
 
   // 主题切换由全局 <html> 或 <body> 的 class 控制，不在此处加 dark/light class
   return (
@@ -121,7 +115,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
                 {/* 消息底部信息 */}
                 <div className="message-actions">
                   <span className={message.role === 'user' ? 'message-timestamp-user' : 'message-timestamp'}>
-                    {message.timestamp}
+                    {message.timestamp instanceof Date ? message.timestamp.toLocaleTimeString('zh-CN', { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    }) : message.timestamp}
                   </span>
                   <div className="message-action-buttons">
                     <button className="btn-action" title="复制">
@@ -150,6 +147,18 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
               </div>
             </div>
           ))}
+          
+          {/* 加载状态 */}
+          {isLoading && (
+            <div className="flex justify-start mb-4">
+              <div className="message-bubble message-bubble-ai">
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                  <span className="text-gray-500 dark:text-gray-400">AI 正在思考中...</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -177,7 +186,11 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
                 className="chat-input-field"
                 rows={1}
                 style={{ minHeight: '24px', maxHeight: '120px', resize: 'none', overflow: 'hidden' }}
-                onInput={handleInput}
+                value={inputValue}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                onCompositionStart={handleCompositionStart}
+                onCompositionEnd={handleCompositionEnd}
               />
             </div>
 
@@ -204,7 +217,12 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
                 <button className="tool-icon-btn" title="新对话">
                   <PlusIcon className="w-3.5 h-3.5" />
                 </button>
-                <button className="send-btn" title="发送">
+                <button 
+                  className="send-btn" 
+                  title="发送"
+                  onClick={handleSend}
+                  disabled={!canSend}
+                >
                   <PaperAirplaneIcon className="w-3.5 h-3.5" />
                 </button>
               </div>

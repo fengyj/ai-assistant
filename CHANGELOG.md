@@ -2,7 +2,28 @@
 
 ## [未发布] - 2025-08-01
 
+### 新功能 ✨
+
+- **聊天功能核心实现**: 完成基础聊天交互功能
+  - 实现ConversationContext状态管理系统
+  - 添加useChatInput自定义Hook处理输入逻辑
+  - 支持消息发送和接收（模拟AI回复）
+  - 集成输入框自动调整高度功能
+  - 添加Ctrl+Enter快捷键发送消息
+  - 实现发送按钮状态管理和加载动画
+  - 支持中文输入法和输入验证
+
+- **项目架构完善**: 建立完整的目录结构和基础设施
+  - 创建api、utils、styles等核心目录
+  - 实现ConversationProvider状态提供者
+  - 添加useConversation Hook便于组件消费状态
+  - 集成对话管理功能（创建、切换、删除对话）
+
 ### Bug 修复 🐛
+
+- **模块导入错误修复**: 解决ConversationContextType导入问题
+  - 修复TypeScript类型导出冲突
+  - 优化模块导入路径和方式
 
 - **主题切换功能修复**: 解决了暗色/亮色主题切换不生效的问题
   - 配置Tailwind CSS v4的dark mode使用class策略: `@variant dark (&:where(.dark, .dark *))`
