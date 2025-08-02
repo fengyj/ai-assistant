@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { extractFilesFromPaste } from '../utils/fileUtils';
 
 export interface UseChatInputReturn {
   // 输入状态
@@ -11,6 +12,7 @@ export interface UseChatInputReturn {
   addFiles: (newFiles: File[]) => void;
   removeFile: (index: number) => void;
   clearFiles: () => void;
+  handleFilesChange: (newFiles: File[]) => void;
   
   // 输入框引用和方法
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
@@ -26,6 +28,7 @@ export interface UseChatInputReturn {
   handleKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   handleCompositionStart: () => void;
   handleCompositionEnd: () => void;
+  handlePaste: (e: React.ClipboardEvent<HTMLTextAreaElement>) => void;
 }
 
 interface UseChatInputOptions {
@@ -133,6 +136,20 @@ export const useChatInput = ({
     setFiles([]);
   }, []);
 
+  // 处理文件变化（用于FileUpload组件）
+  const handleFilesChange = useCallback((newFiles: File[]) => {
+    setFiles(newFiles);
+  }, []);
+
+  // 处理粘贴事件
+  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const pastedFiles = extractFilesFromPaste(e.nativeEvent);
+    if (pastedFiles.length > 0) {
+      e.preventDefault();
+      addFiles(pastedFiles);
+    }
+  }, [addFiles]);
+
   return {
     inputValue,
     setInputValue,
@@ -141,6 +158,7 @@ export const useChatInput = ({
     addFiles,
     removeFile,
     clearFiles,
+    handleFilesChange,
     textareaRef,
     adjustHeight,
     focusInput,
@@ -150,5 +168,6 @@ export const useChatInput = ({
     handleKeyDown,
     handleCompositionStart,
     handleCompositionEnd,
+    handlePaste,
   };
 };

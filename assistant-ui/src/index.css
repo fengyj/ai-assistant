@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./styles/fileUpload.css";
 
 /* 配置Tailwind CSS v4的dark mode使用class策略 */
 @variant dark (&:where(.dark, .dark *));
@@ -237,7 +238,11 @@ body {
 }
 
 .conversation-delete-btn {
-  @apply opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 ml-2 p-1 rounded;
+  @apply opacity-0 transition-opacity duration-200 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 ml-2 p-1 rounded;
+}
+
+.conversation-item:hover .conversation-delete-btn {
+  @apply opacity-100;
 }
 
 .user-status-content {
@@ -282,7 +287,15 @@ body {
 }
 
 .message-action-buttons {
-  @apply flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200;
+  @apply flex items-center space-x-1 opacity-0 transition-opacity duration-200;
+}
+
+.message-bubble:hover .message-action-buttons {
+  @apply opacity-100;
+}
+
+.message-bubble:hover .message-action-buttons {
+  @apply opacity-100;
 }
 
 .btn-action {
@@ -331,7 +344,20 @@ body {
 }
 
 .model-selector {
-  @apply text-xs bg-transparent border border-gray-200 dark:border-gray-600 rounded px-2 py-1 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent;
+  @apply text-xs min-w-[100px];
+  @apply bg-white dark:bg-gray-700;
+  @apply border border-gray-200 dark:border-gray-600;
+  @apply rounded-md px-3 py-1.5;
+  @apply text-gray-700 dark:text-gray-300;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-600;
+  @apply transition-all duration-200;
+  @apply shadow-sm;
+}
+
+/* 深色模式下 select option 的样式支持 */
+.model-selector option {
+  @apply bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300;
 }
 
 .tool-icon-btn {

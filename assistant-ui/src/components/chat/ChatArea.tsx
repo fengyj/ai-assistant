@@ -3,6 +3,7 @@ import { Button } from '../ui/Button';
 import { useSidebar } from '../../hooks/useSidebar';
 import { useConversation } from '../../hooks/useConversation';
 import { useChatInput } from '../../hooks/useChatInput';
+import { FileUpload } from './FileUpload';
 import { 
   SunIcon, 
   MoonIcon, 
@@ -10,7 +11,6 @@ import {
   MicrophoneIcon,
   PlusIcon,
   CogIcon,
-  PaperClipIcon,
   ClipboardDocumentIcon,
   PencilIcon,
   ArrowPathIcon,
@@ -32,6 +32,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
   // 使用聊天输入 Hook
   const {
     inputValue,
+    files,
     textareaRef,
     canSend,
     handleSend,
@@ -39,6 +40,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
     handleKeyDown,
     handleCompositionStart,
     handleCompositionEnd,
+    handleFilesChange,
+    handlePaste,
   } = useChatInput({
     onSend: sendMessage,
   });
@@ -171,10 +174,13 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
             {/* 上层：文件上传区域 */}
             <div className="chat-input-files">
               <div className="chat-input-files-content">
-                <button className="file-upload-btn" title="上传文件">
-                  <PaperClipIcon className="w-3.5 h-3.5" />
-                </button>
-                {/* 这里可以添加已上传文件的列表 */}
+                <FileUpload
+                  files={files}
+                  onFilesChange={handleFilesChange}
+                  maxFiles={5}
+                  maxSize={10 * 1024 * 1024}
+                  className="file-upload-chat"
+                />
               </div>
             </div>
 
@@ -191,6 +197,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
                 onKeyDown={handleKeyDown}
                 onCompositionStart={handleCompositionStart}
                 onCompositionEnd={handleCompositionEnd}
+                onPaste={handlePaste}
               />
             </div>
 
