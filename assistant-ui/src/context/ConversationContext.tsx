@@ -10,6 +10,9 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // 用于取消AI响应的状态
+  const [currentResponseTimeout, setCurrentResponseTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // 生成唯一ID的工具函数
   const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -37,6 +40,15 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
       setCurrentConversation(conversation);
     }
   }, [conversations]);
+
+  // 取消AI响应
+  const cancelResponse = useCallback(() => {
+    if (currentResponseTimeout) {
+      clearTimeout(currentResponseTimeout);
+      setCurrentResponseTimeout(null);
+      setIsLoading(false);
+    }
+  }, [currentResponseTimeout]);
 
   // 发送消息
   const sendMessage = useCallback(async (content: string, files?: File[]): Promise<void> => {
@@ -85,7 +97,7 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
       );
 
       // 模拟AI回复（这里应该调用实际的API）
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         const aiMessage: Message = {
           id: generateId(),
           content: `这是对"${content}"的回复。这是一个模拟的AI响应，用于测试界面功能。在实际应用中，这里应该调用AI API来获取真实的回复。`,
@@ -109,7 +121,11 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
           prev.map(c => c.id === conversation!.id ? finalConversation : c)
         );
         setIsLoading(false);
+        setCurrentResponseTimeout(null); // 清除超时状态
       }, 1000 + Math.random() * 2000); // 模拟网络延迟
+
+      // 保存当前的超时ID，以便能够取消
+      setCurrentResponseTimeout(timeout);
 
     } catch (error) {
       console.error('发送消息失败:', error);
@@ -183,7 +199,7 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
       );
 
       // 模拟重新生成AI回复
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         const newAiMessage: Message = {
           id: generateId(),
           content: `重新生成的回复：这是一个新的AI响应，内容与之前不同。重新生成功能可以为用户提供不同的回答选项。`,
@@ -208,7 +224,11 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
           prev.map(c => c.id === currentConversation.id ? finalConversation : c)
         );
         setIsLoading(false);
+        setCurrentResponseTimeout(null); // 清除超时状态
       }, 1000 + Math.random() * 2000);
+
+      // 保存当前的超时ID，以便能够取消
+      setCurrentResponseTimeout(timeout);
 
     } catch (error) {
       console.error('重新生成消息失败:', error);
@@ -258,6 +278,7 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
     conversations,
     isLoading,
     sendMessage,
+    cancelResponse,
     editMessage,
     deleteMessage,
     regenerateMessage,

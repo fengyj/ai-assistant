@@ -1,5 +1,23 @@
 # 变更日志
 
+## [未发布] - 2025-08-02
+
+### 新功能 ✨
+
+- **消息取消功能**: 实现AI响应过程中的取消功能
+  - 在useChatInput Hook中添加发送状态管理(isSending)
+  - 添加handleCancel和resetSending方法支持取消操作
+  - 在ConversationContext中实现cancelResponse功能
+  - 发送按钮在响应过程中变为取消按钮(XMarkIcon)
+  - 支持超时跟踪，可以正确取消正在进行的AI响应
+  - 状态同步机制确保UI与后台状态一致
+
+### 修复 🐛
+
+- **TypeScript错误修复**: 移除useChatInput.ts中未使用的useEffect导入
+  - 修复TS6133编译错误: 'useEffect' is declared but its value is never read
+  - 优化import语句，提高代码质量
+
 ## [未发布] - 2025-08-01
 
 ### 新功能 ✨

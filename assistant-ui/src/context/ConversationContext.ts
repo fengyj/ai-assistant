@@ -9,6 +9,7 @@ export interface ConversationContextType {
   
   // 消息相关操作
   sendMessage: (content: string, files?: File[]) => Promise<void>;
+  cancelResponse: () => void;
   editMessage: (messageId: string, newContent: string) => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
   regenerateMessage: (messageId: string) => Promise<void>;

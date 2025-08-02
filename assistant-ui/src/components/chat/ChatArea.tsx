@@ -10,6 +10,7 @@ import {
   SunIcon, 
   MoonIcon, 
   PaperAirplaneIcon,
+  StopIcon,
   MicrophoneIcon,
   PlusIcon,
   CogIcon,
@@ -29,7 +30,7 @@ interface ChatAreaProps {
 
 export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
   const { toggleMobileOpen } = useSidebar();
-  const { currentConversation, sendMessage, isLoading } = useConversation();
+  const { currentConversation, sendMessage, cancelResponse, isLoading } = useConversation();
   
   // 编辑模态框状态
   const [editingMessage, setEditingMessage] = useState<{ id: string; content: string } | null>(null);
@@ -54,7 +55,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
     files,
     textareaRef,
     canSend,
+    isSending,
     handleSend,
+    handleCancel,
+    resetSending,
     handleInputChange,
     handleKeyDown,
     handleCompositionStart,
@@ -63,6 +67,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
     handlePaste,
   } = useChatInput({
     onSend: sendMessage,
+    onCancel: cancelResponse,
   });
 
   // 获取当前对话的消息，如果没有对话则显示空数组
@@ -85,6 +90,13 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
 
     return () => clearTimeout(timeoutId);
   }, [messages.length, isLoading]);
+
+  // 同步发送状态：当 isLoading 变为 false 时，重置发送状态
+  useEffect(() => {
+    if (!isLoading && isSending) {
+      resetSending();
+    }
+  }, [isLoading, isSending, resetSending]);
 
   // 处理编辑消息
   const handleEditSave = async (newContent: string) => {
@@ -307,12 +319,16 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
                   <PlusIcon className="w-3.5 h-3.5" />
                 </button>
                 <button 
-                  className="send-btn" 
-                  title="发送"
-                  onClick={handleSend}
-                  disabled={!canSend}
+                  className={`send-btn ${isSending ? 'cancel-mode' : ''}`}
+                  title={isSending ? "取消" : "发送"}
+                  onClick={isSending ? handleCancel : handleSend}
+                  disabled={!canSend && !isSending}
                 >
-                  <PaperAirplaneIcon className="w-3.5 h-3.5" />
+                  {isSending ? (
+                    <StopIcon className="w-3.5 h-3.5" />
+                  ) : (
+                    <PaperAirplaneIcon className="w-3.5 h-3.5" />
+                  )}
                 </button>
               </div>
             </div>

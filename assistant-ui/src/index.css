@@ -368,6 +368,10 @@ body {
   @apply p-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded transition-colors duration-200 shadow-sm hover:shadow-md;
 }
 
+.send-btn.cancel-mode {
+  @apply bg-red-600 hover:bg-red-700 text-white;
+}
+
 /* 输入框组件 */
 .form-input {
   @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;

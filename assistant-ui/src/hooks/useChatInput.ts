@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { extractFilesFromPaste } from '../utils/fileUtils';
 
 export interface UseChatInputReturn {
@@ -21,7 +21,10 @@ export interface UseChatInputReturn {
   
   // 发送相关
   canSend: boolean;
+  isSending: boolean;
   handleSend: () => void;
+  handleCancel: () => void;
+  resetSending: () => void;
   
   // 事件处理
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
@@ -33,17 +36,20 @@ export interface UseChatInputReturn {
 
 interface UseChatInputOptions {
   onSend: (content: string, files: File[]) => void;
+  onCancel?: () => void;
   maxLength?: number;
   maxFiles?: number;
 }
 
 export const useChatInput = ({
   onSend,
+  onCancel,
   maxLength = 2000,
   maxFiles = 5,
 }: UseChatInputOptions): UseChatInputReturn => {
   const [inputValue, setInputValue] = useState('');
   const [isComposing, setIsComposing] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -62,12 +68,26 @@ export const useChatInput = ({
   }, []);
 
   // 判断是否可以发送
-  const canSend = inputValue.trim().length > 0 && inputValue.length <= maxLength;
+  const canSend = !isSending && inputValue.trim().length > 0 && inputValue.length <= maxLength;
+
+  // 处理取消
+  const handleCancel = useCallback(() => {
+    if (isSending && onCancel) {
+      onCancel();
+      setIsSending(false);
+    }
+  }, [isSending, onCancel]);
+
+  // 重置发送状态（用于外部组件在接收到响应后调用）
+  const resetSending = useCallback(() => {
+    setIsSending(false);
+  }, []);
 
   // 处理发送
   const handleSend = useCallback(() => {
-    if (!canSend) return;
+    if (!canSend || isSending) return;
     
+    setIsSending(true);
     onSend(inputValue.trim(), files);
     setInputValue('');
     setFiles([]);
@@ -78,7 +98,7 @@ export const useChatInput = ({
         textareaRef.current.style.height = 'auto';
       }
     }, 0);
-  }, [canSend, inputValue, files, onSend]);
+  }, [canSend, isSending, inputValue, files, onSend]);
 
   // 处理输入变化
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -163,7 +183,10 @@ export const useChatInput = ({
     adjustHeight,
     focusInput,
     canSend,
+    isSending,
     handleSend,
+    handleCancel,
+    resetSending,
     handleInputChange,
     handleKeyDown,
     handleCompositionStart,
