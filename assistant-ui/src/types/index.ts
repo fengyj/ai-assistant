@@ -20,6 +20,9 @@ export interface Message {
     model?: string;
     tokens?: number;
     files?: FileAttachment[];
+    regenerated?: boolean;
+    liked?: boolean;
+    disliked?: boolean;
   };
 }
 

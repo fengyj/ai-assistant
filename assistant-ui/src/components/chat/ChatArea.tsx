@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../ui/Button';
 import { useSidebar } from '../../hooks/useSidebar';
 import { useConversation } from '../../hooks/useConversation';
 import { useChatInput } from '../../hooks/useChatInput';
+import { useMessageActions } from '../../hooks/useMessageActions';
 import { FileUpload } from './FileUpload';
+import { MessageEditModal } from './MessageEditModal';
 import { 
   SunIcon, 
   MoonIcon, 
@@ -29,6 +31,23 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
   const { toggleMobileOpen } = useSidebar();
   const { currentConversation, sendMessage, isLoading } = useConversation();
   
+  // 编辑模态框状态
+  const [editingMessage, setEditingMessage] = useState<{ id: string; content: string } | null>(null);
+  
+  // 滚动相关refs
+  const messageContainerRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // 消息操作Hook
+  const {
+    copyMessage,
+    editMessage,
+    regenerateMessage,
+    likeMessage,
+    dislikeMessage,
+    isProcessing,
+  } = useMessageActions();
+  
   // 使用聊天输入 Hook
   const {
     inputValue,
@@ -48,6 +67,36 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
 
   // 获取当前对话的消息，如果没有对话则显示空数组
   const messages = currentConversation?.messages || [];
+
+  // 滚动到底部函数
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'end'
+    });
+  };
+
+  // 监听消息变化，自动滚动到底部
+  useEffect(() => {
+    // 延迟滚动，确保DOM已更新
+    const timeoutId = setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [messages.length, isLoading]);
+
+  // 处理编辑消息
+  const handleEditSave = async (newContent: string) => {
+    if (editingMessage) {
+      await editMessage(editingMessage.id, newContent);
+      setEditingMessage(null);
+    }
+  };
+
+  const handleEditCancel = () => {
+    setEditingMessage(null);
+  };
 
   // 主题切换由全局 <html> 或 <body> 的 class 控制，不在此处加 dark/light class
   return (
@@ -76,7 +125,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
       </div>
 
       {/* 中间：消息列表 */}
-      <div className="message-container">
+      <div className="message-container" ref={messageContainerRef}>
         <div className="message-wrapper">
           {messages.map((message) => (
             <div
@@ -91,6 +140,11 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
                 }`}
               >
                 <div className="prose prose-sm max-w-none dark:prose-invert">
+                  {message.metadata?.regenerated && (
+                    <div className="mb-2 text-xs text-orange-600 dark:text-orange-400 font-medium">
+                      🔄 重新生成的回复
+                    </div>
+                  )}
                   {message.content.split('\n').map((line, index) => {
                     if (line.startsWith('```javascript')) {
                       return (
@@ -124,23 +178,48 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
                     }) : message.timestamp}
                   </span>
                   <div className="message-action-buttons">
-                    <button className="btn-action" title="复制">
+                    <button 
+                      className="btn-action" 
+                      title="复制"
+                      onClick={() => copyMessage(message.id)}
+                      disabled={isProcessing}
+                    >
                       <ClipboardDocumentIcon className="w-3.5 h-3.5" />
                     </button>
                     {message.role === 'user' && (
-                      <button className="btn-action" title="编辑">
+                      <button 
+                        className="btn-action" 
+                        title="编辑"
+                        onClick={() => setEditingMessage({ id: message.id, content: message.content })}
+                        disabled={isProcessing}
+                      >
                         <PencilIcon className="w-3.5 h-3.5" />
                       </button>
                     )}
                     {message.role === 'assistant' && (
                       <>
-                        <button className="btn-action" title="重新生成">
+                        <button 
+                          className="btn-action" 
+                          title="重新生成"
+                          onClick={() => regenerateMessage(message.id)}
+                          disabled={isProcessing || isLoading}
+                        >
                           <ArrowPathIcon className="w-3.5 h-3.5" />
                         </button>
-                        <button className="btn-action" title="喜欢">
+                        <button 
+                          className={`btn-action ${message.metadata?.liked ? 'text-green-600 dark:text-green-400' : ''}`}
+                          title="喜欢"
+                          onClick={() => likeMessage(message.id)}
+                          disabled={isProcessing}
+                        >
                           <HandThumbUpIcon className="w-3.5 h-3.5" />
                         </button>
-                        <button className="btn-action" title="不喜欢">
+                        <button 
+                          className={`btn-action ${message.metadata?.disliked ? 'text-red-600 dark:text-red-400' : ''}`}
+                          title="不喜欢"
+                          onClick={() => dislikeMessage(message.id)}
+                          disabled={isProcessing}
+                        >
                           <HandThumbDownIcon className="w-3.5 h-3.5" />
                         </button>
                       </>
@@ -162,6 +241,9 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
               </div>
             </div>
           )}
+          
+          {/* 滚动目标元素 */}
+          <div ref={messagesEndRef} className="h-1" />
         </div>
       </div>
 
@@ -238,6 +320,14 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
           </div>
         </div>
       </div>
+      
+      {/* 编辑消息模态框 */}
+      <MessageEditModal
+        isOpen={!!editingMessage}
+        initialContent={editingMessage?.content || ''}
+        onSave={handleEditSave}
+        onCancel={handleEditCancel}
+      />
     </div>
   );
 };

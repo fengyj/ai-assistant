@@ -156,9 +156,65 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
 
   // 重新生成消息
   const regenerateMessage = useCallback(async (messageId: string): Promise<void> => {
-    // 实现重新生成逻辑
-    console.log('重新生成消息:', messageId);
-  }, []);
+    if (!currentConversation) return;
+
+    const messageIndex = currentConversation.messages.findIndex(msg => msg.id === messageId);
+    if (messageIndex === -1) return;
+
+    const message = currentConversation.messages[messageIndex];
+    if (message.role !== 'assistant') return; // 只能重新生成AI消息
+
+    setIsLoading(true);
+
+    try {
+      // 移除当前AI消息及其后面的所有消息
+      const messagesBeforeRegenerate = currentConversation.messages.slice(0, messageIndex);
+      
+      // 更新对话，移除旧的AI回复
+      const tempConversation: Conversation = {
+        ...currentConversation,
+        messages: messagesBeforeRegenerate,
+        updatedAt: new Date()
+      };
+
+      setCurrentConversation(tempConversation);
+      setConversations(prev =>
+        prev.map(c => c.id === currentConversation.id ? tempConversation : c)
+      );
+
+      // 模拟重新生成AI回复
+      setTimeout(() => {
+        const newAiMessage: Message = {
+          id: generateId(),
+          content: `重新生成的回复：这是一个新的AI响应，内容与之前不同。重新生成功能可以为用户提供不同的回答选项。`,
+          role: 'assistant',
+          timestamp: new Date(),
+          conversationId: currentConversation.id,
+          metadata: {
+            model: 'GPT-4',
+            tokens: 45,
+            regenerated: true
+          }
+        };
+
+        const finalConversation: Conversation = {
+          ...tempConversation,
+          messages: [...tempConversation.messages, newAiMessage],
+          updatedAt: new Date()
+        };
+
+        setCurrentConversation(finalConversation);
+        setConversations(prev =>
+          prev.map(c => c.id === currentConversation.id ? finalConversation : c)
+        );
+        setIsLoading(false);
+      }, 1000 + Math.random() * 2000);
+
+    } catch (error) {
+      console.error('重新生成消息失败:', error);
+      setIsLoading(false);
+    }
+  }, [currentConversation]);
 
   // 删除对话
   const deleteConversation = useCallback(async (conversationId: string): Promise<void> => {
