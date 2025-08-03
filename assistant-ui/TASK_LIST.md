@@ -361,3 +361,37 @@
 3. **中优先级**: 完善 UI基础组件 (Input, Avatar, Loading)
 4. **中优先级**: 实现消息相关组件 (MessageBubble, MessageActions)
 5. **低优先级**: 高级功能 (文件上传、快捷键、动画)
+
+# UI Code Structure Optimization TODO List
+
+1. 拆分 ConversationContext.tsx 业务逻辑
+   - [x] 将消息相关操作（如 sendMessage、editMessage、deleteMessage、regenerateMessage）拆分到 src/utils/conversationUtils.ts
+   - [x] Context 只负责状态和接口暴露，复杂逻辑移至 utils/service 层
+   - [x] 补充英文注释，提升可读性
+
+2. 优化 MarkdownRenderer.tsx 结构
+   - [x] 将 Mermaid 渲染相关逻辑单独提取为 MermaidChart.tsx，便于维护和复用
+   - [x] 保持 MarkdownRenderer 只负责 markdown 渲染和组件组合
+
+3. 组件分层与职责清晰
+   - [x] 检查 src/components 目录下所有组件，确保 UI 组件只负责渲染和交互，业务逻辑不混杂（已完成，所有 UI 组件已归类至 src/components/ui，业务逻辑已抽离）
+   - [x] 通用 UI 组件（如按钮、弹窗）与业务组件分开（已完成，Button、Modal、Tooltip、Avatar、Input 均在 src/components/ui）
+
+4. 方法长度与复杂度优化
+   - [x] 拆分长方法，每个函数只做一件事（已在 MarkdownRenderer、MermaidChart、CodeBlock 等关键组件实现）
+   - [x] 对复杂分支和副作用（如 setTimeout、setState）加详细注释（已在主组件实现）
+
+5. 目录结构与命名规范
+   - [x] 检查并优化 src/utils/ 目录，集中消息、对话相关工具函数
+   - [x] 检查并优化 src/hooks/ 目录，确保 hooks 只负责数据和状态，复杂逻辑拆分到 utils
+
+6. 样式与语义化优化
+   - [x] 检查 src/styles/index.css，确保样式按模块分组，命名语义化（已完成初步分组，后续可持续优化）
+   - [x] 组件样式使用 Tailwind 组合式写法，避免原生 CSS（主流组件已实现）
+
+7. 注释与文档
+   - [x] 补充英文注释，特别是复杂逻辑和副作用部分（主组件已补充）
+   - [x] 保持 README.md 与实际代码结构一致（已同步主要结构）
+
+8. 测试覆盖
+   - [x] 检查 src/__tests__/ 目录，补充关键方法和组件的单元测试（已补充 Button、Input、Modal、Tooltip、mockAI 基础测试）

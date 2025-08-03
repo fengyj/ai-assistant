@@ -1,7 +1,15 @@
+import { getMockAIResponse } from '../utils/mockAI';
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { ConversationContext } from './ConversationContext';
 import type { Conversation, Message } from '../types/index';
+import {
+  createConversationObject,
+  createUserMessage,
+  createAIMessage,
+  editMessage as editMessageUtil,
+  deleteMessage as deleteMessageUtil
+} from '../utils/conversationUtils';
 
 interface ConversationProviderProps {
   children: React.ReactNode;
@@ -16,14 +24,9 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
 
   const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
+  // Create a new conversation and update state
   const createConversation = useCallback(async (title?: string): Promise<string> => {
-    const newConversation: Conversation = {
-      id: generateId(),
-      title: title || '新对话',
-      messages: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    const newConversation = createConversationObject(generateId(), title || '新对话');
     setConversations(prev => [newConversation, ...prev]);
     setCurrentConversation(newConversation);
     return newConversation.id;
@@ -47,82 +50,42 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
   }, [currentResponseTimeout]);
 
   // 发送消息
+  // Send a message (user and simulated AI reply)
   const sendMessage = useCallback(async (content: string, files?: File[]): Promise<void> => {
     if (!content.trim()) return;
-
     setIsLoading(true);
-    
     try {
-      // 如果没有当前对话，创建一个新的
       let conversation = currentConversation;
       if (!conversation) {
         const newConversationId = await createConversation();
         conversation = conversations.find(c => c.id === newConversationId) || null;
         if (!conversation) return;
       }
-
-      // 创建用户消息
-      const userMessage: Message = {
-        id: generateId(),
-        content,
-        role: 'user',
-        timestamp: new Date(),
-        conversationId: conversation.id,
-        metadata: files && files.length > 0 ? {
-          files: files.map(file => ({
-            id: generateId(),
-            name: file.name,
-            size: file.size,
-            type: file.type,
-          }))
-        } : undefined
-      };
-
-      // 更新对话
+      // Create user message using util
+      const userMessage = createUserMessage(generateId(), content, conversation.id, files);
       const updatedConversation: Conversation = {
         ...conversation,
         messages: [...conversation.messages, userMessage],
         updatedAt: new Date(),
         title: conversation.messages.length === 0 ? content.slice(0, 30) + (content.length > 30 ? '...' : '') : conversation.title
       };
-
-      // 更新状态
       setCurrentConversation(updatedConversation);
-      setConversations(prev => 
-        prev.map(c => c.id === conversation!.id ? updatedConversation : c)
-      );
-
-      // 模拟AI回复（这里应该调用实际的API）
+      setConversations(prev => prev.map(c => c.id === conversation!.id ? updatedConversation : c));
+      // Simulate AI reply
       const timeout = setTimeout(() => {
-        const aiMessage: Message = {
-          id: generateId(),
-          content: `这是对"${content}"的回复。这是一个模拟的AI响应，用于测试界面功能。在实际应用中，这里应该调用AI API来获取真实的回复。`,
-          role: 'assistant',
-          timestamp: new Date(),
-          conversationId: conversation!.id,
-          metadata: {
-            model: 'GPT-4',
-            tokens: 50
-          }
-        };
-
+        // Import mock AI response from utils
+        const aiMessage = createAIMessage(generateId(), getMockAIResponse(content), conversation!.id);
         const finalConversation: Conversation = {
           ...updatedConversation,
           messages: [...updatedConversation.messages, aiMessage],
           updatedAt: new Date()
         };
-
         setCurrentConversation(finalConversation);
-        setConversations(prev => 
-          prev.map(c => c.id === conversation!.id ? finalConversation : c)
-        );
+        setConversations(prev => prev.map(c => c.id === conversation!.id ? finalConversation : c));
         setIsLoading(false);
-        setCurrentResponseTimeout(null); // 清除超时状态
-      }, 1000 + Math.random() * 2000); // 模拟网络延迟
-
-      // 保存当前的超时ID，以便能够取消
+        setCurrentResponseTimeout(null);
+      }, 1000 + Math.random() * 2000);
       setCurrentResponseTimeout(timeout);
-
     } catch (error) {
       console.error('发送消息失败:', error);
       setIsLoading(false);
@@ -130,102 +93,66 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
   }, [currentConversation, conversations, createConversation]);
 
   // 编辑消息
+  // Edit a message in the current conversation
   const editMessage = useCallback(async (messageId: string, newContent: string): Promise<void> => {
     if (!currentConversation) return;
-
-    const updatedMessages = currentConversation.messages.map(msg =>
-      msg.id === messageId ? { ...msg, content: newContent } : msg
-    );
-
+    const updatedMessages = editMessageUtil(currentConversation.messages, messageId, newContent);
     const updatedConversation: Conversation = {
       ...currentConversation,
       messages: updatedMessages,
       updatedAt: new Date()
     };
-
     setCurrentConversation(updatedConversation);
-    setConversations(prev =>
-      prev.map(c => c.id === currentConversation.id ? updatedConversation : c)
-    );
+    setConversations(prev => prev.map(c => c.id === currentConversation.id ? updatedConversation : c));
   }, [currentConversation]);
 
   // 删除消息
+  // Delete a message from the current conversation
   const deleteMessage = useCallback(async (messageId: string): Promise<void> => {
     if (!currentConversation) return;
-
-    const updatedMessages = currentConversation.messages.filter(msg => msg.id !== messageId);
+    const updatedMessages = deleteMessageUtil(currentConversation.messages, messageId);
     const updatedConversation: Conversation = {
       ...currentConversation,
       messages: updatedMessages,
       updatedAt: new Date()
     };
-
     setCurrentConversation(updatedConversation);
-    setConversations(prev =>
-      prev.map(c => c.id === currentConversation.id ? updatedConversation : c)
-    );
+    setConversations(prev => prev.map(c => c.id === currentConversation.id ? updatedConversation : c));
   }, [currentConversation]);
 
   // 重新生成消息
+  // Regenerate an AI message in the current conversation
   const regenerateMessage = useCallback(async (messageId: string): Promise<void> => {
     if (!currentConversation) return;
-
     const messageIndex = currentConversation.messages.findIndex(msg => msg.id === messageId);
     if (messageIndex === -1) return;
-
     const message = currentConversation.messages[messageIndex];
-    if (message.role !== 'assistant') return; // 只能重新生成AI消息
-
+    if (message.role !== 'assistant') return;
     setIsLoading(true);
-
     try {
-      // 移除当前AI消息及其后面的所有消息
+      // Remove current AI message and all after it
       const messagesBeforeRegenerate = currentConversation.messages.slice(0, messageIndex);
-      
-      // 更新对话，移除旧的AI回复
       const tempConversation: Conversation = {
         ...currentConversation,
         messages: messagesBeforeRegenerate,
         updatedAt: new Date()
       };
-
       setCurrentConversation(tempConversation);
-      setConversations(prev =>
-        prev.map(c => c.id === currentConversation.id ? tempConversation : c)
-      );
-
-      // 模拟重新生成AI回复
+      setConversations(prev => prev.map(c => c.id === currentConversation.id ? tempConversation : c));
+      // Simulate new AI reply
       const timeout = setTimeout(() => {
-        const newAiMessage: Message = {
-          id: generateId(),
-          content: `重新生成的回复：这是一个新的AI响应，内容与之前不同。重新生成功能可以为用户提供不同的回答选项。`,
-          role: 'assistant',
-          timestamp: new Date(),
-          conversationId: currentConversation.id,
-          metadata: {
-            model: 'GPT-4',
-            tokens: 45,
-            regenerated: true
-          }
-        };
-
+        const newAiMessage = createAIMessage(generateId(), `重新生成的回复：这是一个新的AI响应，内容与之前不同。重新生成功能可以为用户提供不同的回答选项。`, currentConversation.id, 45, true);
         const finalConversation: Conversation = {
           ...tempConversation,
           messages: [...tempConversation.messages, newAiMessage],
           updatedAt: new Date()
         };
-
         setCurrentConversation(finalConversation);
-        setConversations(prev =>
-          prev.map(c => c.id === currentConversation.id ? finalConversation : c)
-        );
+        setConversations(prev => prev.map(c => c.id === currentConversation.id ? finalConversation : c));
         setIsLoading(false);
-        setCurrentResponseTimeout(null); // 清除超时状态
+        setCurrentResponseTimeout(null);
       }, 1000 + Math.random() * 2000);
-
-      // 保存当前的超时ID，以便能够取消
       setCurrentResponseTimeout(timeout);
-
     } catch (error) {
       console.error('重新生成消息失败:', error);
       setIsLoading(false);

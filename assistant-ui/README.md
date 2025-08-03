@@ -90,7 +90,7 @@
 
 - React 19
 - TypeScript
-- Tailwind CSS
+- Tailwind CSS v4
 - Vite
 - Heroicons
 - React-Intl

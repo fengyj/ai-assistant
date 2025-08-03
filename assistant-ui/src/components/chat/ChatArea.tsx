@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useEditingMessage } from '../../hooks/useEditingMessage';
 import { Button } from '../ui/Button';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useSidebar } from '../../hooks/useSidebar';
@@ -34,7 +35,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
   const { currentConversation, sendMessage, cancelResponse, isLoading } = useConversation();
   
   // 编辑模态框状态
-  const [editingMessage, setEditingMessage] = useState<{ id: string; content: string } | null>(null);
+  // Use custom hook for editing message state
+  const { editingMessage, setEditingMessage } = useEditingMessage<{ id: string; content: string }>();
   
   // 滚动相关refs
   const messageContainerRef = useRef<HTMLDivElement>(null);

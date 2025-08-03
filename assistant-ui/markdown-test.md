@@ -5,6 +5,7 @@
 ## 代码块测试
 
 ### JavaScript 代码
+
 ```javascript
 function greet(name) {
   console.log(`Hello, ${name}!`);
@@ -16,6 +17,7 @@ greet(user);
 ```
 
 ### Python 代码
+
 ```python
 def fibonacci(n):
     if n <= 1:
@@ -28,6 +30,7 @@ for i in range(10):
 ```
 
 ### 行内代码
+
 这里有一些 `行内代码` 示例，比如 `console.log()` 和 `print()` 函数。
 
 ## 表格测试
@@ -42,6 +45,7 @@ for i in range(10):
 ## Mermaid 图表测试
 
 ### 流程图
+
 ```mermaid
 graph TD
     A[开始] --> B{条件判断}
@@ -52,6 +56,7 @@ graph TD
 ```
 
 ### 时序图
+
 ```mermaid
 sequenceDiagram
     participant U as 用户
@@ -68,6 +73,7 @@ sequenceDiagram
 ```
 
 ### 类图
+
 ```mermaid
 classDiagram
     class MessageComponent {
@@ -92,6 +98,7 @@ classDiagram
 ## 其他 Markdown 元素
 
 ### 列表
+
 - 无序列表项 1
 - 无序列表项 2
   - 嵌套项 2.1
@@ -103,20 +110,25 @@ classDiagram
 3. 有序列表项 3
 
 ### 引用
+
 > 这是一个引用块。
-> 
+>
 > 引用可以包含多个段落，也可以包含其他 Markdown 元素。
 
 ### 链接
+
 这是一个 [链接到 GitHub](https://github.com) 的示例。
 
 ### 强调
+
 这是 **粗体文本** 和 *斜体文本* 的示例。
 
 ### 分割线
+
 ---
 
 ### 复杂的 Mermaid 图表
+
 ```mermaid
 gitgraph
     commit id: "初始提交"
@@ -140,6 +152,7 @@ gitgraph
 ## 测试总结
 
 如果您能看到：
+
 - ✅ 代码块有语法高亮
 - ✅ 表格格式正确
 - ✅ Mermaid 图表正确渲染

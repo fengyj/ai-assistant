@@ -1,3 +1,4 @@
+import { mockConversations } from '../../utils/mockData';
 import React from 'react';
 import { 
   UserIcon, 
@@ -16,13 +17,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
   const { isCollapsed, toggleCollapse } = useSidebar();
   
   // 模拟对话历史数据
-  const conversations = [
-    { id: '1', title: '关于React Hook的问题', time: '10:30', group: '今天' },
-    { id: '2', title: '如何优化前端性能', time: '09:15', group: '今天' },
-    { id: '3', title: 'TypeScript类型定义', time: '15:22', group: '昨天' },
-    { id: '4', title: 'Tailwind CSS使用技巧', time: '11:08', group: '昨天' },
-    { id: '5', title: 'API设计最佳实践', time: '16:45', group: '本周' },
-  ];
+  const conversations = mockConversations;
 
   const groupedConversations = conversations.reduce((groups, conv) => {
     const group = conv.group;

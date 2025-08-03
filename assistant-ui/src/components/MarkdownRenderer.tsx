@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useRef, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vs, dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
-import mermaid from 'mermaid';
+import MermaidChart from './MermaidChart';
+import CodeBlock from './CodeBlock';
 
 interface MarkdownRendererProps {
   content: string;
@@ -13,102 +11,7 @@ interface MarkdownRendererProps {
   theme?: 'light' | 'dark';
 }
 
-// 最基础的 Mermaid 图表组件
-const MermaidChart: React.FC<{ 
-  chart: string; 
-  theme: 'light' | 'dark'; 
-}> = ({ chart, theme }) => {
-  const chartRef = useRef<HTMLDivElement>(null);
-  const [error, setError] = useState<string | null>(null);
-  
-  useEffect(() => {
-    if (!chartRef.current) return;
-    
-    const renderChart = async () => {
-      try {
-        setError(null);
-        
-        // 清空容器
-        if (chartRef.current) {
-          chartRef.current.innerHTML = '';
-        }
-        
-        // 初始化 Mermaid
-        mermaid.initialize({
-          startOnLoad: false,
-          theme: 'neutral', // 使用中性主题，比 default 和 dark 更柔和
-          securityLevel: 'loose'
-        });
-        
-        // 生成唯一ID
-        const id = `mermaid-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-        
-        // 渲染图表
-        const { svg } = await mermaid.render(id, chart);
-        
-        // 插入到DOM
-        if (chartRef.current) {
-          chartRef.current.innerHTML = svg;
-        }
-        
-      } catch (err) {
-        console.error('Mermaid 渲染错误:', err);
-        setError(err instanceof Error ? err.message : '渲染失败');
-      }
-    };
-    
-    renderChart();
-  }, [chart, theme]);
 
-  const copyChart = () => {
-    navigator.clipboard.writeText(chart);
-  };
-  
-  if (error) {
-    return (
-      <div className="mermaid-wrapper my-6">
-        <div className="mermaid-header bg-gray-100 dark:bg-gray-800 px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-t-lg flex items-center justify-between">
-          <span className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-            Mermaid (渲染失败)
-          </span>
-          <button
-            className="mermaid-copy-btn"
-            onClick={copyChart}
-            title="复制图表代码"
-          >
-            <ClipboardDocumentIcon className="w-4 h-4" />
-          </button>
-        </div>
-        <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 border-t-0 rounded-b-lg overflow-hidden">
-          <pre className="p-4 text-sm text-gray-800 dark:text-gray-200 overflow-x-auto whitespace-pre-wrap font-mono">
-            {chart}
-          </pre>
-        </div>
-      </div>
-    );
-  }
-  
-  return (
-    <div className="mermaid-wrapper my-6">
-      <div className="mermaid-header bg-gray-100 dark:bg-gray-800 px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-t-lg flex items-center justify-between">
-        <span className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-          Mermaid 图表
-        </span>
-        <button
-          className="mermaid-copy-btn"
-          onClick={copyChart}
-          title="复制图表代码"
-        >
-          <ClipboardDocumentIcon className="w-4 h-4" />
-        </button>
-      </div>
-      <div 
-        ref={chartRef}
-        className="mermaid-chart bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-600 border-t-0 rounded-b-lg p-4 overflow-x-auto min-h-[200px]"
-      />
-    </div>
-  );
-};
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ 
   content, 
@@ -122,61 +25,34 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({
       const { inline, className, children, ...rest } = props;
       const match = /language-(\w+)/.exec(className || '');
       const language = match ? match[1] : '';
-      
-      // 处理 Mermaid 图表
+
+      // Mermaid 图表渲染，异常时友好提示
       if (!inline && language === 'mermaid') {
+        // MermaidChart 需在内部处理错误，若渲染失败则显示错误提示
         return (
           <MermaidChart 
             chart={String(children).replace(/\n$/, '')} 
-            theme={theme} 
+            theme={theme}
           />
         );
       }
-      
+
+      // 代码块使用独立组件
       if (!inline && language) {
         return (
-          <div className="code-block-wrapper my-4">
-            <div className="code-block-header bg-gray-100 dark:bg-gray-800 px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-t-lg flex items-center justify-between">
-              <span className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                {language}
-              </span>
-              <button
-                className="code-block-copy-btn"
-                onClick={() => navigator.clipboard.writeText(String(children).replace(/\n$/, ''))}
-                title="复制代码"
-              >
-                <ClipboardDocumentIcon className="w-4 h-4" />
-              </button>
-            </div>
-            <SyntaxHighlighter
-              style={theme === 'dark' ? dark : vs}
-              language={language}
-              PreTag="div"
-              className="syntax-highlighter"
-              showLineNumbers={false}
-              wrapLines={true}
-              customStyle={{
-                margin: 0,
-                borderRadius: '0 0 0.5rem 0.5rem',
-                fontSize: '0.875rem',
-                border: '1px solid',
-                borderColor: theme === 'dark' ? '#374151' : '#e5e7eb',
-                borderTop: 'none',
-                backgroundColor: theme === 'dark' ? '#1f2937' : '#f9fafb',
-                boxShadow: 'none', // 明确禁用阴影
-              }}
-              {...rest}
-            >
-              {String(children).replace(/\n$/, '')}
-            </SyntaxHighlighter>
-          </div>
+          <CodeBlock
+            language={language}
+            value={String(children).replace(/\n$/, '')}
+            theme={theme}
+            rest={rest}
+          />
         );
       }
 
-      // 内联代码
+      // 内联代码样式微调，提升可读性
       return (
         <code 
-          className="bg-gray-100 dark:bg-gray-800 text-red-600 dark:text-red-400 px-1 py-0.5 rounded text-sm" 
+          className="bg-gray-100 dark:bg-gray-800 text-pink-700 dark:text-pink-400 px-1.5 py-0.5 rounded text-[0.95em] font-mono border border-gray-200 dark:border-gray-700" 
           {...rest}
         >
           {children}
