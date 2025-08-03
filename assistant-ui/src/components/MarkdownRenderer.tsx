@@ -41,7 +41,7 @@ const MermaidChart: React.FC<{
         });
         
         // 生成唯一ID
-        const id = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+        const id = `mermaid-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
         
         // 渲染图表
         const { svg } = await mermaid.render(id, chart);

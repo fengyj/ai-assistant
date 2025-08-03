@@ -15,7 +15,7 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
   const [currentResponseTimeout, setCurrentResponseTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // 生成唯一ID的工具函数
-  const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
   // 创建新对话
   const createConversation = useCallback(async (title?: string): Promise<string> => {
