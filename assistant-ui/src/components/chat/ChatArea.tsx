@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../ui/Button';
+import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useSidebar } from '../../hooks/useSidebar';
 import { useConversation } from '../../hooks/useConversation';
 import { useChatInput } from '../../hooks/useChatInput';
@@ -157,28 +158,11 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
                       🔄 重新生成的回复
                     </div>
                   )}
-                  {message.content.split('\n').map((line, index) => {
-                    if (line.startsWith('```javascript')) {
-                      return (
-                        <div key={index} className="bg-gray-100 dark:bg-gray-900 rounded-lg p-4 my-3 border-l-4 border-blue-500">
-                          <code className="text-sm font-mono text-blue-800 dark:text-blue-200">
-                            {message.content.split('```javascript')[1]?.split('```')[0]}
-                          </code>
-                        </div>
-                      );
-                    }
-                    if (line.startsWith('```')) {
-                      return null; // 跳过代码块标记
-                    }
-                    if (line.trim() === '') {
-                      return <br key={index} />;
-                    }
-                    return (
-                      <p key={index} className={`mb-2 ${message.role === 'user' ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>
-                        {line}
-                      </p>
-                    );
-                  })}
+                  <MarkdownRenderer 
+                    content={message.content} 
+                    theme={theme}
+                    className={message.role === 'user' ? 'user-message-content' : 'ai-message-content'}
+                  />
                 </div>
                 
                 {/* 消息底部信息 */}
