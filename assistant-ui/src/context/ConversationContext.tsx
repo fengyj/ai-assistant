@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { ConversationContext } from './ConversationContext';
 import type { Conversation, Message } from '../types/index';
@@ -11,13 +12,10 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  // 用于取消AI响应的状态
   const [currentResponseTimeout, setCurrentResponseTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  // 生成唯一ID的工具函数
   const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
-  // 创建新对话
   const createConversation = useCallback(async (title?: string): Promise<string> => {
     const newConversation: Conversation = {
       id: generateId(),
@@ -26,10 +24,8 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-
     setConversations(prev => [newConversation, ...prev]);
     setCurrentConversation(newConversation);
-    
     return newConversation.id;
   }, []);
 
