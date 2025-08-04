@@ -1,6 +1,10 @@
 import { useCallback, useState } from 'react';
 import { useConversation } from './useConversation';
 
+// 时间常量
+const FEEDBACK_DURATION = 1200; // 1.2s - 复制成功反馈持续时间
+const ACTION_FEEDBACK_DURATION = 2000; // 2s - 其他操作反馈持续时间
+
 export interface UseMessageActionsReturn {
   copyMessage: (messageId: string) => Promise<void>;
   editMessage: (messageId: string, newContent: string) => Promise<void>;
@@ -10,6 +14,7 @@ export interface UseMessageActionsReturn {
   dislikeMessage: (messageId: string) => Promise<void>;
   isProcessing: boolean;
   lastAction: string | null;
+  copiedMessageId: string | null;
 }
 
 export const useMessageActions = (): UseMessageActionsReturn => {
@@ -17,12 +22,13 @@ export const useMessageActions = (): UseMessageActionsReturn => {
     editMessage: contextEditMessage,
     deleteMessage: contextDeleteMessage,
     regenerateMessage: contextRegenerateMessage,
-    currentConversation,
-    getMessageById 
+    getMessageById,
+    updateMessageMetadata
   } = useConversation();
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [lastAction, setLastAction] = useState<string | null>(null);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
   // 复制消息到剪贴板
   const copyMessage = useCallback(async (messageId: string): Promise<void> => {
@@ -32,6 +38,7 @@ export const useMessageActions = (): UseMessageActionsReturn => {
     try {
       setIsProcessing(true);
       setLastAction('copy');
+      setCopiedMessageId(messageId);
       
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(message.content);
@@ -56,7 +63,10 @@ export const useMessageActions = (): UseMessageActionsReturn => {
       console.error('复制失败:', error);
     } finally {
       setIsProcessing(false);
-      setTimeout(() => setLastAction(null), 2000);
+      setTimeout(() => {
+        setLastAction(null);
+        setCopiedMessageId(null);
+      }, FEEDBACK_DURATION);
     }
   }, [getMessageById]);
 
@@ -73,7 +83,7 @@ export const useMessageActions = (): UseMessageActionsReturn => {
       console.error('编辑失败:', error);
     } finally {
       setIsProcessing(false);
-      setTimeout(() => setLastAction(null), 2000);
+      setTimeout(() => setLastAction(null), ACTION_FEEDBACK_DURATION);
     }
   }, [contextEditMessage]);
 
@@ -90,7 +100,7 @@ export const useMessageActions = (): UseMessageActionsReturn => {
       console.error('删除失败:', error);
     } finally {
       setIsProcessing(false);
-      setTimeout(() => setLastAction(null), 2000);
+      setTimeout(() => setLastAction(null), ACTION_FEEDBACK_DURATION);
     }
   }, [contextDeleteMessage]);
 
@@ -107,69 +117,49 @@ export const useMessageActions = (): UseMessageActionsReturn => {
       console.error('重新生成失败:', error);
     } finally {
       setIsProcessing(false);
-      setTimeout(() => setLastAction(null), 2000);
+      setTimeout(() => setLastAction(null), ACTION_FEEDBACK_DURATION);
     }
   }, [contextRegenerateMessage]);
 
   // 点赞消息
   const likeMessage = useCallback(async (messageId: string): Promise<void> => {
     const message = getMessageById(messageId);
-    if (!message || !currentConversation) return;
-
+    if (!message) return;
     try {
       setIsProcessing(true);
       setLastAction('like');
-
-      // 更新消息的点赞状态
-      const updatedMessage = {
-        ...message,
-        metadata: {
-          ...message.metadata,
-          liked: !message.metadata?.liked,
-          disliked: false // 取消点踩
-        }
-      };
-
-      // 这里应该调用API更新消息状态
-      console.log('消息点赞状态更新:', updatedMessage.metadata?.liked);
-      
+      // 切换 liked 状态，取消 disliked
+      updateMessageMetadata(messageId, {
+        liked: !message.metadata?.liked,
+        disliked: false
+      });
     } catch (error) {
       console.error('点赞失败:', error);
     } finally {
       setIsProcessing(false);
-      setTimeout(() => setLastAction(null), 2000);
+      setTimeout(() => setLastAction(null), ACTION_FEEDBACK_DURATION);
     }
-  }, [getMessageById, currentConversation]);
+  }, [getMessageById, updateMessageMetadata]);
 
   // 点踩消息
   const dislikeMessage = useCallback(async (messageId: string): Promise<void> => {
     const message = getMessageById(messageId);
-    if (!message || !currentConversation) return;
-
+    if (!message) return;
     try {
       setIsProcessing(true);
       setLastAction('dislike');
-
-      // 更新消息的点踩状态
-      const updatedMessage = {
-        ...message,
-        metadata: {
-          ...message.metadata,
-          disliked: !message.metadata?.disliked,
-          liked: false // 取消点赞
-        }
-      };
-
-      // 这里应该调用API更新消息状态
-      console.log('消息点踩状态更新:', updatedMessage.metadata?.disliked);
-      
+      // 切换 disliked 状态，取消 liked
+      updateMessageMetadata(messageId, {
+        disliked: !message.metadata?.disliked,
+        liked: false
+      });
     } catch (error) {
       console.error('点踩失败:', error);
     } finally {
       setIsProcessing(false);
-      setTimeout(() => setLastAction(null), 2000);
+      setTimeout(() => setLastAction(null), ACTION_FEEDBACK_DURATION);
     }
-  }, [getMessageById, currentConversation]);
+  }, [getMessageById, updateMessageMetadata]);
 
   return {
     copyMessage,
@@ -180,6 +170,7 @@ export const useMessageActions = (): UseMessageActionsReturn => {
     dislikeMessage,
     isProcessing,
     lastAction,
+    copiedMessageId,
   };
 };
 

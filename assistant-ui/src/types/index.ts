@@ -9,6 +9,16 @@ export interface User {
   isLoggedIn: boolean;
 }
 
+// 消息元数据类型
+export interface MessageMetadata {
+  model?: string;
+  tokens?: number;
+  files?: FileAttachment[];
+  regenerated?: boolean;
+  liked?: boolean;
+  disliked?: boolean;
+}
+
 // 消息相关类型
 export interface Message {
   id: string;
@@ -16,14 +26,7 @@ export interface Message {
   role: 'user' | 'assistant';
   timestamp: Date;
   conversationId: string;
-  metadata?: {
-    model?: string;
-    tokens?: number;
-    files?: FileAttachment[];
-    regenerated?: boolean;
-    liked?: boolean;
-    disliked?: boolean;
-  };
+  metadata?: MessageMetadata;
 }
 
 // 对话相关类型

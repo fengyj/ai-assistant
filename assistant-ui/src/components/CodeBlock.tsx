@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vs, dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
+import { CheckIcon } from '@heroicons/react/24/solid';
 
 interface CodeBlockProps {
   language: string;
   value: string;
   theme: 'light' | 'dark';
-  rest?: any;
+  rest?: React.ComponentProps<typeof SyntaxHighlighter>;
 }
 
 /**
@@ -15,6 +16,7 @@ interface CodeBlockProps {
  */
 const CodeBlock: React.FC<CodeBlockProps> = ({ language, value, theme, rest }) => {
   const [copied, setCopied] = useState(false);
+  // 复制代码并切换按钮图标
   const handleCopy = () => {
     navigator.clipboard.writeText(value);
     setCopied(true);
@@ -32,9 +34,11 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ language, value, theme, rest }) =
           onClick={handleCopy}
           title={copied ? '已复制' : '复制代码'}
         >
-          <ClipboardDocumentIcon className="w-4 h-4" />
-          {copied && (
-            <span className="absolute left-full ml-2 px-2 py-0.5 text-xs bg-green-500 text-white rounded shadow">已复制</span>
+          {/* 复制后图标变为√，否则显示原图标 */}
+          {copied ? (
+            <CheckIcon className="w-4 h-4 text-green-500 transition" />
+          ) : (
+            <ClipboardDocumentIcon className="w-4 h-4" />
           )}
         </button>
       </div>

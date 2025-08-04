@@ -2,7 +2,7 @@ import { getMockAIResponse } from '../utils/mockAI';
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { ConversationContext } from './ConversationContext';
-import type { Conversation, Message } from '../types/index';
+import type { Conversation, Message, MessageMetadata } from '../types/index';
 import {
   createConversationObject,
   createUserMessage,
@@ -196,6 +196,31 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
     }
   }, [conversations.length, createConversation]);
 
+  // 更新消息的 metadata（如点赞/点踩）
+  const updateMessageMetadata = useCallback((messageId: string, metadata: Partial<MessageMetadata>) => {
+    if (!currentConversation) {
+      console.warn('无法更新消息元数据：没有当前对话');
+      return;
+    }
+    
+    try {
+      const updatedMessages = currentConversation.messages.map(msg =>
+        msg.id === messageId
+          ? { ...msg, metadata: { ...msg.metadata, ...metadata } }
+          : msg
+      );
+      const updatedConversation: Conversation = {
+        ...currentConversation,
+        messages: updatedMessages,
+        updatedAt: new Date()
+      };
+      setCurrentConversation(updatedConversation);
+      setConversations(prev => prev.map(c => c.id === currentConversation.id ? updatedConversation : c));
+    } catch (error) {
+      console.error('更新消息元数据失败:', error);
+    }
+  }, [currentConversation]);
+
   const value = {
     currentConversation,
     conversations,
@@ -211,6 +236,7 @@ export const ConversationProvider: React.FC<ConversationProviderProps> = ({ chil
     updateConversationTitle,
     clearCurrentConversation,
     getMessageById,
+    updateMessageMetadata,
   };
 
   return (

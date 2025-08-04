@@ -1,3 +1,35 @@
+/* 点赞/点踩按钮颜色样式 - 确保激活状态在非hover时就显示正确颜色 */
+/* 基础激活状态 - light mode */
+.message-action-buttons .btn-action.text-green-600 {
+  color: #16a34a !important;
+}
+.message-action-buttons .btn-action.text-red-600 {
+  color: #dc2626 !important;
+}
+
+/* 基础激活状态 - dark mode */
+html.dark .message-action-buttons .btn-action.text-green-400 {
+  color: #4ade80 !important;
+}
+html.dark .message-action-buttons .btn-action.text-red-400 {
+  color: #f87171 !important;
+}
+
+/* hover状态 - light mode */
+.message-action-buttons .btn-action.text-green-600:hover {
+  color: #15803d !important;
+}
+.message-action-buttons .btn-action.text-red-600:hover {
+  color: #b91c1c !important;
+}
+
+/* hover状态 - dark mode */
+html.dark .message-action-buttons .btn-action.text-green-400:hover {
+  color: #22c55e !important;
+}
+html.dark .message-action-buttons .btn-action.text-red-400:hover {
+  color: #ef4444 !important;
+}
 @import "tailwindcss";
 @import "./styles/fileUpload.css";
 

@@ -24,6 +24,7 @@ import {
   InformationCircleIcon,
   Bars3Icon
 } from '@heroicons/react/24/outline';
+import { CheckIcon } from '@heroicons/react/24/solid';
 
 interface ChatAreaProps {
   theme: 'light' | 'dark';
@@ -50,6 +51,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
     likeMessage,
     dislikeMessage,
     isProcessing,
+    copiedMessageId,
   } = useMessageActions();
   
   // 使用聊天输入 Hook
@@ -178,11 +180,15 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
                   <div className="message-action-buttons">
                     <button 
                       className="btn-action" 
-                      title="复制"
+                      title={copiedMessageId === message.id ? "已复制" : "复制"}
                       onClick={() => copyMessage(message.id)}
                       disabled={isProcessing}
                     >
-                      <ClipboardDocumentIcon className="w-3.5 h-3.5" />
+                      {copiedMessageId === message.id ? (
+                        <CheckIcon className="w-3.5 h-3.5 text-green-500 transition" />
+                      ) : (
+                        <ClipboardDocumentIcon className="w-3.5 h-3.5" />
+                      )}
                     </button>
                     {message.role === 'user' && (
                       <button 
@@ -204,22 +210,26 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
                         >
                           <ArrowPathIcon className="w-3.5 h-3.5" />
                         </button>
-                        <button 
-                          className={`btn-action ${message.metadata?.liked ? 'text-green-600 dark:text-green-400' : ''}`}
-                          title="喜欢"
-                          onClick={() => likeMessage(message.id)}
-                          disabled={isProcessing}
-                        >
-                          <HandThumbUpIcon className="w-3.5 h-3.5" />
-                        </button>
-                        <button 
-                          className={`btn-action ${message.metadata?.disliked ? 'text-red-600 dark:text-red-400' : ''}`}
-                          title="不喜欢"
-                          onClick={() => dislikeMessage(message.id)}
-                          disabled={isProcessing}
-                        >
-                          <HandThumbDownIcon className="w-3.5 h-3.5" />
-                        </button>
+                      <button 
+                        className={`btn-action ${message.metadata?.liked ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`}
+                        title={message.metadata?.liked ? "取消喜欢" : "喜欢"}
+                        aria-pressed={message.metadata?.liked}
+                        aria-label={message.metadata?.liked ? "取消喜欢这条消息" : "喜欢这条消息"}
+                        onClick={() => likeMessage(message.id)}
+                        disabled={isProcessing}
+                      >
+                        <HandThumbUpIcon className="w-3.5 h-3.5" />
+                      </button>
+                      <button 
+                        className={`btn-action ${message.metadata?.disliked ? 'text-red-600 dark:text-red-400' : 'text-gray-400 dark:text-gray-500'}`}
+                        title={message.metadata?.disliked ? "取消不喜欢" : "不喜欢"}
+                        aria-pressed={message.metadata?.disliked}
+                        aria-label={message.metadata?.disliked ? "取消不喜欢这条消息" : "不喜欢这条消息"}
+                        onClick={() => dislikeMessage(message.id)}
+                        disabled={isProcessing}
+                      >
+                        <HandThumbDownIcon className="w-3.5 h-3.5" />
+                      </button>
                       </>
                     )}
                   </div>

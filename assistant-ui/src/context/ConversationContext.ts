@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import type { Conversation, Message } from '../types/index';
+import type { Conversation, Message, MessageMetadata } from '../types/index';
 
 export interface ConversationContextType {
   // 当前对话状态
@@ -23,6 +23,7 @@ export interface ConversationContextType {
   // 工具函数
   clearCurrentConversation: () => void;
   getMessageById: (messageId: string) => Message | null;
+  updateMessageMetadata: (messageId: string, metadata: Partial<MessageMetadata>) => void;
 }
 
 export const ConversationContext = createContext<ConversationContextType | null>(null);
