@@ -12,8 +12,17 @@ from .user import (
     UsageStats,
     UserCreateRequest,
     UserUpdateRequest,
+    EmailChangeRequest,
+    RoleChangeRequest,
     LoginRequest,
     UserResponse,
+)
+
+from .session import (
+    UserSession,
+    SessionStatus,
+    SessionCreateRequest,
+    SessionResponse,
 )
 
 __all__ = [
@@ -26,6 +35,12 @@ __all__ = [
     "UsageStats",
     "UserCreateRequest",
     "UserUpdateRequest",
+    "EmailChangeRequest",
+    "RoleChangeRequest",
     "LoginRequest",
     "UserResponse",
+    "UserSession",
+    "SessionStatus",
+    "SessionCreateRequest",
+    "SessionResponse",
 ]

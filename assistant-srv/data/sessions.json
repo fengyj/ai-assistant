@@ -1,0 +1,15 @@
+[
+  {
+    "id": "8973f8a6-0806-4ca5-9efa-18c16669e81c",
+    "user_id": "7124601b-85b2-4563-a176-30295b2005ae",
+    "token": "YgEVrvYj135JZw1Q2s-FbkyyRSe3yoEZYz_oC6fxxt4",
+    "ip_address": "127.0.0.1",
+    "user_agent": "curl/8.5.0",
+    "device_info": "Test Browser",
+    "status": "active",
+    "created_at": "2025-08-04T03:40:53.717092+00:00",
+    "last_accessed": "2025-08-04T03:40:53.717092+00:00",
+    "expires_at": "2025-08-05T03:40:53.717087+00:00",
+    "metadata": {}
+  }
+]

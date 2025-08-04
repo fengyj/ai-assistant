@@ -11,6 +11,7 @@ from uuid import uuid4
 
 class UserRole(Enum):
     """User role enumeration."""
+
     ADMIN = "admin"
     USER = "user"
     GUEST = "guest"
@@ -18,6 +19,7 @@ class UserRole(Enum):
 
 class UserStatus(Enum):
     """User status enumeration."""
+
     ACTIVE = "active"
     INACTIVE = "inactive"
     SUSPENDED = "suspended"
@@ -25,6 +27,7 @@ class UserStatus(Enum):
 
 class OAuthProvider(Enum):
     """OAuth provider enumeration."""
+
     GOOGLE = "google"
     MICROSOFT = "microsoft"
     APPLE = "apple"
@@ -33,6 +36,7 @@ class OAuthProvider(Enum):
 @dataclass
 class UserProfile:
     """User profile information."""
+
     display_name: Optional[str] = None
     avatar_url: Optional[str] = None
     bio: Optional[str] = None
@@ -44,6 +48,7 @@ class UserProfile:
 @dataclass
 class OAuthInfo:
     """OAuth information."""
+
     provider: OAuthProvider
     provider_id: str
     email: str
@@ -54,54 +59,58 @@ class OAuthInfo:
 @dataclass
 class UsageStats:
     """User usage statistics."""
-    model_api_usage: List['ModelAPIUsage'] = field(default_factory=list)
+
+    model_api_usage: List["ModelAPIUsage"] = field(default_factory=list)
     last_activity: Optional[datetime] = None
     total_sessions: int = 0
     created_prompts: int = 0
     uploaded_files: int = 0
 
+
 @dataclass
 class ModelAPIUsage:
     """LLM usage information."""
+
     name: str = ""
     tokens_consumed: int = 0
     api_calls_count: int = 0
     last_used: Optional[datetime] = None
 
+
 @dataclass
 class User:
     """User model."""
-    
+
     # Basic information
     id: str = field(default_factory=lambda: str(uuid4()))
     username: str = ""
     email: str = ""
     password_hash: Optional[str] = None
-    
+
     # Profile
     profile: UserProfile = field(default_factory=UserProfile)
-    
+
     # OAuth information
     oauth_info: List[OAuthInfo] = field(default_factory=list)
-    
+
     # Role and permissions
     role: UserRole = UserRole.USER
     permissions: List[str] = field(default_factory=list)
-    
+
     # Status
     status: UserStatus = UserStatus.ACTIVE
-    
+
     # Usage statistics
     usage_stats: UsageStats = field(default_factory=UsageStats)
-    
+
     # Timestamps
     created_at: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
     updated_at: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
     last_login: Optional[datetime] = None
-    
+
     # Quota and limits (for future enhancement)
     quota_limits: Dict[str, int] = field(default_factory=dict)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert user to dictionary."""
         return {
@@ -131,13 +140,22 @@ class User:
             "permissions": self.permissions,
             "status": self.status.value,
             "usage_stats": {
-                "model_api_usage": [{
-                    "name": usage.name,
-                    "tokens_consumed": usage.tokens_consumed,
-                    "api_calls_count": usage.api_calls_count,
-                    "last_used": usage.last_used.isoformat() if usage.last_used else None
-                } for usage in self.usage_stats.model_api_usage],
-                "last_activity": self.usage_stats.last_activity.isoformat() if self.usage_stats.last_activity else None,
+                "model_api_usage": [
+                    {
+                        "name": usage.name,
+                        "tokens_consumed": usage.tokens_consumed,
+                        "api_calls_count": usage.api_calls_count,
+                        "last_used": (
+                            usage.last_used.isoformat() if usage.last_used else None
+                        ),
+                    }
+                    for usage in self.usage_stats.model_api_usage
+                ],
+                "last_activity": (
+                    self.usage_stats.last_activity.isoformat()
+                    if self.usage_stats.last_activity
+                    else None
+                ),
                 "total_sessions": self.usage_stats.total_sessions,
                 "created_prompts": self.usage_stats.created_prompts,
                 "uploaded_files": self.usage_stats.uploaded_files,
@@ -147,9 +165,9 @@ class User:
             "last_login": self.last_login.isoformat() if self.last_login else None,
             "quota_limits": self.quota_limits,
         }
-    
+
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'User':
+    def from_dict(cls, data: Dict[str, Any]) -> "User":
         """Create user from dictionary."""
         profile_data = data.get("profile", {})
         profile = UserProfile(
@@ -160,17 +178,19 @@ class User:
             language=profile_data.get("language", "en"),
             preferences=profile_data.get("preferences", {}),
         )
-        
+
         oauth_info = []
         for oauth_data in data.get("oauth_info", []):
-            oauth_info.append(OAuthInfo(
-                provider=OAuthProvider(oauth_data["provider"]),
-                provider_id=oauth_data["provider_id"],
-                email=oauth_data["email"],
-                name=oauth_data.get("name"),
-                avatar_url=oauth_data.get("avatar_url"),
-            ))
-        
+            oauth_info.append(
+                OAuthInfo(
+                    provider=OAuthProvider(oauth_data["provider"]),
+                    provider_id=oauth_data["provider_id"],
+                    email=oauth_data["email"],
+                    name=oauth_data.get("name"),
+                    avatar_url=oauth_data.get("avatar_url"),
+                )
+            )
+
         usage_stats_data = data.get("usage_stats", {})
         usage_stats = UsageStats(
             model_api_usage=[
@@ -178,15 +198,24 @@ class User:
                     name=usage.get("name", ""),
                     tokens_consumed=usage.get("tokens_consumed", 0),
                     api_calls_count=usage.get("api_calls_count", 0),
-                    last_used=datetime.fromisoformat(usage["last_used"]) if usage.get("last_used") else None
-                ) for usage in usage_stats_data.get("model_api_usage", [])
+                    last_used=(
+                        datetime.fromisoformat(usage["last_used"])
+                        if usage.get("last_used")
+                        else None
+                    ),
+                )
+                for usage in usage_stats_data.get("model_api_usage", [])
             ],
-            last_activity=datetime.fromisoformat(usage_stats_data["last_activity"]) if usage_stats_data.get("last_activity") else None,
+            last_activity=(
+                datetime.fromisoformat(usage_stats_data["last_activity"])
+                if usage_stats_data.get("last_activity")
+                else None
+            ),
             total_sessions=usage_stats_data.get("total_sessions", 0),
             created_prompts=usage_stats_data.get("created_prompts", 0),
             uploaded_files=usage_stats_data.get("uploaded_files", 0),
         )
-        
+
         return cls(
             id=data["id"],
             username=data["username"],
@@ -200,7 +229,11 @@ class User:
             usage_stats=usage_stats,
             created_at=datetime.fromisoformat(data["created_at"]),
             updated_at=datetime.fromisoformat(data["updated_at"]),
-            last_login=datetime.fromisoformat(data["last_login"]) if data.get("last_login") else None,
+            last_login=(
+                datetime.fromisoformat(data["last_login"])
+                if data.get("last_login")
+                else None
+            ),
             quota_limits=data.get("quota_limits", {}),
         )
 
@@ -208,28 +241,49 @@ class User:
 @dataclass
 class UserCreateRequest:
     """User creation request."""
+
     username: str
     email: str
     password: Optional[str] = None
     display_name: Optional[str] = None
     role: UserRole = UserRole.USER
+    is_oauth: bool = False  # Flag for OAuth users
 
 
 @dataclass
 class UserUpdateRequest:
-    """User update request."""
+    """User update request - basic profile information only."""
+
     username: Optional[str] = None
-    email: Optional[str] = None
     display_name: Optional[str] = None
     bio: Optional[str] = None
     timezone: Optional[str] = None
     language: Optional[str] = None
+    avatar_url: Optional[str] = None
     preferences: Optional[Dict[str, Any]] = None
+
+
+@dataclass
+class EmailChangeRequest:
+    """Email change request - requires verification."""
+
+    new_email: str
+    password: str  # Current password for verification
+
+
+@dataclass
+class RoleChangeRequest:
+    """Role change request - admin only operation."""
+
+    user_id: str
+    new_role: UserRole
+    reason: Optional[str] = None  # Reason for role change
 
 
 @dataclass
 class LoginRequest:
     """Login request."""
+
     username: str
     password: str
 
@@ -237,6 +291,7 @@ class LoginRequest:
 @dataclass
 class UserResponse:
     """User response (without sensitive data)."""
+
     id: str
     username: str
     email: str
@@ -246,9 +301,9 @@ class UserResponse:
     status: str
     created_at: str
     last_login: Optional[str]
-    
+
     @classmethod
-    def from_user(cls, user: User) -> 'UserResponse':
+    def from_user(cls, user: User) -> "UserResponse":
         """Create user response from user model."""
         return cls(
             id=user.id,

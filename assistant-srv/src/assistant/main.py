@@ -2,12 +2,16 @@
 Main FastAPI application.
 """
 
+import uvicorn
+from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from .core import config
 from .api.users import router as users_router
+from .api.oauth import router as oauth_router
+from .api.sessions import router as sessions_router
 
 
 @asynccontextmanager
@@ -25,7 +29,7 @@ app = FastAPI(
     title="Personal AI Assistant Server",
     description="A comprehensive AI assistant backend server",
     version="0.1.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Add CORS middleware
@@ -39,6 +43,8 @@ app.add_middleware(
 
 # Include routers
 app.include_router(users_router)
+app.include_router(oauth_router)
+app.include_router(sessions_router)
 
 
 @app.get("/")
@@ -47,21 +53,17 @@ async def root():
     return {
         "message": "Personal AI Assistant Server",
         "version": "0.1.0",
-        "status": "running"
+        "status": "running",
     }
 
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
-    return {"status": "healthy", "timestamp": "2025-01-11T00:00:00Z"}
+    return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(
-        "assistant.main:app",
-        host=config.host,
-        port=config.port,
-        reload=config.debug
+        "assistant.main:app", host=config.host, port=config.port, reload=config.debug
     )

@@ -1,26 +1,35 @@
 #!/usr/bin/env python3
 """
-Development server runner.
+Start the Personal AI Assistant Server.
 """
 
 import sys
 import os
+import uvicorn
 
 # Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from assistant.main import app
 from assistant.core.config import config
+from assistant.utils.db_init import initialize_database
 
-if __name__ == "__main__":
-    import uvicorn
-    
-    print(f"Starting server on {config.host}:{config.port}")
-    print(f"Debug mode: {config.debug}")
-    
+
+def main():
+    """Main entry point."""
+    print("Starting Personal AI Assistant Server...")
+
+    # Initialize database
+    initialize_database()
+
+    # Start server
     uvicorn.run(
-        app,
+        "assistant.main:app",
         host=config.host,
         port=config.port,
-        reload=config.debug
+        reload=config.debug,
+        log_level="info" if not config.debug else "debug",
     )
+
+
+if __name__ == "__main__":
+    main()

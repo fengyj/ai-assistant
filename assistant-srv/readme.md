@@ -7,13 +7,15 @@ This is the AI assistant backend server. It provides APIs for `assistant-ui`.
 The assistant supports multi-users. So it needs the APIs for user management.
 
 ### Core Features
+
 - User registration and authentication
 - User can login via Oauth, such as Google, Microsoft, Apple.
 - Save the user name and email address when the user logs in at the first time. User can change them after that.
 - User profile management
 - Multi-user session handling
 
-### Enhanced Features
+### User API Enhanced Features
+
 - **Role & Permission System**
   - Administrator roles
   - Regular user permissions
@@ -31,9 +33,10 @@ The assistant supports multi-users. So it needs the APIs for user management.
 
 The assistant supports to connect to diverse LLMs. The APIs are implemented for registering/removing/listing the models.
 
-User also can config what LLMs they want to use, and set the model configurations like the temperate, max token count, etc.
+User also can register/unregister what LLMs they want to use, and set the model configurations like the temperate, max token count, etc.
 
-### Enhanced Features
+### LLM APIs Enhanced Features
+
 - **Health Monitoring**
   - Periodic model availability checks
   - Response time monitoring
@@ -57,7 +60,8 @@ The assistant needs the MCP servers to extend its capability. It needs the APIs 
 
 User also can decide which MCP servers are enabled for the model.
 
-### Enhanced Features
+### MCP Server APIs Enhanced Features
+
 - **Dependency Management**
   - Inter-server dependency mapping
   - Dependency resolution
@@ -82,21 +86,25 @@ For maintain the knowledge base, it needs the APIs for parsing the various forma
 ## Additional Core Features
 
 ### Conversation Management
+
 - Chat history persistence
 - Conversation threading
 - Export/import capabilities
 
 ### Plugin System
+
 - Custom functionality extensions
 - Plugin marketplace integration
 - Developer SDK
 
 ### Real-time Communication
+
 - WebSocket support for streaming
 - Real-time notifications
 - Live collaboration features
 
 ### File Management
+
 - File upload versioning
 - Permission-based access
 - Metadata management
@@ -104,16 +112,19 @@ For maintain the knowledge base, it needs the APIs for parsing the various forma
 ## Security & Compliance
 
 ### API Key Management
+
 - External service API keys
 - Key rotation policies
 - Access scope control
 
 ### Audit & Logging
+
 - Comprehensive audit trails
 - Operation logging
 - Security event monitoring
 
 ### Data Protection
+
 - Sensitive data encryption
 - Data anonymization
 - Privacy compliance tools
@@ -121,21 +132,25 @@ For maintain the knowledge base, it needs the APIs for parsing the various forma
 ## Monitoring & Operations
 
 ### Performance Monitoring
+
 - System performance metrics
 - Application performance monitoring
 - Resource usage tracking
 
 ### Alerting System
+
 - Configurable alerts
 - Notification channels
 - Escalation policies
 
 ### Analytics Dashboard
+
 - Usage analytics
 - Performance insights
 - Business intelligence
 
 ### Backup & Recovery
+
 - Automated backup systems
 - Point-in-time recovery
 - Disaster recovery planning

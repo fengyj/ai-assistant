@@ -8,6 +8,6 @@ from .json_user_repository import JsonUserRepository
 
 __all__ = [
     "BaseRepository",
-    "UserRepository", 
+    "UserRepository",
     "JsonUserRepository",
 ]
