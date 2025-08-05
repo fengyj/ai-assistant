@@ -270,7 +270,7 @@ body {
 }
 
 .conversation-delete-btn {
-  @apply opacity-0 transition-opacity duration-200 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 ml-2 p-1 rounded;
+  @apply opacity-0 transition-opacity duration-200 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 ml-2 p-1 rounded;
 }
 
 .conversation-item:hover .conversation-delete-btn {

@@ -1,6 +1,45 @@
+
+## 2025-08-05
+
+### Fixed
+
+- **修复登录后无法跳转和用户状态栏问题**:
+  - 修复了登录成功后页面不跳转到聊天界面的问题
+  - 修复了用户状态栏始终显示"未登录"的问题
+  - 改进了认证状态管理，使用事件监听机制确保状态同步
+  - 添加了JWT token过期检查和用户信息解析功能
+  - 在侧边栏添加了动态用户状态显示和登出功能
+
+### Improved
+
+- **增强认证工具函数**:
+  - 添加了`getUserInfo()`函数用于从JWT token中提取用户信息
+  - 添加了`logout()`函数用于完整的登出处理
+  - 改进了token验证逻辑，包含过期检查
+  - 添加了自定义事件机制，确保认证状态变化时各组件能够同步更新
+
+- **改进登出用户体验**:
+  - 将浏览器原生的`window.confirm`对话框替换为自定义HTML对话框
+  - 分离登出按钮，只有点击专门的登出按钮才会触发对话框
+  - 登出按钮支持hover状态，图标颜色会从灰色变为红色
+  - 重新设计对话框配色，使用更现代的设计语言和更好的主题适配
+  - 添加了毛玻璃背景效果和更精致的阴影
+  - 支持ESC键和点击背景关闭对话框
+  - 提供更直观的用户界面和更好的可访问性
+
+- Refactored API server address configuration: all API calls now use a centralized config and environment variable for backend server address.
+- Login page now uses a unified request utility (axios) for backend communication.
+
 # 变更日志
 
 ## [Unreleased]
+
+### Fixed
+
+- **修复前端构建错误**: 解决了TypeScript编译错误
+  - 修复了从错误文件路径导入Context Provider的问题
+  - 正确配置测试环境，解决了@testing-library/jest-dom的toBeInTheDocument方法未定义问题
+  - 创建了setupTests.ts文件并更新了jest配置
 
 ### Added
 
@@ -43,9 +82,6 @@
 - **可扩展架构**: 模块化设计，支持添加新的OAuth提供商和存储后端
 - **完整的测试套件**: 集成测试和OAuth系统测试
 - **配置文档**: OAuth设置指南和环境变量配置说明
-
-### Fixed
-
 
 ### Changed
 

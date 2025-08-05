@@ -30,6 +30,7 @@ dependencies = [
     "pyjwt>=2.9.0",
     "cryptography>=45.0.5",
     "black>=24.8.0",
+    "python-dotenv>=1.0.1",
 ]
 
 [project.optional-dependencies]

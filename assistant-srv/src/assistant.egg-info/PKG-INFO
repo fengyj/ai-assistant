@@ -25,6 +25,7 @@ Requires-Dist: httpx>=0.25.0
 Requires-Dist: pyjwt>=2.9.0
 Requires-Dist: cryptography>=45.0.5
 Requires-Dist: black>=24.8.0
+Requires-Dist: python-dotenv>=1.0.1
 Provides-Extra: dev
 Requires-Dist: pytest>=7.0; extra == "dev"
 Requires-Dist: black>=22.0; extra == "dev"

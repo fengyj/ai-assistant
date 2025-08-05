@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>颜色一致性验证</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .color-demo {
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="p-8 bg-gray-100">
+    <h1 class="text-2xl font-bold mb-6">红色颜色一致性验证</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 浅色主题 -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-4">浅色主题</h2>
+            
+            <div class="color-demo">
+                <h3 class="font-medium mb-2">1. 点踩按钮 (激活状态)</h3>
+                <button class="p-2 rounded">
+                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 13l3 3 7-7"></path>
+                    </svg>
+                    <span class="ml-2 text-red-600">text-red-600</span>
+                </button>
+            </div>
+            
+            <div class="color-demo">
+                <h3 class="font-medium mb-2">2. 登出按钮 (hover状态)</h3>
+                <button class="p-2 rounded group">
+                    <svg class="w-4 h-4 text-gray-500 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span class="ml-2 text-gray-500 group-hover:text-red-600 transition-colors">group-hover:text-red-600</span>
+                </button>
+            </div>
+            
+            <div class="color-demo">
+                <h3 class="font-medium mb-2">3. 对话框图标</h3>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                    </div>
+                    <span class="ml-3">bg-red-100 + text-red-600</span>
+                </div>
+            </div>
+            
+            <div class="color-demo">
+                <h3 class="font-medium mb-2">4. 确认登出按钮</h3>
+                        <button class="border border-red-600 text-red-600 hover:bg-red-600 hover:text-white px-4 py-2 rounded text-sm font-medium">
+          确认登出
+        </button>
+            </div>
+        </div>
+
+        <!-- 深色主题 -->
+        <div class="dark bg-gray-900 p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-4 text-white">深色主题</h2>
+            
+            <div class="color-demo bg-gray-800 border-gray-700">
+                <h3 class="font-medium mb-2 text-white">1. 点踩按钮 (激活状态)</h3>
+                <button class="p-2 rounded">
+                    <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 13l3 3 7-7"></path>
+                    </svg>
+                    <span class="ml-2 text-red-400">text-red-400</span>
+                </button>
+            </div>
+            
+            <div class="color-demo bg-gray-800 border-gray-700">
+                <h3 class="font-medium mb-2 text-white">2. 登出按钮 (hover状态)</h3>
+                <button class="p-2 rounded group">
+                    <svg class="w-4 h-4 text-gray-400 group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span class="ml-2 text-gray-400 group-hover:text-red-400 transition-colors">group-hover:text-red-400</span>
+                </button>
+            </div>
+            
+            <div class="color-demo bg-gray-800 border-gray-700">
+                <h3 class="font-medium mb-2 text-white">3. 对话框图标</h3>
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-red-900/30 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                    </div>
+                    <span class="ml-3 text-white">bg-red-900/30 + text-red-400</span>
+                </div>
+            </div>
+            
+            <div class="color-demo bg-gray-800 border-gray-700">
+                <h3 class="font-medium mb-2 text-white">4. 确认登出按钮 (修复后)</h3>
+                <button class="px-4 py-2 border border-red-600 text-red-400 hover:bg-red-600 hover:text-white rounded-lg transition-colors">
+                    border-red-600 text-red-400 (统一边框颜色)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 p-6 bg-white rounded-lg shadow">
+        <h2 class="text-lg font-semibold mb-4">颜色系统说明</h2>
+        <div class="space-y-3 text-sm">
+            <p><strong>文本颜色:</strong></p>
+            <ul class="ml-4 space-y-1">
+                <li>• 浅色主题: <span class="font-mono bg-gray-100 px-2 py-1 rounded">text-red-600</span></li>
+                <li>• 深色主题: <span class="font-mono bg-gray-100 px-2 py-1 rounded">text-red-400</span></li>
+            </ul>
+            
+            <p><strong>背景颜色:</strong></p>
+            <ul class="ml-4 space-y-1">
+                <li>• 按钮: <span class="font-mono bg-gray-100 px-2 py-1 rounded">bg-red-600</span> (两个主题相同)</li>
+                <li>• 浅色背景: <span class="font-mono bg-gray-100 px-2 py-1 rounded">bg-red-100</span></li>
+                <li>• 深色背景: <span class="font-mono bg-gray-100 px-2 py-1 rounded">bg-red-900/30</span></li>
+            </ul>
+            
+            <p class="mt-4 text-green-600 font-medium">✅ 所有红色使用都遵循Tailwind CSS的标准颜色系统，保持了完美的一致性！</p>
+            <p class="mt-2 text-blue-600 text-sm">🔧 修复：确认登出按钮现在在深色主题下也使用统一的 border-red-600，避免了 oklch 颜色转换问题。</p>
+        </div>
+    </div>
+
+    <script>
+        // 切换主题功能（可选）
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 't') {
+                document.body.classList.toggle('dark');
+            }
+        });
+    </script>
+</body>
+</html>

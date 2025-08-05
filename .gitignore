@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.local
+*.sqlite3
+*.db
+*.log
+
+# FastAPI
+assistant-srv/.venv/
+assistant-srv/.mypy_cache/
+assistant-srv/.pytest_cache/
+assistant-srv/.coverage
+assistant-srv/.cache/
+assistant-srv/.DS_Store
+
+# Node/Vite/React
+assistant-ui/node_modules/
+assistant-ui/dist/
+assistant-ui/.vite/
+assistant-ui/.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Misc
+*.bak
+*.tmp
