@@ -5,7 +5,7 @@ Model management service for unified model storage and secure key management.
 - Service provides CRUD for models and keys, ensures security and separation.
 """
 
-from typing import List, Dict, Optional
+from typing import List, Optional
 from ..models.model import Model
 from ..repositories.model_repository import ModelRepository
 
@@ -15,101 +15,104 @@ class ModelService:
     Service for managing models and their secure keys.
     """
 
-    @staticmethod
-    def list_models(user_id: str) -> List[Model]:
-        """List all models available to the user (system + user)."""
-        return ModelRepository.list_models_by_owner(user_id)
+    def __init__(self, model_repository: ModelRepository):
+        """Initialize model service."""
+        self.model_repository = model_repository
 
-    @staticmethod
-    def get_model(model_id: str, load_api_key: bool = False) -> Optional[Model]:
+    async def list_models(self, user_id: str) -> List[Model]:
+        """List all models available to the user (system + user)."""
+        return await self.model_repository.list_models_by_owner(user_id)
+
+    async def get_model(
+        self,
+        model_id: str,
+        load_api_key: bool = False,
+        user_id: Optional[str] = None
+    ) -> Optional[Model]:
         """Get a model by id, optionally loading api_key."""
-        model = ModelRepository.get_model_by_id(model_id)
-        if model and load_api_key:
-            model.api_key = ModelService.get_key(model.owner, model.id)
+        model = await self.model_repository.get_by_id(model_id)
+        if model and load_api_key and user_id:
+            model.api_key = await self.model_repository.get_user_api_key(
+                user_id, model.id
+            )
         elif model:
             model.api_key = None
         return model
 
-    @staticmethod
-    def add_model(model: Model) -> Model:
+    async def add_model(self, model: Model) -> Model:
         """Add a new model, ensuring name uniqueness and handling api_key."""
-        if ModelRepository.model_name_exists(model.owner, model.name):
-            raise ValueError(f"Model name '{model.name}' already exists for owner '{model.owner}'")
-        api_key = model.api_key
-        model.api_key = None
-        ModelRepository.add_model(model)
-        if api_key:
-            ModelService.set_key(model.owner, model.id, api_key)
-        result = ModelRepository.get_model_by_id(model.id)
-        if result is None:
-            raise RuntimeError("Failed to add model: model not found after save.")
-        return result
-
-    @staticmethod
-    def update_model(
-        model_id: str, updates: Dict, owner: str
-    ) -> Optional[Model]:
-        """Update a model, enforcing owner and name uniqueness."""
-        model = ModelRepository.get_model_by_id(model_id)
-        if not model:
-            return None
-        if model.owner != owner:
-            raise PermissionError()
-        new_name = updates.get("name")
-        if new_name and ModelRepository.model_name_exists(
-            owner, new_name, exclude_id=model_id
+        if await self.model_repository.model_name_exists(
+            model.owner, model.name
         ):
             raise ValueError(
-                f"Model name '{new_name}' already exists for owner '{owner}'"
+                f"Model name '{model.name}' already exists "
+                f"for owner '{model.owner}'"
             )
-        api_key = updates.get("api_key")
-        ModelRepository.update_model(model_id, updates)
+        
+        api_key = model.api_key
+        model.api_key = None
+        result = await self.model_repository.create(model)
+        
         if api_key:
-            ModelService.set_key(owner, model_id, api_key)
-        return ModelRepository.get_model_by_id(model_id)
-
-    @staticmethod
-    def delete_model(model_id: str, owner: str) -> bool:
-        """Delete a model by id and owner, and remove its api_key."""
-        ModelRepository.delete_model(model_id, owner)
-        ModelService.delete_key(owner, model_id)
-        return True
-
-    # Key management
-    @staticmethod
-    def get_key(owner: str, model_id: str) -> Optional[str]:
-        keys = ModelRepository.load_keys()
-        for k in keys:
-            if k.get("user_id") == owner and k.get("model_id") == model_id:
-                return k.get("api_key")
-        return None
-
-    @staticmethod
-    def set_key(owner: str, model_id: str, api_key: str) -> None:
-        keys = ModelRepository.load_keys()
-        found = False
-        for k in keys:
-            if k.get("user_id") == owner and k.get("model_id") == model_id:
-                k["api_key"] = api_key
-                found = True
-        if not found:
-            keys.append({
-                "user_id": owner,
-                "model_id": model_id,
-                "api_key": api_key
-            })
-        ModelRepository.save_keys(keys)
-
-    @staticmethod
-    def delete_key(owner: str, model_id: str) -> None:
-        keys = ModelRepository.load_keys()
-        keys = [
-            k for k in keys
-            if not (
-                k.get("user_id") == owner and k.get("model_id") == model_id
+            await self.model_repository.set_user_api_key(
+                model.owner, result.id, api_key
             )
-        ]
-        ModelRepository.save_keys(keys)
+        
+        return result
+
+    async def update_model(self, model: Model) -> Optional[Model]:
+        """Update a model, enforcing owner and name uniqueness."""
+        # Check if model exists first
+        existing_model = await self.model_repository.get_by_id(model.id)
+        if not existing_model:
+            return None
+        
+        # Handle API key separately
+        api_key = model.api_key
+        model.api_key = None  # Don't store api_key in model data
+        
+        try:
+            # Update the model (this will check name uniqueness)
+            updated_model = await self.model_repository.update(model)
+            
+            # Update API key if provided
+            if api_key:
+                await self.model_repository.set_user_api_key(
+                    model.owner, model.id, api_key
+                )
+            
+            return updated_model
+        except ValueError:
+            return None
+
+    async def delete_model(self, model_id: str, owner: str) -> bool:
+        """Delete a model by id and owner, and remove its api_key."""
+        # Check if model exists and belongs to owner
+        model = await self.model_repository.get_by_id(model_id)
+        if not model or model.owner != owner:
+            return False
+            
+        # Delete the model
+        success = await self.model_repository.delete(model_id)
+        
+        # Remove associated API key
+        if success:
+            await self.model_repository.remove_user_api_key(owner, model_id)
+        
+        return success
+
+    # Key management methods
+    async def get_key(self, owner: str, model_id: str) -> Optional[str]:
+        """Get API key for owner and model."""
+        return await self.model_repository.get_user_api_key(owner, model_id)
+
+    async def set_key(self, owner: str, model_id: str, api_key: str) -> None:
+        """Set API key for owner and model."""
+        await self.model_repository.set_user_api_key(owner, model_id, api_key)
+
+    async def delete_key(self, owner: str, model_id: str) -> None:
+        """Delete API key for owner and model."""
+        await self.model_repository.remove_user_api_key(owner, model_id)
 
 
 # TODO: Add unit tests for ModelService

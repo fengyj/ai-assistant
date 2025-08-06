@@ -1,6 +1,18 @@
 
 ## 2025-08-06
 
+### Refactored
+
+- **重构模型服务和仓储层架构**:
+  - 将`ModelRepository`从静态方法重构为异步实例方法
+  - 创建了`ModelRepository`接口继承自`BaseRepository[Model]`
+  - 实现了`JsonModelRepository`作为JSON文件存储的具体实现
+  - 重构`ModelService`使用依赖注入接收repository实例
+  - 将所有`ModelService`方法改为异步方法
+  - 更新API端点使用异步方法和依赖注入模式
+  - 遵循SOLID原则，改善代码的可测试性和可维护性
+  - 统一了与用户服务相同的架构模式
+
 ### Fixed
 
 - **完成后端Python代码类型注解和认证实现**:
