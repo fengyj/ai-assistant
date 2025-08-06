@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "A Python assistant project"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 authors = [
     {name = "Eric Feng", email = "fengyj@live.com"}
 ]
@@ -12,10 +12,11 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     "fastapi>=0.116.0",
@@ -25,19 +26,20 @@ dependencies = [
     "bcrypt>=4.0.0",
     "python-jose[cryptography]>=3.3.0",
     "passlib[bcrypt]>=1.7.4",
-    "pytest>=8.3.5",
-    "httpx>=0.25.0",
     "pyjwt>=2.9.0",
     "cryptography>=45.0.5",
-    "black>=24.8.0",
     "python-dotenv>=1.0.1",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0",
-    "black>=22.0",
-    "flake8>=4.0",
+    "httpx>=0.25.0",
+    "pytest>=8.3.5",
+    "black>=24.8.0",
+    "flake8>=7.0.0",
+    "isort>=5.13.2",
+    "pre-commit>=3.7.0",
+    "mypy>=1.14.1",
 ]
 
 [build-system]
@@ -50,7 +52,34 @@ where = ["assistant-srv/src"]
 [tool.setuptools.package-dir]
 "" = "assistant-srv/src"
 
+[tool.black]
+line-length = 120
+target-version = ['py312']
+skip-string-normalization = false
+
+[tool.isort]
+profile = "black"
+line_length = 120
+known_first_party = ["assistant_srv"]
+
+[tool.mypy]
+python_version = 3.12
+ignore_missing_imports = true
+strict = true
+
+[flake8]
+max-line-length = 120
+exclude = [
+    "tests/*",
+    "docs/*",
+    "build/*",
+    "dist/*",
+    ".venv/*",
+    "__pycache__/*",
+]
+
 [dependency-groups]
 dev = [
-    "mypy>=1.14.1",
+    "flake8>=7.3.0",
+    "pre-commit>=4.2.0",
 ]
