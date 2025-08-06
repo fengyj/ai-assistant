@@ -21,18 +21,18 @@ def generate_api_docs():
         version="0.1.0",
         description="""
         ## User Management APIs
-        
+
         The assistant supports multi-users with the following core features:
-        
+
         ### Core Features
-        
+
         - User registration and authentication
-        - User profile management  
+        - User profile management
         - Multi-user session handling
         - OAuth support (Google, Microsoft, Apple)
-        
+
         ### Available Endpoints
-        
+
         #### User Management
         - `POST /api/users/` - Create new user
         - `GET /api/users/{user_id}` - Get user by ID
@@ -42,12 +42,12 @@ def generate_api_docs():
         - `POST /api/users/login` - User login
         - `POST /api/users/{user_id}/change-password` - Change password
         - `GET /api/users/search/{query}` - Search users
-        
+
         #### OAuth Authentication
         - `GET /api/oauth/{provider}/authorize` - Get OAuth authorization URL
         - `POST /api/oauth/{provider}/callback` - Handle OAuth callback
         - `POST /api/oauth/{provider}/unlink/{user_id}` - Unlink OAuth provider
-        
+
         #### Session Management
         - `POST /api/sessions/` - Create session
         - `GET /api/sessions/{token}` - Get session by token

@@ -5,10 +5,10 @@ Centralizes authorization logic following DRY principle.
 
 from functools import wraps
 from fastapi import HTTPException, status
-from typing import Callable
+from typing import Callable, Any, Optional
 
 
-def _extract_current_user(kwargs):
+def _extract_current_user(kwargs: dict) -> Optional[Any]:
     """Extract current_user from FastAPI dependencies in kwargs."""
     for key, value in kwargs.items():
         if hasattr(value, "role") and hasattr(value, "id"):
@@ -16,7 +16,7 @@ def _extract_current_user(kwargs):
     return None
 
 
-def _get_user_role(current_user):
+def _get_user_role(current_user: Any) -> str:
     """Get user role as string."""
     return (
         current_user.role.value
@@ -29,7 +29,7 @@ def require_admin(func: Callable) -> Callable:
     """装饰器：要求管理员权限"""
 
     @wraps(func)
-    async def wrapper(*args, **kwargs):
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
         current_user = _extract_current_user(kwargs)
 
         if not current_user:
@@ -55,7 +55,7 @@ def require_owner_or_admin(func: Callable) -> Callable:
     """装饰器：要求用户是目标用户本人或管理员"""
 
     @wraps(func)
-    async def wrapper(*args, **kwargs):
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
         current_user = _extract_current_user(kwargs)
 
         if not current_user:
@@ -93,7 +93,7 @@ def require_session_owner_or_admin(func: Callable) -> Callable:
     """装饰器：要求用户是会话所有者或管理员"""
 
     @wraps(func)
-    async def wrapper(*args, **kwargs):
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
         current_user = _extract_current_user(kwargs)
 
         if not current_user:
@@ -131,7 +131,7 @@ def require_session_token_owner_or_admin(func: Callable) -> Callable:
     """装饰器：要求会话所有者或管理员权限（针对session token的特殊装饰器）"""
 
     @wraps(func)
-    async def wrapper(*args, **kwargs):
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
         from ..services.session_service import SessionService
         from ..repositories.json_session_repository import JsonSessionRepository
 

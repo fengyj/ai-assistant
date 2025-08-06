@@ -7,27 +7,24 @@ from typing import Optional, Dict
 from pydantic import BaseModel, EmailStr
 
 
-class OAuthCallbackRequest(BaseModel):
-    """OAuth callback request."""
-
+class OAuthCallbackRequestData(BaseModel):
+    """OAuth callback request data."""
     code: str
     state: str
     error: Optional[str] = None
     error_description: Optional[str] = None
 
 
-class OAuthUserInfo(BaseModel):
-    """OAuth user information."""
-
+class OAuthUserInfoData(BaseModel):
+    """OAuth user information data."""
     provider_id: str
     email: EmailStr
     name: Optional[str] = None
     avatar_url: Optional[str] = None
 
 
-class OAuthLoginResponse(BaseModel):
-    """OAuth login response."""
-
+class OAuthLoginResponseData(BaseModel):
+    """OAuth login response data."""
     user_id: str
     username: str
     email: str
@@ -39,16 +36,14 @@ class OAuthLoginResponse(BaseModel):
     access_token: Optional[str] = None  # For future JWT implementation
 
 
-class OAuthProvidersResponse(BaseModel):
-    """Available OAuth providers response."""
-
+class OAuthProvidersResponseData(BaseModel):
+    """Available OAuth providers response data."""
     providers: list[str]
     configured_providers: Dict[str, bool]
 
 
-class OAuthAuthorizeResponse(BaseModel):
-    """OAuth authorization response."""
-
+class OAuthAuthorizeResponseData(BaseModel):
+    """OAuth authorization response data."""
     authorize_url: str
     state: str
     provider: str

@@ -6,15 +6,20 @@ Focused on HTTP layer concerns only, business logic delegated to services.
 from datetime import timedelta, datetime
 from typing import List
 from fastapi import APIRouter, HTTPException, Depends, status
-from ..models import UserCreateRequest, UserUpdateRequest, UserResponse, UserRole
+from ..models import (
+    UserCreateRequest,
+    UserUpdateRequest,
+    UserResponse,
+    UserRole
+)
 from ..models.api.user_api import (
-    UserCreateAPI,
-    UserUpdateAPI,
-    LoginAPI,
-    PasswordChangeAPI,
-    OAuthLoginAPI,
-    UserResponseAPI,
-    TokenResponse,
+    UserCreateRequestData,
+    UserUpdateRequestData,
+    LoginRequestData,
+    PasswordChangeRequestData,
+    OAuthLoginRequestData,
+    UserResponseData,
+    TokenResponseData,
 )
 from ..services.user_service import UserService
 from ..repositories.json_user_repository import JsonUserRepository
@@ -24,7 +29,11 @@ from ..core.exceptions import (
     InvalidCredentialsError,
     ValidationError,
 )
-from ..utils.auth import get_current_active_user, create_access_token, CurrentUser
+from ..utils.auth import (
+    get_current_active_user,
+    create_access_token,
+    CurrentUser
+)
 from ..utils.permissions import require_admin, require_owner_or_admin
 
 
@@ -39,13 +48,15 @@ def get_user_service() -> UserService:
 router = APIRouter(prefix="/api/users", tags=["users"])
 
 
-@router.post("/", response_model=UserResponseAPI, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", response_model=UserResponseData, status_code=status.HTTP_201_CREATED
+)
 @require_admin
 async def create_user(
-    user_data: UserCreateAPI,
+    user_data: UserCreateRequestData,
     user_service: UserService = Depends(get_user_service),
     current_user: CurrentUser = Depends(get_current_active_user),
-):
+) -> UserResponseData:
     """Create a new user (Admin only)."""
     try:
         # Convert API model to service model
@@ -61,7 +72,7 @@ async def create_user(
         user = await user_service.create_user(request)
         user_response = UserResponse.from_user(user)
 
-        return UserResponseAPI(
+        return UserResponseData(
             id=user_response.id,
             username=user_response.username,
             email=user_response.email,
@@ -79,13 +90,13 @@ async def create_user(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.get("/{user_id}", response_model=UserResponseAPI)
+@router.get("/{user_id}", response_model=UserResponseData)
 @require_owner_or_admin
 async def get_user(
     user_id: str,
     user_service: UserService = Depends(get_user_service),
     current_user: CurrentUser = Depends(get_current_active_user),
-):
+) -> UserResponseData:
     """Get user by ID (User can access own data, Admin can access any)."""
     try:
         user = await user_service.get_user_by_id(user_id)
@@ -95,7 +106,7 @@ async def get_user(
             )
 
         user_response = UserResponse.from_user(user)
-        return UserResponseAPI(
+        return UserResponseData(
             id=user_response.id,
             username=user_response.username,
             email=user_response.email,
@@ -113,13 +124,13 @@ async def get_user(
         )
 
 
-@router.get("/", response_model=List[UserResponseAPI])
+@router.get("/", response_model=List[UserResponseData])
 @require_admin
 async def get_users(
     active_only: bool = False,
     user_service: UserService = Depends(get_user_service),
     current_user: CurrentUser = Depends(get_current_active_user),
-):
+) -> List[UserResponseData]:
     """Get all users (Admin only)."""
     try:
         if active_only:
@@ -128,7 +139,7 @@ async def get_users(
             users = await user_service.get_all_users()
 
         return [
-            UserResponseAPI(
+            UserResponseData(
                 id=user.id,
                 username=user.username,
                 email=user.email,
@@ -137,7 +148,9 @@ async def get_users(
                 role=user.role.value,
                 status=user.status.value,
                 created_at=user.created_at.isoformat(),
-                last_login=(user.last_login.isoformat() if user.last_login else None),
+                last_login=(
+                    user.last_login.isoformat() if user.last_login else None
+                ),
             )
             for user in users
         ]
@@ -148,14 +161,14 @@ async def get_users(
         )
 
 
-@router.put("/{user_id}", response_model=UserResponseAPI)
+@router.put("/{user_id}", response_model=UserResponseData)
 @require_owner_or_admin
 async def update_user(
     user_id: str,
-    user_data: UserUpdateAPI,
+    user_data: UserUpdateRequestData,
     user_service: UserService = Depends(get_user_service),
     current_user: CurrentUser = Depends(get_current_active_user),
-):
+) -> UserResponseData:
     """
     Update user information (User can update own data, Admin can update any).
     """
@@ -171,7 +184,7 @@ async def update_user(
         user = await user_service.update_user(user_id, request)
         user_response = UserResponse.from_user(user)
 
-        return UserResponseAPI(
+        return UserResponseData(
             id=user_response.id,
             username=user_response.username,
             email=user_response.email,
@@ -197,7 +210,7 @@ async def delete_user(
     user_id: str,
     user_service: UserService = Depends(get_user_service),
     current_user: CurrentUser = Depends(get_current_active_user),
-):
+) -> None:
     """Delete a user (Admin only)."""
     try:
         success = await user_service.delete_user(user_id)
@@ -210,10 +223,11 @@ async def delete_user(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponseData)
 async def login(
-    login_data: LoginAPI, user_service: UserService = Depends(get_user_service)
-):
+    login_data: LoginRequestData,
+    user_service: UserService = Depends(get_user_service)
+) -> TokenResponseData:
     """Authenticate user and return access token."""
     try:
         user = await user_service.authenticate_user(
@@ -227,7 +241,7 @@ async def login(
             expires_delta=timedelta(minutes=30),
         )
 
-        user_api = UserResponseAPI(
+        user_api = UserResponseData(
             id=user_response.id,
             username=user_response.username,
             email=user_response.email,
@@ -239,7 +253,7 @@ async def login(
             last_login=user_response.last_login,
         )
 
-        return TokenResponse(
+        return TokenResponseData(
             access_token=access_token, token_type="bearer", user=user_api
         )
 
@@ -247,16 +261,19 @@ async def login(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
 
 
-@router.post("/oauth-login", response_model=TokenResponse)
+@router.post("/oauth-login", response_model=TokenResponseData)
 async def oauth_login(
-    oauth_data: OAuthLoginAPI, user_service: UserService = Depends(get_user_service)
-):
+    oauth_data: OAuthLoginRequestData,
+    user_service: UserService = Depends(get_user_service)
+) -> TokenResponseData:
     """OAuth login - create user if not exists, login if exists."""
     try:
         # Try to find existing user by email
         existing_user = None
         try:
-            existing_user = await user_service.get_user_by_email(oauth_data.email)
+            existing_user = await user_service.get_user_by_email(
+                oauth_data.email
+            )
         except UserNotFoundError:
             pass
 
@@ -304,7 +321,7 @@ async def oauth_login(
             expires_delta=timedelta(minutes=30),
         )
 
-        user_api = UserResponseAPI(
+        user_api = UserResponseData(
             id=user_response.id,
             username=user_response.username,
             email=user_response.email,
@@ -316,7 +333,7 @@ async def oauth_login(
             last_login=user_response.last_login,
         )
 
-        return TokenResponse(
+        return TokenResponseData(
             access_token=access_token, token_type="bearer", user=user_api
         )
 
@@ -333,10 +350,10 @@ async def oauth_login(
 @require_owner_or_admin
 async def change_password(
     user_id: str,
-    password_data: PasswordChangeAPI,
+    password_data: PasswordChangeRequestData,
     user_service: UserService = Depends(get_user_service),
     current_user: CurrentUser = Depends(get_current_active_user),
-):
+) -> dict:
     """
     Change user password (User can change own password, Admin can change any).
     """
@@ -352,20 +369,20 @@ async def change_password(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
 
 
-@router.get("/search/{query}", response_model=List[UserResponseAPI])
+@router.get("/search/{query}", response_model=List[UserResponseData])
 @require_admin
 async def search_users(
     query: str,
     limit: int = 10,
     user_service: UserService = Depends(get_user_service),
     current_user: CurrentUser = Depends(get_current_active_user),
-):
+) -> List[UserResponseData]:
     """Search users by query (Admin only)."""
     try:
         users = await user_service.search_users(query, limit)
 
         return [
-            UserResponseAPI(
+            UserResponseData(
                 id=user.id,
                 username=user.username,
                 email=user.email,
@@ -374,7 +391,9 @@ async def search_users(
                 role=user.role.value,
                 status=user.status.value,
                 created_at=user.created_at.isoformat(),
-                last_login=(user.last_login.isoformat() if user.last_login else None),
+                last_login=(
+                    user.last_login.isoformat() if user.last_login else None
+                ),
             )
             for user in users
         ]

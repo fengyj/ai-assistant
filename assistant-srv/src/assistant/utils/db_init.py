@@ -10,13 +10,13 @@ from ..models import User, UserRole, UserStatus, UserProfile
 from ..utils.security import PasswordHasher
 
 
-def ensure_data_directory():
+def ensure_data_directory() -> None:
     """Ensure data directory exists."""
     os.makedirs(config.data_dir, exist_ok=True)
     print(f"Data directory ensured: {config.data_dir}")
 
 
-def create_default_admin_user():
+def create_default_admin_user() -> None:
     """Create default admin user if no users exist."""
     users_file = os.path.join(config.data_dir, config.users_file)
 
@@ -51,7 +51,7 @@ def create_default_admin_user():
     print(f"Default admin user created: admin/admin123")
 
 
-def initialize_database():
+def initialize_database() -> None:
     """Initialize database and create default data."""
     print("Initializing database...")
 

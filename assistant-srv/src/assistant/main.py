@@ -4,7 +4,8 @@ Main FastAPI application.
 
 import uvicorn
 from datetime import datetime, timezone
-from fastapi import FastAPI, HTTPException
+from typing import Dict
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
@@ -48,7 +49,7 @@ app.include_router(sessions_router)
 
 
 @app.get("/")
-async def root():
+async def root() -> Dict[str, str]:
     """Root endpoint."""
     return {
         "message": "Personal AI Assistant Server",
@@ -58,12 +59,18 @@ async def root():
 
 
 @app.get("/health")
-async def health_check():
+async def health_check() -> Dict[str, str]:
     """Health check endpoint."""
-    return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
 
 
 if __name__ == "__main__":
     uvicorn.run(
-        "assistant.main:app", host=config.host, port=config.port, reload=config.debug
+        "assistant.main:app",
+        host=config.host,
+        port=config.port,
+        reload=config.debug
     )

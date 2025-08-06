@@ -3,7 +3,7 @@ Authentication and authorization utilities for API endpoints.
 """
 
 from datetime import datetime, timedelta
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
@@ -42,7 +42,9 @@ class CurrentUser(BaseModel):
 security = HTTPBearer()
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(
+    data: dict, expires_delta: Optional[timedelta] = None
+) -> str:
     """Create JWT access token."""
     to_encode = data.copy()
     if expires_delta:
@@ -147,7 +149,9 @@ class RoleChecker:
     def __init__(self, allowed_roles: List[UserRole]):
         self.allowed_roles = allowed_roles
 
-    def __call__(self, current_user: CurrentUser = Depends(get_current_active_user)):
+    def __call__(
+        self, current_user: CurrentUser = Depends(get_current_active_user)
+    ) -> CurrentUser:
         if current_user.role not in self.allowed_roles:
             allowed_roles_str = [role.value for role in self.allowed_roles]
             raise HTTPException(

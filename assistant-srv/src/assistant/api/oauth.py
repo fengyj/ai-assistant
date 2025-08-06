@@ -8,11 +8,11 @@ from fastapi import APIRouter, HTTPException, Depends, status, Request
 
 from ..models import User, UserRole, UserStatus, OAuthProvider, OAuthInfo, UserProfile
 from ..models.api.oauth_api import (
-    OAuthCallbackRequest,
-    OAuthUserInfo,
-    OAuthLoginResponse,
-    OAuthProvidersResponse,
-    OAuthAuthorizeResponse,
+    OAuthCallbackRequestData,
+    OAuthUserInfoData,
+    OAuthLoginResponseData,
+    OAuthProvidersResponseData,
+    OAuthAuthorizeResponseData,
 )
 from ..services.user_service import UserService
 from ..services.oauth_service import oauth_manager
@@ -29,7 +29,7 @@ def get_user_service() -> UserService:
     return UserService(user_repository)
 
 
-def get_oauth_manager():
+def get_oauth_manager() -> object:
     """Get OAuth service manager."""
     return oauth_manager
 
@@ -38,8 +38,8 @@ def get_oauth_manager():
 router = APIRouter(prefix="/api/oauth", tags=["oauth"])
 
 
-@router.get("/providers", response_model=OAuthProvidersResponse)
-async def get_oauth_providers(oauth_service=Depends(get_oauth_manager)):
+@router.get("/providers", response_model=OAuthProvidersResponseData)
+async def get_oauth_providers(oauth_service: object = Depends(get_oauth_manager)) -> OAuthProvidersResponseData:
     """Get available OAuth providers."""
     available_providers = oauth_service.get_available_providers()
 
@@ -49,15 +49,15 @@ async def get_oauth_providers(oauth_service=Depends(get_oauth_manager)):
         provider: provider in available_providers for provider in all_providers
     }
 
-    return OAuthProvidersResponse(
+    return OAuthProvidersResponseData(
         providers=available_providers, configured_providers=configured_providers
     )
 
 
-@router.get("/{provider}/authorize", response_model=OAuthAuthorizeResponse)
+@router.get("/{provider}/authorize", response_model=OAuthAuthorizeResponseData)
 async def get_oauth_authorize_url(
-    provider: str, request: Request, oauth_service=Depends(get_oauth_manager)
-):
+    provider: str, request: Request, oauth_service: object = Depends(get_oauth_manager)
+) -> OAuthAuthorizeResponseData:
     """Get OAuth authorization URL for the specified provider."""
     try:
         # Check if provider is available
@@ -78,7 +78,7 @@ async def get_oauth_authorize_url(
             provider.lower(), metadata
         )
 
-        return OAuthAuthorizeResponse(
+        return OAuthAuthorizeResponseData(
             authorize_url=auth_url, state=state_token, provider=provider.lower()
         )
 
@@ -91,14 +91,14 @@ async def get_oauth_authorize_url(
         )
 
 
-@router.post("/{provider}/callback", response_model=OAuthLoginResponse)
+@router.post("/{provider}/callback", response_model=OAuthLoginResponseData)
 async def oauth_callback(
     provider: str,
-    callback_data: OAuthCallbackRequest,
+    callback_data: OAuthCallbackRequestData,
     request: Request,
     user_service: UserService = Depends(get_user_service),
-    oauth_service=Depends(get_oauth_manager),
-):
+    oauth_service: object = Depends(get_oauth_manager),
+) -> OAuthLoginResponseData:
     """Handle OAuth callback and login/register user."""
     try:
         # Check for OAuth errors
@@ -186,7 +186,7 @@ async def oauth_callback(
                 user.usage_stats.total_sessions = 1
                 user = await user_service.user_repository.create(user)
 
-        return OAuthLoginResponse(
+        return OAuthLoginResponseData(
             user_id=user.id,
             username=user.username,
             email=user.email,
@@ -213,7 +213,7 @@ async def unlink_oauth_provider(
     user_id: str,
     user_service: UserService = Depends(get_user_service),
     current_user: CurrentUser = Depends(get_current_active_user),
-):
+) -> dict:
     """Unlink OAuth provider from user account."""
     try:
         oauth_provider = OAuthProvider(provider.lower())
@@ -250,9 +250,9 @@ async def unlink_oauth_provider(
 @router.post("/cleanup", status_code=status.HTTP_200_OK)
 @require_admin
 async def cleanup_oauth_states(
-    oauth_service=Depends(get_oauth_manager),
+    oauth_service: object = Depends(get_oauth_manager),
     current_user: CurrentUser = Depends(get_current_active_user),
-):
+) -> dict:
     """Clean up expired OAuth states."""
     try:
         count = await oauth_service.cleanup_expired_states()

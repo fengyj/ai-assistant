@@ -5,47 +5,53 @@ Centralizes all API model imports for easier access.
 
 # User API models
 from .user_api import (
-    UserCreateAPI,
-    UserUpdateAPI,
-    EmailChangeAPI,
-    RoleChangeAPI,
-    LoginAPI,
-    PasswordChangeAPI,
-    OAuthLoginAPI,
-    UserResponseAPI,
-    TokenResponse,
+    UserCreateRequestData,
+    UserUpdateRequestData,
+    EmailChangeRequestData,
+    RoleChangeRequestData,
+    LoginRequestData,
+    PasswordChangeRequestData,
+    OAuthLoginRequestData,
+    UserResponseData,
+    TokenResponseData,
 )
 
 # OAuth API models
 from .oauth_api import (
-    OAuthCallbackRequest,
-    OAuthUserInfo,
-    OAuthLoginResponse,
-    OAuthProvidersResponse,
-    OAuthAuthorizeResponse,
+    OAuthCallbackRequestData,
+    OAuthUserInfoData,
+    OAuthLoginResponseData,
+    OAuthProvidersResponseData,
+    OAuthAuthorizeResponseData,
 )
 
 # Session API models
-from .session_api import SessionCreateAPI, SessionRefreshAPI
+from .session_api import SessionCreateRequestData, SessionRefreshRequestData
+
+# Model API models
+from .model_api import ModelRequestData, ModelResponseData
 
 __all__ = [
     # User API
-    "UserCreateAPI",
-    "UserUpdateAPI",
-    "EmailChangeAPI",
-    "RoleChangeAPI",
-    "LoginAPI",
-    "PasswordChangeAPI",
-    "OAuthLoginAPI",
-    "UserResponseAPI",
-    "TokenResponse",
+    "UserCreateRequestData",
+    "UserUpdateRequestData",
+    "EmailChangeRequestData",
+    "RoleChangeRequestData",
+    "LoginRequestData",
+    "PasswordChangeRequestData",
+    "OAuthLoginRequestData",
+    "UserResponseData",
+    "TokenResponseData",
     # OAuth API
-    "OAuthCallbackRequest",
-    "OAuthUserInfo",
-    "OAuthLoginResponse",
-    "OAuthProvidersResponse",
-    "OAuthAuthorizeResponse",
+    "OAuthCallbackRequestData",
+    "OAuthUserInfoData",
+    "OAuthLoginResponseData",
+    "OAuthProvidersResponseData",
+    "OAuthAuthorizeResponseData",
     # Session API
-    "SessionCreateAPI",
-    "SessionRefreshAPI",
+    "SessionCreateRequestData",
+    "SessionRefreshRequestData",
+    # Model API
+    "ModelRequestData",
+    "ModelResponseData",
 ]

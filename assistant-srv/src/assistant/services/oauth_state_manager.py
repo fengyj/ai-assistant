@@ -54,7 +54,7 @@ class OAuthState:
 class OAuthStateManager:
     """Manages OAuth state tokens for security."""
 
-    def __init__(self, data_dir: str = None):
+    def __init__(self, data_dir: str = None) -> None:
         """Initialize state manager."""
         self.data_dir = data_dir or config.data_dir
         self.state_file = os.path.join(self.data_dir, "oauth_states.json")
@@ -62,11 +62,11 @@ class OAuthStateManager:
         self._states_cache: Dict[str, OAuthState] = {}
         self._load_states()
 
-    def _ensure_data_dir(self):
+    def _ensure_data_dir(self) -> None:
         """Ensure data directory exists."""
         os.makedirs(self.data_dir, exist_ok=True)
 
-    def _load_states(self):
+    def _load_states(self) -> None:
         """Load states from JSON file."""
         if not os.path.exists(self.state_file):
             self._states_cache = {}
@@ -86,11 +86,12 @@ class OAuthStateManager:
             self._states_cache = {}
             print(f"Warning: Error loading OAuth states file: {e}")
 
-    def _save_states(self):
+    def _save_states(self) -> None:
         """Save states to JSON file."""
         # Filter out expired states before saving
         active_states = [
-            state for state in self._states_cache.values() if not state.is_expired()
+            state for state in self._states_cache.values()
+            if not state.is_expired()
         ]
 
         states_data = [state.to_dict() for state in active_states]
@@ -98,11 +99,17 @@ class OAuthStateManager:
         with open(self.state_file, "w", encoding="utf-8") as f:
             json.dump(states_data, f, indent=2, ensure_ascii=False)
 
-        # Update cache to remove expired states
-        self._states_cache = {state.state_token: state for state in active_states}
+        # Update cache to only include active states
+        self._states_cache = {
+            state.state_token: state
+            for state in active_states
+        }
 
     def create_state(
-        self, provider: str, redirect_uri: str, metadata: Dict[str, Any] = None
+        self,
+        provider: str,
+        redirect_uri: str,
+        metadata: Optional[Dict[str, Any]] = None
     ) -> str:
         """Create a new OAuth state token."""
         state_token = TokenGenerator.generate_token(32)

@@ -7,8 +7,8 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
-class UserCreateAPI(BaseModel):
-    """User creation API model."""
+class UserCreateRequestData(BaseModel):
+    """User creation API request model."""
 
     username: str
     email: EmailStr
@@ -17,8 +17,8 @@ class UserCreateAPI(BaseModel):
     role: str = "user"
 
 
-class UserUpdateAPI(BaseModel):
-    """User update API model - basic profile information only."""
+class UserUpdateRequestData(BaseModel):
+    """User update API request model - basic profile information only."""
 
     username: Optional[str] = None
     display_name: Optional[str] = None
@@ -27,36 +27,36 @@ class UserUpdateAPI(BaseModel):
     language: Optional[str] = None
 
 
-class EmailChangeAPI(BaseModel):
-    """Email change API model."""
+class EmailChangeRequestData(BaseModel):
+    """Email change API request model."""
 
     new_email: EmailStr
     password: str
 
 
-class RoleChangeAPI(BaseModel):
-    """Role change API model."""
+class RoleChangeRequestData(BaseModel):
+    """Role change API request model."""
 
     new_role: str
     reason: Optional[str] = None
 
 
-class LoginAPI(BaseModel):
-    """Login API model."""
+class LoginRequestData(BaseModel):
+    """Login API request model."""
 
     username: str
     password: str
 
 
-class PasswordChangeAPI(BaseModel):
-    """Password change API model."""
+class PasswordChangeRequestData(BaseModel):
+    """Password change API request model."""
 
     old_password: str
     new_password: str
 
 
-class OAuthLoginAPI(BaseModel):
-    """OAuth login API model."""
+class OAuthLoginRequestData(BaseModel):
+    """OAuth login API request model."""
 
     provider: str
     provider_id: str
@@ -66,7 +66,7 @@ class OAuthLoginAPI(BaseModel):
     avatar: Optional[str] = None
 
 
-class UserResponseAPI(BaseModel):
+class UserResponseData(BaseModel):
     """User response API model."""
 
     id: str
@@ -80,9 +80,9 @@ class UserResponseAPI(BaseModel):
     last_login: Optional[str] = None
 
 
-class TokenResponse(BaseModel):
-    """Token response model."""
+class TokenResponseData(BaseModel):
+    """Token response API model."""
 
     access_token: str
     token_type: str
-    user: UserResponseAPI
+    user: UserResponseData
