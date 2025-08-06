@@ -18,6 +18,27 @@ class SessionStatus(Enum):
 
 
 @dataclass
+class SessionMetadata:
+    """Session metadata with specific structure."""
+    login_method: str  # 'password' | 'oauth'
+    oauth_provider: Optional[str]
+    device_type: str  # 'web' | 'mobile' | 'desktop'
+    location: Optional[str]
+    security_flags: List[str]
+
+
+def _default_metadata() -> SessionMetadata:
+    """Create default session metadata."""
+    return SessionMetadata(
+        login_method="password",
+        oauth_provider=None,
+        device_type="web",
+        location=None,
+        security_flags=[]
+    )
+
+
+@dataclass
 class UserSession:
     """User session model."""
 
@@ -40,7 +61,7 @@ class UserSession:
     )
 
     # Additional data
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: SessionMetadata = field(default_factory=_default_metadata)
 
     def is_expired(self) -> bool:
         """Check if session is expired."""

@@ -17,3 +17,17 @@ class SessionCreateRequestData(BaseModel):
 class SessionRefreshRequestData(BaseModel):
     """Session refresh API request data."""
     extend_hours: int = 24
+
+
+class SessionTerminateResponseData(BaseModel):
+    """Session termination response API model."""
+
+    success: bool = True
+    message: str
+
+
+class SessionCleanupResponseData(BaseModel):
+    """Session cleanup response API model."""
+
+    success: bool = True
+    message: str

@@ -5,10 +5,11 @@ Centralizes authorization logic following DRY principle.
 
 from functools import wraps
 from fastapi import HTTPException, status
-from typing import Callable, Any, Optional
+from typing import Callable, Optional, Dict, Any
+from ..models.user import User
 
 
-def _extract_current_user(kwargs: dict) -> Optional[Any]:
+def _extract_current_user(kwargs: Dict[str, Any]) -> Optional[User]:
     """Extract current_user from FastAPI dependencies in kwargs."""
     for key, value in kwargs.items():
         if hasattr(value, "role") and hasattr(value, "id"):
@@ -16,7 +17,7 @@ def _extract_current_user(kwargs: dict) -> Optional[Any]:
     return None
 
 
-def _get_user_role(current_user: Any) -> str:
+def _get_user_role(current_user: User) -> str:
     """Get user role as string."""
     return (
         current_user.role.value

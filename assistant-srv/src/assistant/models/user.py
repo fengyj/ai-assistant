@@ -77,6 +77,16 @@ class ModelAPIUsage:
     last_used: Optional[datetime] = None
 
 
+@dataclass    
+class UserPreferences:
+    """User preferences with specific structure."""
+    theme: str  # 'light' | 'dark' | 'auto'
+    language: str
+    timezone: str
+    notifications: Dict[str, bool]
+    ui_settings: Dict[str, Any]
+
+
 @dataclass
 class User:
     """User model."""

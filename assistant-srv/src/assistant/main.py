@@ -1,18 +1,15 @@
 """
-Main FastAPI application.
+FastAPI application configuration and setup.
 """
 
-import uvicorn
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from typing import Dict
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-
-from .core import config
 from .api.users import router as users_router
 from .api.oauth import router as oauth_router
 from .api.sessions import router as sessions_router
+from .models.api.general_api import StatusResponseData, HealthCheckResponseData
 
 
 @asynccontextmanager
@@ -48,26 +45,31 @@ app.include_router(oauth_router)
 app.include_router(sessions_router)
 
 
-@app.get("/")
-async def root() -> Dict[str, str]:
+@app.get("/", response_model=StatusResponseData)
+async def root() -> StatusResponseData:
     """Root endpoint."""
-    return {
-        "message": "Personal AI Assistant Server",
-        "version": "0.1.0",
-        "status": "running",
-    }
+    return StatusResponseData(
+        status="running",
+        data={
+            "message": "Personal AI Assistant Server",
+            "version": "0.1.0",
+        }
+    )
 
 
-@app.get("/health")
-async def health_check() -> Dict[str, str]:
+@app.get("/health", response_model=HealthCheckResponseData)
+async def health_check() -> HealthCheckResponseData:
     """Health check endpoint."""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now(timezone.utc).isoformat()
-    }
+    return HealthCheckResponseData(
+        status="healthy",
+        timestamp=datetime.now(timezone.utc).isoformat()
+    )
 
 
 if __name__ == "__main__":
+    import uvicorn
+    from .core.config import config
+    
     uvicorn.run(
         "assistant.main:app",
         host=config.host,

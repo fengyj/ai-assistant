@@ -86,3 +86,10 @@ class TokenResponseData(BaseModel):
     access_token: str
     token_type: str
     user: UserResponseData
+
+
+class PasswordChangeResponseData(BaseModel):
+    """Password change response API model."""
+
+    success: bool = True
+    message: str = "Password changed successfully"

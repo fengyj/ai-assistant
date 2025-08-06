@@ -3,7 +3,7 @@ Authentication and authorization utilities for API endpoints.
 """
 
 from datetime import datetime, timedelta
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Union
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
@@ -13,6 +13,7 @@ from ..models import UserRole, UserStatus
 from ..services.user_service import UserService
 from ..repositories.json_user_repository import JsonUserRepository
 from ..core.config import config
+
 
 
 # JWT Configuration
@@ -42,8 +43,11 @@ class CurrentUser(BaseModel):
 security = HTTPBearer()
 
 
+JWTPayload = Dict[str, Union[str, int, float]]
+
+
 def create_access_token(
-    data: dict, expires_delta: Optional[timedelta] = None
+    data: JWTPayload, expires_delta: Optional[timedelta] = None
 ) -> str:
     """Create JWT access token."""
     to_encode = data.copy()
@@ -51,7 +55,7 @@ def create_access_token(
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
+    to_encode["exp"] = expire  # type: ignore
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 

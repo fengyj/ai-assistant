@@ -49,3 +49,8 @@ where = ["assistant-srv/src"]
 
 [tool.setuptools.package-dir]
 "" = "assistant-srv/src"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.14.1",
+]

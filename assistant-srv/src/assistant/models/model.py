@@ -2,7 +2,27 @@
 Model entity definition for LLM model management.
 """
 
-from typing import Dict, Optional
+from typing import Optional, Dict, Any, List, Union, TypedDict
+
+
+# Model related types
+class ModelDefaultParams(TypedDict, total=False):
+    """Model default parameters with specific types."""
+    temperature: float
+    max_tokens: int
+    top_p: float
+    frequency_penalty: float
+    presence_penalty: float
+    stop: Union[str, List[str]]
+
+
+class ModelExtraData(TypedDict, total=False):
+    """Model extra data with specific fields."""
+    provider: str
+    version: str
+    capabilities: List[str]
+    pricing: Dict[str, float]
+    context_length: int
 
 
 class Model:
@@ -16,10 +36,10 @@ class Model:
         name: str,
         type: str,
         description: str,
-        default_params: Dict,
+        default_params: ModelDefaultParams,
         owner: str = "system",
         api_key: Optional[str] = None,
-        extra: Optional[Dict] = None,
+        extra: Optional[ModelExtraData] = None,
     ):
         self.id = id or ""
         self.name = name or ""
@@ -30,7 +50,7 @@ class Model:
         self.api_key = api_key
         self.extra = extra or {}
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> Dict[str, Any]:
         d = {
             "id": self.id,
             "name": self.name,
@@ -39,32 +59,30 @@ class Model:
             "default_params": self.default_params,
             "owner": self.owner,
             "api_key": self.api_key,
-            **self.extra,
+            **(self.extra or {}),
         }
         return d
 
     @staticmethod
-    def from_dict(data: Dict) -> "Model":
+    def from_dict(data: Dict[str, Any]) -> "Model":
+        # Extract known fields and create extra data from remaining fields
+        known_fields = {
+            "id", "name", "type", "description",
+            "default_params", "owner", "api_key"
+        }
+
+        extra_data: ModelExtraData = {}
+        for k, v in data.items():
+            if k not in known_fields:
+                extra_data[k] = v  # type: ignore
+
         return Model(
             id=str(data.get("id", "")),
             name=str(data.get("name", "")),
             type=str(data.get("type", "")),
             description=str(data.get("description", "")),
-            default_params=data.get("default_params", {}),
+            default_params=data.get("default_params", {}),  # type: ignore
             owner=str(data.get("owner", "system")),
             api_key=data.get("api_key"),
-            extra={
-                k: v
-                for k, v in data.items()
-                if k
-                not in {
-                    "id",
-                    "name",
-                    "type",
-                    "description",
-                    "default_params",
-                    "owner",
-                    "api_key",
-                }
-            },
+            extra=extra_data if extra_data else None,
         )

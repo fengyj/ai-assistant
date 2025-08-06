@@ -20,6 +20,7 @@ from ..models.api.user_api import (
     OAuthLoginRequestData,
     UserResponseData,
     TokenResponseData,
+    PasswordChangeResponseData,
 )
 from ..services.user_service import UserService
 from ..repositories.json_user_repository import JsonUserRepository
@@ -353,7 +354,7 @@ async def change_password(
     password_data: PasswordChangeRequestData,
     user_service: UserService = Depends(get_user_service),
     current_user: CurrentUser = Depends(get_current_active_user),
-) -> dict:
+) -> PasswordChangeResponseData:
     """
     Change user password (User can change own password, Admin can change any).
     """
@@ -361,7 +362,9 @@ async def change_password(
         await user_service.change_password(
             user_id, password_data.old_password, password_data.new_password
         )
-        return {"message": "Password changed successfully"}
+        return PasswordChangeResponseData(
+            message="Password changed successfully"
+        )
 
     except UserNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

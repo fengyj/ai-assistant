@@ -8,6 +8,12 @@ from fastapi import APIRouter, HTTPException, Depends, status, Request
 from pydantic import BaseModel
 
 from ..models.session import SessionCreateRequest, SessionResponse
+from ..models.api.session_api import (
+    SessionCreateRequestData, 
+    SessionRefreshRequestData,
+    SessionTerminateResponseData,
+    SessionCleanupResponseData
+)
 from ..services.session_service import SessionService
 from ..repositories.json_session_repository import JsonSessionRepository
 from ..core.exceptions import ValidationError
@@ -16,7 +22,6 @@ from ..utils.permissions import require_admin, require_owner_or_admin
 
 
 # Pydantic models for Session API (temporary, will be moved to models/api/)
-from ..models.api.session_api import SessionCreateRequestData, SessionRefreshRequestData
 
 
 # Dependency injection
@@ -126,11 +131,13 @@ async def terminate_user_sessions(
     user_id: str,
     session_service: SessionService = Depends(get_session_service),
     current_user: CurrentUser = Depends(get_current_active_user),
-) -> dict:
+) -> SessionTerminateResponseData:
     """Terminate all sessions for a user."""
     count = await session_service.terminate_user_sessions(user_id)
 
-    return {"message": f"Terminated {count} sessions"}
+    return SessionTerminateResponseData(
+        message=f"Terminated {count} sessions"
+    )
 
 
 @router.post("/cleanup", status_code=status.HTTP_200_OK)
@@ -138,11 +145,13 @@ async def terminate_user_sessions(
 async def cleanup_expired_sessions(
     session_service: SessionService = Depends(get_session_service),
     current_user: CurrentUser = Depends(get_current_active_user),
-) -> dict:
+) -> SessionCleanupResponseData:
     """Clean up expired sessions."""
     count = await session_service.cleanup_expired_sessions()
 
-    return {"message": f"Cleaned up {count} expired sessions"}
+    return SessionCleanupResponseData(
+        message=f"Cleaned up {count} expired sessions"
+    )
 
 
 @router.post("/{token}/validate", response_model=SessionResponse)
