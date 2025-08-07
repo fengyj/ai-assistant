@@ -16,6 +16,24 @@ class UserRole(Enum):
     USER = "user"
     GUEST = "guest"
 
+    @staticmethod
+    def from_str(role_str: str) -> "UserRole":
+        """Convert string to UserRole enum."""
+        role_str = role_str.strip().lower()
+        if role_str == UserRole.ADMIN.value:
+            return UserRole.ADMIN
+        elif role_str == UserRole.USER.value:
+            return UserRole.USER
+        elif role_str == UserRole.GUEST.value:
+            return UserRole.GUEST
+        else:
+            raise ValueError(f"Invalid role: {role_str}")
+
+    @staticmethod
+    def is_admin(role_str: str) -> bool:
+        """Check if the role is admin."""
+        return role_str.strip().lower() == UserRole.ADMIN.value
+
 
 class UserStatus(Enum):
     """User status enumeration."""

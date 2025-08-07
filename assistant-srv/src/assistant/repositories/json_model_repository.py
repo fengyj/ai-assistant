@@ -151,8 +151,8 @@ class JsonModelRepository(ModelRepository):
         return entity_id in self._models_cache
 
     async def list_models_by_owner(self, user_id: str) -> List[Model]:
-        """List all models available to the user (system + user)."""
-        return [model for model in self._models_cache.values() if model.owner in ("system", user_id)]
+        """List all models available to the user."""
+        return [model for model in self._models_cache.values() if model.owner == user_id]
 
     async def model_name_exists(self, owner: str, name: str, exclude_id: Optional[str] = None) -> bool:
         """Check if a model name exists for an owner."""
@@ -161,14 +161,14 @@ class JsonModelRepository(ModelRepository):
                 return True
         return False
 
-    async def get_user_api_key(self, user_id: str, model_id: str) -> Optional[str]:
+    async def get_api_key(self, user_id: str, model_id: str) -> Optional[str]:
         """Get API key for a specific user and model."""
         for key_data in self._keys_cache:
             if key_data.get("user_id") == user_id and key_data.get("model_id") == model_id:
                 return key_data.get("api_key")
         return None
 
-    async def set_user_api_key(self, user_id: str, model_id: str, api_key: str) -> None:
+    async def set_api_key(self, user_id: str, model_id: str, api_key: str) -> None:
         """Set API key for a specific user and model."""
         found = False
         for key_data in self._keys_cache:
@@ -192,7 +192,7 @@ class JsonModelRepository(ModelRepository):
         with self._keys_lock:
             self._save_keys()
 
-    async def remove_user_api_key(self, user_id: str, model_id: str) -> None:
+    async def remove_api_key(self, user_id: str, model_id: str) -> None:
         """Remove API key for a specific user and model."""
         with self._keys_lock:
             self._keys_cache = [

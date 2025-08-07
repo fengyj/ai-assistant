@@ -14,7 +14,7 @@ class ModelRepository(BaseRepository[Model]):
 
     @abstractmethod
     async def list_models_by_owner(self, user_id: str) -> List[Model]:
-        """List all models available to the user (system + user)."""
+        """List all models available to the user."""
         pass
 
     @abstractmethod
@@ -23,16 +23,16 @@ class ModelRepository(BaseRepository[Model]):
         pass
 
     @abstractmethod
-    async def get_user_api_key(self, user_id: str, model_id: str) -> Optional[str]:
+    async def get_api_key(self, user_id: str, model_id: str) -> Optional[str]:
         """Get API key for a specific user and model."""
         pass
 
     @abstractmethod
-    async def set_user_api_key(self, user_id: str, model_id: str, api_key: str) -> None:
+    async def set_api_key(self, user_id: str, model_id: str, api_key: str) -> None:
         """Set API key for a specific user and model."""
         pass
 
     @abstractmethod
-    async def remove_user_api_key(self, user_id: str, model_id: str) -> None:
+    async def remove_api_key(self, user_id: str, model_id: str) -> None:
         """Remove API key for a specific user and model."""
         pass

@@ -50,6 +50,36 @@ def require_admin(func: Callable[..., Any]) -> Callable[..., Any]:
     return wrapper
 
 
+def require_owner(func: Callable[..., Any]) -> Callable[..., Any]:
+    """装饰器：要求用户是目标用户本人"""
+
+    @wraps(func)
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
+        current_user = _extract_user_from_kwargs(**kwargs)
+
+        if not current_user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authentication required",
+            )
+
+        # 获取目标用户ID
+        target_user_id = kwargs.get("user_id")
+        if target_user_id is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User ID required")
+
+        # 检查是否是用户本人
+        if current_user.id != target_user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied: You can only access your own resources",
+            )
+
+        return await func(*args, **kwargs)
+
+    return wrapper
+
+
 def require_owner_or_admin(func: Callable[..., Any]) -> Callable[..., Any]:
     """装饰器：要求用户是目标用户本人或管理员"""
 

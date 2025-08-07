@@ -56,6 +56,13 @@ class PasswordChangeRequestData(BaseModel):
     new_password: str
 
 
+class UserRoleUpdateRequestData(BaseModel):
+    """User role update API request model."""
+
+    new_role: str
+    reason: Optional[str] = None
+
+
 class OAuthLoginRequestData(BaseModel):
     """OAuth login API request model."""
 
@@ -94,3 +101,10 @@ class PasswordChangeResponseData(BaseModel):
 
     success: bool = True
     message: str = "Password changed successfully"
+
+
+class UserRoleUpdateResponseData(BaseModel):
+    """User role update response API model."""
+
+    success: bool = True
+    message: str = "User role updated successfully"

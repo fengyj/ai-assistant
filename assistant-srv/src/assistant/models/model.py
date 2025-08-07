@@ -52,6 +52,9 @@ class Model:
         self.api_key = api_key
         self.extra = extra or {}
 
+    # Static variable for system owner
+    SYSTEM_OWNER = "system"
+
     def to_dict(self) -> Dict[str, Any]:
         d = {
             "id": self.id,
@@ -85,3 +88,7 @@ class Model:
             api_key=data.get("api_key"),
             extra=extra_data if extra_data else None,
         )
+
+    def is_system_model(self) -> bool:
+        """Return if it's a system model."""
+        return self.owner == self.SYSTEM_OWNER

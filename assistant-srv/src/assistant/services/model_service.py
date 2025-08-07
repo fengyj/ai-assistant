@@ -8,6 +8,7 @@ Model management service for unified model storage and secure key management.
 from typing import List, Optional
 
 from ..models.model import Model
+from ..models.user import UserRole  # Import UserRole for type hinting
 from ..repositories.model_repository import ModelRepository
 
 
@@ -20,32 +21,50 @@ class ModelService:
         """Initialize model service."""
         self.model_repository = model_repository
 
-    async def list_models(self, user_id: str) -> List[Model]:
-        """List all models available to the user (system + user)."""
+    async def list_user_models(self, user_id: str) -> List[Model]:
+        """List all models available to the user."""
         return await self.model_repository.list_models_by_owner(user_id)
+
+    async def list_system_models(self) -> List[Model]:
+        """List all system models."""
+        return await self.model_repository.list_models_by_owner(Model.SYSTEM_OWNER)
+
+    async def list_models(self, user_id: str, user_role: UserRole) -> List[Model]:
+        """List all models available to the user (system + user)."""
+        if user_role == UserRole.ADMIN:
+            return await self.list_system_models()
+        return await self.list_user_models(user_id) + await self.list_system_models()
 
     async def get_model(
         self, model_id: str, load_api_key: bool = False, user_id: Optional[str] = None
     ) -> Optional[Model]:
         """Get a model by id, optionally loading api_key."""
         model = await self.model_repository.get_by_id(model_id)
-        if model and load_api_key and user_id:
-            model.api_key = await self.model_repository.get_user_api_key(user_id, model.id)
+        if not model:
+            return None
+        if not model.is_system_model() and model.owner != user_id:
+            return None
+        if load_api_key:
+            model.api_key = await self.model_repository.get_api_key(model.owner, model.id)
         elif model:
             model.api_key = None
         return model
 
-    async def add_model(self, model: Model) -> Model:
+    async def add_model(self, model: Model, user_id: str, user_role: UserRole) -> Model:
         """Add a new model, ensuring name uniqueness and handling api_key."""
         if await self.model_repository.model_name_exists(model.owner, model.name):
             raise ValueError(f"Model name '{model.name}' already exists " f"for owner '{model.owner}'")
 
         api_key = model.api_key
         model.api_key = None
+        if user_role == UserRole.ADMIN:
+            model.owner = Model.SYSTEM_OWNER
+        else:
+            model.owner = user_id
         result = await self.model_repository.create(model)
 
         if api_key:
-            await self.model_repository.set_user_api_key(model.owner, result.id, api_key)
+            await self.model_repository.set_api_key(model.owner, result.id, api_key)
 
         return result
 
@@ -66,17 +85,16 @@ class ModelService:
 
             # Update API key if provided
             if api_key:
-                await self.model_repository.set_user_api_key(model.owner, model.id, api_key)
+                await self.model_repository.set_api_key(model.owner, model.id, api_key)
 
             return updated_model
         except ValueError:
             return None
 
-    async def delete_model(self, model_id: str, owner: str) -> bool:
-        """Delete a model by id and owner, and remove its api_key."""
-        # Check if model exists and belongs to owner
+    async def delete_model(self, model_id: str) -> bool:
+        """Delete a system model, and remove its api_key."""
         model = await self.model_repository.get_by_id(model_id)
-        if not model or model.owner != owner:
+        if not model:
             return False
 
         # Delete the model
@@ -84,25 +102,19 @@ class ModelService:
 
         # Remove associated API key
         if success:
-            await self.model_repository.remove_user_api_key(owner, model_id)
+            await self.model_repository.remove_api_key(model.owner, model_id)
 
         return success
 
     # Key management methods
     async def get_key(self, owner: str, model_id: str) -> Optional[str]:
         """Get API key for owner and model."""
-        return await self.model_repository.get_user_api_key(owner, model_id)
+        return await self.model_repository.get_api_key(owner, model_id)
 
     async def set_key(self, owner: str, model_id: str, api_key: str) -> None:
         """Set API key for owner and model."""
-        await self.model_repository.set_user_api_key(owner, model_id, api_key)
+        await self.model_repository.set_api_key(owner, model_id, api_key)
 
     async def delete_key(self, owner: str, model_id: str) -> None:
         """Delete API key for owner and model."""
-        await self.model_repository.remove_user_api_key(owner, model_id)
-
-
-# TODO: Add unit tests for ModelService
-# TODO: Add API endpoints for model and key management
-# TODO: Ensure all sensitive key operations are authenticated
-# TODO: Document all public methods
+        await self.model_repository.remove_api_key(owner, model_id)

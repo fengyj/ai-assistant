@@ -19,13 +19,187 @@
     "usage_stats": {
       "model_api_usage": [],
       "last_activity": null,
-      "total_sessions": 7,
+      "total_sessions": 12,
       "created_prompts": 0,
       "uploaded_files": 0
     },
     "created_at": "2025-08-05T01:34:22.466606+00:00",
-    "updated_at": "2025-08-05T09:00:31.440312+00:00",
-    "last_login": "2025-08-05T09:00:31.440292+00:00",
+    "updated_at": "2025-08-07T10:27:25.558674+00:00",
+    "last_login": "2025-08-07T10:27:25.558659+00:00",
+    "quota_limits": {}
+  },
+  {
+    "id": "09f7e805-f297-414e-9d6c-27b6b478d5d5",
+    "username": "securitytest_1754562437",
+    "email": "securitytest_1754562437@example.com",
+    "password_hash": "$2b$12$13AOx8ZrJF9g7.yPjcuI7eBapaJBr/dGjYytA7NScnDmMc.dZGlxi",
+    "profile": {
+      "display_name": "Hacker User",
+      "avatar_url": null,
+      "bio": null,
+      "timezone": null,
+      "language": "en",
+      "preferences": {}
+    },
+    "oauth_info": [],
+    "role": "admin",
+    "permissions": [],
+    "status": "active",
+    "usage_stats": {
+      "model_api_usage": [],
+      "last_activity": null,
+      "total_sessions": 1,
+      "created_prompts": 0,
+      "uploaded_files": 0
+    },
+    "created_at": "2025-08-07T10:27:17.960465+00:00",
+    "updated_at": "2025-08-07T10:27:18.336160+00:00",
+    "last_login": "2025-08-07T10:27:18.271187+00:00",
+    "quota_limits": {}
+  },
+  {
+    "id": "e0b5c784-9067-4fc6-9ac3-60f7b71abcc8",
+    "username": "oauth_user_1754562439",
+    "email": "oauth.user.1754562439@gmail.com",
+    "password_hash": null,
+    "profile": {
+      "display_name": "OAuth Test User",
+      "avatar_url": "https://lh3.googleusercontent.com/a/test-avatar",
+      "bio": null,
+      "timezone": null,
+      "language": "en",
+      "preferences": {}
+    },
+    "oauth_info": [],
+    "role": "user",
+    "permissions": [],
+    "status": "active",
+    "usage_stats": {
+      "model_api_usage": [],
+      "last_activity": null,
+      "total_sessions": 0,
+      "created_prompts": 0,
+      "uploaded_files": 0
+    },
+    "created_at": "2025-08-07T10:27:19.849154+00:00",
+    "updated_at": "2025-08-07T10:27:19.933615+00:00",
+    "last_login": "2025-08-07T10:27:19.933605+00:00",
+    "quota_limits": {}
+  },
+  {
+    "id": "e7a0a791-88fb-4c14-84bd-61c7c5de89b5",
+    "username": "testuser_1754562440",
+    "email": "testuser_1754562440@example.com",
+    "password_hash": "$2b$12$9eFwT22.KzzQbWxe41521.7q.WjEpKVRyHZV2QVVgShH6uVdxP95a",
+    "profile": {
+      "display_name": "Test User",
+      "avatar_url": null,
+      "bio": null,
+      "timezone": null,
+      "language": "en",
+      "preferences": {}
+    },
+    "oauth_info": [],
+    "role": "admin",
+    "permissions": [],
+    "status": "active",
+    "usage_stats": {
+      "model_api_usage": [],
+      "last_activity": null,
+      "total_sessions": 1,
+      "created_prompts": 0,
+      "uploaded_files": 0
+    },
+    "created_at": "2025-08-07T10:27:20.735809+00:00",
+    "updated_at": "2025-08-07T10:27:21.107389+00:00",
+    "last_login": "2025-08-07T10:27:21.049647+00:00",
+    "quota_limits": {}
+  },
+  {
+    "id": "20c5b879-f1d6-4052-b4f0-1e744b456943",
+    "username": "securitytest_1754562441",
+    "email": "securitytest_1754562441@example.com",
+    "password_hash": "$2b$12$l04gUyr4vIbsSf.hPQGGNew2qIS2zIuq9c6LffNlQuACeSMQKBKTu",
+    "profile": {
+      "display_name": "Security Test User",
+      "avatar_url": null,
+      "bio": null,
+      "timezone": null,
+      "language": "en",
+      "preferences": {}
+    },
+    "oauth_info": [],
+    "role": "admin",
+    "permissions": [],
+    "status": "active",
+    "usage_stats": {
+      "model_api_usage": [],
+      "last_activity": null,
+      "total_sessions": 1,
+      "created_prompts": 0,
+      "uploaded_files": 0
+    },
+    "created_at": "2025-08-07T10:27:21.778907+00:00",
+    "updated_at": "2025-08-07T10:27:22.132525+00:00",
+    "last_login": "2025-08-07T10:27:22.079004+00:00",
+    "quota_limits": {}
+  },
+  {
+    "id": "34c45470-36e0-4bab-aa75-11c88203f31f",
+    "username": "regularuser",
+    "email": "regular@example.com",
+    "password_hash": "$2b$12$WsvpyWSO4jP2rtuU6WimOu.4AcZDe2.kAGjgD3pO1x/8xGKIaSHIu",
+    "profile": {
+      "display_name": "Regular User",
+      "avatar_url": null,
+      "bio": null,
+      "timezone": null,
+      "language": "en",
+      "preferences": {}
+    },
+    "oauth_info": [],
+    "role": "user",
+    "permissions": [],
+    "status": "active",
+    "usage_stats": {
+      "model_api_usage": [],
+      "last_activity": null,
+      "total_sessions": 1,
+      "created_prompts": 0,
+      "uploaded_files": 0
+    },
+    "created_at": "2025-08-07T10:27:25.870272+00:00",
+    "updated_at": "2025-08-07T10:27:27.160726+00:00",
+    "last_login": "2025-08-07T10:27:26.169240+00:00",
+    "quota_limits": {}
+  },
+  {
+    "id": "8f9d0132-b614-419b-92a5-4afc6747d1cb",
+    "username": "anotheruser",
+    "email": "another@example.com",
+    "password_hash": "$2b$12$fFCsLHAU04yvl14JIh/OLezoeHZ0hQiabNo75CJevP1KFla09mpd6",
+    "profile": {
+      "display_name": null,
+      "avatar_url": null,
+      "bio": null,
+      "timezone": null,
+      "language": "en",
+      "preferences": {}
+    },
+    "oauth_info": [],
+    "role": "user",
+    "permissions": [],
+    "status": "active",
+    "usage_stats": {
+      "model_api_usage": [],
+      "last_activity": null,
+      "total_sessions": 0,
+      "created_prompts": 0,
+      "uploaded_files": 0
+    },
+    "created_at": "2025-08-07T10:27:26.526446+00:00",
+    "updated_at": "2025-08-07T10:27:26.526446+00:00",
+    "last_login": null,
     "quota_limits": {}
   }
 ]

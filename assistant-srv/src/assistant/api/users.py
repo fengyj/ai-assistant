@@ -23,12 +23,14 @@ from ..models.api.user_api import (
     TokenResponseData,
     UserCreateRequestData,
     UserResponseData,
+    UserRoleUpdateRequestData,
+    UserRoleUpdateResponseData,
     UserUpdateRequestData,
 )
 from ..repositories.json_user_repository import JsonUserRepository
 from ..services.user_service import UserService
 from ..utils.auth import CurrentUser, create_access_token, get_current_user
-from ..utils.permissions import require_admin, require_owner_or_admin
+from ..utils.permissions import require_admin, require_owner, require_owner_or_admin
 
 
 # Dependency injection
@@ -43,22 +45,19 @@ router = APIRouter(prefix="/api/users", tags=["users"])
 
 
 @router.post("/", response_model=UserResponseData, status_code=status.HTTP_201_CREATED)
-@require_admin
 async def create_user(
     user_data: UserCreateRequestData,
     user_service: UserService = Depends(get_user_service),
-    current_user: CurrentUser = Depends(get_current_user),
 ) -> UserResponseData:
-    """Create a new user (Admin only)."""
+    """Create a new normal user."""
     try:
         # Convert API model to service model
-        role = UserRole.ADMIN if user_data.role == "admin" else UserRole.USER
         request = UserCreateRequest(
             username=user_data.username,
             email=user_data.email,
             password=user_data.password,
             display_name=user_data.display_name,
-            role=role,
+            role=UserRole.USER,
         )
 
         user = await user_service.create_user(request)
@@ -317,7 +316,7 @@ async def oauth_login(
 
 
 @router.post("/{user_id}/change-password", status_code=status.HTTP_200_OK)
-@require_owner_or_admin
+@require_owner
 async def change_password(
     user_id: str,
     password_data: PasswordChangeRequestData,
@@ -335,6 +334,29 @@ async def change_password(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except InvalidCredentialsError as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
+
+
+@router.post("/{user_id}/change-role", status_code=status.HTTP_200_OK)
+@require_admin
+async def change_role(
+    user_id: str,
+    role_data: UserRoleUpdateRequestData,
+    user_service: UserService = Depends(get_user_service),
+    current_user: CurrentUser = Depends(get_current_user),
+) -> UserRoleUpdateResponseData:
+    """
+    Change user role (Admin only).
+    """
+    try:
+        await user_service.change_user_role(
+            current_user.id, user_id, UserRole.from_str(role_data.new_role), role_data.reason
+        )
+        return UserRoleUpdateResponseData(message="User role changed successfully")
+
+    except UserNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @router.get("/search/{query}", response_model=List[UserResponseData])
