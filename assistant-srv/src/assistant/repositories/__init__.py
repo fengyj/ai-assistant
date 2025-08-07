@@ -3,9 +3,9 @@ Repositories module initialization.
 """
 
 from .base import BaseRepository
-from .user_repository import UserRepository
 from .json_user_repository import JsonUserRepository
 from .model_repository import ModelRepository
+from .user_repository import UserRepository
 
 __all__ = [
     "BaseRepository",

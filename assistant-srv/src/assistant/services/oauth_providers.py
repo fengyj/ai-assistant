@@ -2,25 +2,21 @@
 OAuth provider base classes and implementations.
 """
 
-from abc import ABC, abstractmethod
-from datetime import datetime, timezone, timedelta
-from typing import Dict, Any, Optional, List
-from dataclasses import dataclass
-import httpx
-import urllib.parse
-import time
-import jwt
 import base64
-import json
 import logging
+import time
+import urllib.parse
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional
 
-from typing import Dict, Any
+import httpx
+import jwt
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import ec
 
-from ..core.config import config
-from ..models import OAuthProvider
 from ..core.exceptions import ValidationError
+from ..models import OAuthProvider
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +79,7 @@ class BaseOAuthProvider(ABC):
         """Get provider enum value."""
         pass
 
-    def generate_authorization_url(self, state: str, **kwargs) -> str:
+    def generate_authorization_url(self, state: str, **kwargs: Any) -> str:
         """Generate OAuth authorization URL."""
         params = {
             "client_id": self.config.client_id,
@@ -105,9 +101,7 @@ class BaseOAuthProvider(ABC):
         """Get provider-specific authorization parameters."""
         pass
 
-    async def exchange_code_for_token(
-        self, code: str, state: str
-    ) -> OAuthTokenResponse:
+    async def exchange_code_for_token(self, code: str, state: str) -> OAuthTokenResponse:
         """Exchange authorization code for access token."""
         token_data = {
             "client_id": self.config.client_id,
@@ -149,9 +143,7 @@ class BaseOAuthProvider(ABC):
             "Accept": "application/json",
         }
 
-        response = await self.http_client.get(
-            self.config.user_info_url, headers=headers
-        )
+        response = await self.http_client.get(self.config.user_info_url, headers=headers)
 
         if response.status_code != 200:
             raise ValidationError(f"Failed to get user profile: {response.text}")
@@ -164,7 +156,7 @@ class BaseOAuthProvider(ABC):
         """Parse user profile from provider response."""
         pass
 
-    async def close(self):
+    async def close(self) -> None:
         """Close HTTP client."""
         await self.http_client.aclose()
 
@@ -254,9 +246,7 @@ class MicrosoftOAuthProvider(BaseOAuthProvider):
             "Accept": "application/json",
         }
 
-        response = await self.http_client.get(
-            self.config.user_info_url, headers=headers
-        )
+        response = await self.http_client.get(self.config.user_info_url, headers=headers)
 
         if response.status_code != 200:
             raise ValidationError(f"Failed to get user profile: {response.text}")
@@ -319,9 +309,7 @@ class AppleOAuthProvider(BaseOAuthProvider):
             token_type=token_info.get("token_type", "Bearer"),
         )
 
-    async def exchange_code_for_token(
-        self, code: str, state: str
-    ) -> OAuthTokenResponse:
+    async def exchange_code_for_token(self, code: str, state: str) -> OAuthTokenResponse:
         """Exchange authorization code for access token and parse ID token."""
         token_data = {
             "client_id": self.config.client_id,
@@ -360,7 +348,7 @@ class AppleOAuthProvider(BaseOAuthProvider):
             # SECURITY WARNING: Never use unverified tokens in production!
 
             # Decode header to get key information
-            header = jwt.get_unverified_header(id_token)
+            header = jwt.get_unverified_header(id_token)  # noqa: F841
 
             # In production, fetch Apple's public keys and verify signature:
             # 1. Get Apple's public keys from https://appleid.apple.com/auth/keys
@@ -368,16 +356,13 @@ class AppleOAuthProvider(BaseOAuthProvider):
             # 3. Verify the token signature
 
             # For demo, decode without verification (UNSAFE for production)
-            payload = jwt.decode(
-                id_token, options={"verify_signature": False}, algorithms=["RS256"]
-            )
+            payload = jwt.decode(id_token, options={"verify_signature": False}, algorithms=["RS256"])
 
             logger.warning(
-                "Apple ID token decoded WITHOUT signature verification. "
-                "This is unsafe for production use!"
+                "Apple ID token decoded WITHOUT signature verification. " "This is unsafe for production use!"
             )
 
-            return payload
+            return payload  # type: ignore[no-any-return]
 
         except jwt.InvalidTokenError as e:
             logger.error(f"Failed to decode Apple ID token: {e}")
@@ -389,9 +374,7 @@ class AppleOAuthProvider(BaseOAuthProvider):
         # User information is embedded in the ID token received during token exchange
 
         if not hasattr(self, "_id_token") or not self._id_token:
-            raise ValidationError(
-                "Apple ID token not available. " "Call exchange_code_for_token first."
-            )
+            raise ValidationError("Apple ID token not available. " "Call exchange_code_for_token first.")
 
         user_info = self._decode_apple_id_token(self._id_token)
         return self._parse_user_profile(user_info)
@@ -424,20 +407,18 @@ class AppleJWTGenerator:
         self.key_id = key_id
         self.private_key = self._load_private_key(private_key_path)
 
-    def _load_private_key(self, private_key_path: str) -> ec.EllipticCurvePrivateKey:
+    from cryptography.hazmat.primitives.asymmetric.types import PrivateKeyTypes
+
+    def _load_private_key(self, private_key_path: str) -> PrivateKeyTypes:
         """Load Apple private key from .p8 file."""
         try:
             with open(private_key_path, "rb") as key_file:
-                private_key = serialization.load_pem_private_key(
-                    key_file.read(), password=None
-                )
+                private_key = serialization.load_pem_private_key(key_file.read(), password=None)
             return private_key
         except Exception as e:
             raise ValueError(f"Failed to load Apple private key: {e}")
 
-    def generate_client_secret(
-        self, client_id: str, audience: str = "https://appleid.apple.com"
-    ) -> str:
+    def generate_client_secret(self, client_id: str, audience: str = "https://appleid.apple.com") -> str:
         """
         Generate client secret JWT for Apple OAuth.
 
@@ -448,7 +429,7 @@ class AppleJWTGenerator:
         Returns:
             Signed JWT string for use as client_secret
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         headers = {"alg": "ES256", "kid": self.key_id}
 
@@ -460,18 +441,16 @@ class AppleJWTGenerator:
             "sub": client_id,
         }
 
-        return jwt.encode(
-            payload=payload, key=self.private_key, algorithm="ES256", headers=headers
-        )
+        return jwt.encode(payload=payload, key=self.private_key, algorithm="ES256", headers=headers)  # type: ignore
 
 
 class AppleTokenVerifier:
     """Verify Apple ID tokens in production."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize Apple token verifier."""
-        self._public_keys = None
-        self._keys_last_fetched = None
+        self._public_keys: Optional[Dict[str, Any]] = None
+        self._keys_last_fetched: Optional[float] = None
 
     async def verify_id_token(self, id_token: str, client_id: str) -> Dict[str, Any]:
         """
@@ -487,7 +466,8 @@ class AppleTokenVerifier:
         Raises:
             ValidationError: If token is invalid
         """
-        import httpx
+        import httpx  # noqa: F401
+
         from ..core.exceptions import ValidationError
 
         try:
@@ -513,21 +493,17 @@ class AppleTokenVerifier:
             # Additional validation
             self._validate_token_claims(payload)
 
-            return payload
+            return payload  # type: ignore[no-any-return]
 
         except jwt.InvalidTokenError as e:
             raise ValidationError(f"Invalid Apple ID token: {e}")
 
-    async def _get_public_key(self, key_id: str) -> str:
+    async def _get_public_key(self, key_id: str) -> Any:
         """Fetch Apple's public key for token verification."""
         import httpx
 
         # Cache keys for 1 hour
-        if (
-            self._public_keys is None
-            or self._keys_last_fetched is None
-            or time.time() - self._keys_last_fetched > 3600
-        ):
+        if self._public_keys is None or self._keys_last_fetched is None or time.time() - self._keys_last_fetched > 3600:
 
             async with httpx.AsyncClient() as client:
                 response = await client.get("https://appleid.apple.com/auth/keys")

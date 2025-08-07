@@ -3,33 +3,33 @@ API models module exports.
 Centralizes all API model imports for easier access.
 """
 
-# User API models
-from .user_api import (
-    UserCreateRequestData,
-    UserUpdateRequestData,
-    EmailChangeRequestData,
-    RoleChangeRequestData,
-    LoginRequestData,
-    PasswordChangeRequestData,
-    OAuthLoginRequestData,
-    UserResponseData,
-    TokenResponseData,
-)
+# Model API models
+from .model_api import ModelRequestData, ModelResponseData
 
 # OAuth API models
 from .oauth_api import (
+    OAuthAuthorizeResponseData,
     OAuthCallbackRequestData,
-    OAuthUserInfoData,
     OAuthLoginResponseData,
     OAuthProvidersResponseData,
-    OAuthAuthorizeResponseData,
+    OAuthUserInfoData,
 )
 
 # Session API models
 from .session_api import SessionCreateRequestData, SessionRefreshRequestData
 
-# Model API models
-from .model_api import ModelRequestData, ModelResponseData
+# User API models
+from .user_api import (
+    EmailChangeRequestData,
+    LoginRequestData,
+    OAuthLoginRequestData,
+    PasswordChangeRequestData,
+    RoleChangeRequestData,
+    TokenResponseData,
+    UserCreateRequestData,
+    UserResponseData,
+    UserUpdateRequestData,
+)
 
 __all__ = [
     # User API

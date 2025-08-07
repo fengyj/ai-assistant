@@ -5,14 +5,17 @@ pydantic[email]>=2.0.0
 bcrypt>=4.0.0
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
-pytest>=8.3.5
-httpx>=0.25.0
 pyjwt>=2.9.0
 cryptography>=45.0.5
-black>=24.8.0
 python-dotenv>=1.0.1
+requests>=2.32.4
 
 [dev]
-pytest>=7.0
-black>=22.0
-flake8>=4.0
+httpx>=0.25.0
+pytest>=8.3.5
+black>=24.8.0
+flake8>=7.0.0
+isort>=5.13.2
+pre-commit>=3.7.0
+mypy>=1.14.1
+pytest-asyncio>=1.1.0

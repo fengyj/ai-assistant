@@ -3,11 +3,13 @@
 Start the Personal AI Assistant Server.
 """
 
-import sys
 import os
+import sys
+
 import uvicorn
 from dotenv import load_dotenv
-env_suffix = os.getenv('ENV', '')
+
+env_suffix = os.getenv("ENV", "")
 env_file = f".env{'.' + env_suffix if env_suffix else ''}"
 load_dotenv(dotenv_path=env_file)
 load_dotenv(dotenv_path=f"{env_file}.local")  # Load default .env if exists
@@ -15,11 +17,11 @@ load_dotenv(dotenv_path=f"{env_file}.local")  # Load default .env if exists
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from assistant.core.config import config
-from assistant.utils.db_init import initialize_database
+from assistant.core.config import config  # noqa: E402
+from assistant.utils.db_init import initialize_database  # noqa: E402
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     print("Starting Personal AI Assistant Server...")
 

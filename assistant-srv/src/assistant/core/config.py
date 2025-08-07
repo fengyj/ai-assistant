@@ -3,8 +3,8 @@ Core configuration settings for the assistant server.
 """
 
 import os
-from typing import Optional
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
@@ -43,15 +43,9 @@ class Config:
             debug=os.getenv("DEBUG", "False").lower() == "true",
             data_dir=os.getenv("DATA_DIR", "data"),
             users_file=os.getenv("USERS_FILE", "users.json"),
-            secret_key=os.getenv(
-                "SECRET_KEY", "your-secret-key-change-this-in-production"
-            ),
-            jwt_secret_key=os.getenv(
-                "JWT_SECRET_KEY", "your-jwt-secret-key-change-this-in-production"
-            ),
-            access_token_expire_minutes=int(
-                os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
-            ),
+            secret_key=os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production"),
+            jwt_secret_key=os.getenv("JWT_SECRET_KEY", "your-jwt-secret-key-change-this-in-production"),
+            access_token_expire_minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")),
             google_client_id=os.getenv("GOOGLE_CLIENT_ID"),
             google_client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
             microsoft_client_id=os.getenv("MICROSOFT_CLIENT_ID"),

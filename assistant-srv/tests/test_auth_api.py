@@ -2,14 +2,14 @@
 Simple test script to validate the user API with authentication.
 """
 
-import asyncio
 import httpx
-import json
+import pytest
 
 BASE_URL = "http://localhost:8000"
 
 
-async def test_user_api():
+@pytest.mark.asyncio  # type: ignore[misc]
+async def test_user_api() -> None:
     """Test user API endpoints with authentication."""
 
     async with httpx.AsyncClient() as client:
@@ -57,9 +57,7 @@ async def test_user_api():
                 # Test 4: Try to access specific user data
                 print("\n4. Testing user-specific data access...")
                 admin_id = user_info["id"]
-                response = await client.get(
-                    f"{BASE_URL}/api/users/{admin_id}", headers=headers
-                )
+                response = await client.get(f"{BASE_URL}/api/users/{admin_id}", headers=headers)
                 print(f"   Status: {response.status_code}")
                 if response.status_code == 200:
                     user_data = response.json()
@@ -77,9 +75,7 @@ async def test_user_api():
                     "role": "user",
                 }
 
-                response = await client.post(
-                    f"{BASE_URL}/api/users/", json=new_user_data, headers=headers
-                )
+                response = await client.post(f"{BASE_URL}/api/users/", json=new_user_data, headers=headers)
                 print(f"   Status: {response.status_code}")
                 if response.status_code == 201:
                     created_user = response.json()
@@ -95,8 +91,9 @@ async def test_user_api():
 
 
 if __name__ == "__main__":
+    import asyncio
+
     print("Testing User API with Authentication")
     print("Make sure the server is running: python run_server.py")
     print()
-
     asyncio.run(test_user_api())

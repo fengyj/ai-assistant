@@ -1,13 +1,17 @@
 """
 API request and response models for model management.
 """
-from typing import Optional, Dict, Any
+
+from typing import Any, Dict, Optional
+
 from pydantic import BaseModel
+
 from ..model import Model
 
 
 class ModelCreateRequestData(BaseModel):
     """Model creation request API model."""
+
     name: str
     description: Optional[str] = None
     provider: str
@@ -18,6 +22,7 @@ class ModelCreateRequestData(BaseModel):
 
 class ModelUpdateRequestData(BaseModel):
     """Model update request API model."""
+
     name: Optional[str] = None
     description: Optional[str] = None
     default_params: Optional[Dict[str, Any]] = None
@@ -26,6 +31,7 @@ class ModelUpdateRequestData(BaseModel):
 
 class ModelRequestData(BaseModel):
     """Model create/update API request data."""
+
     name: Optional[str] = None
     description: Optional[str] = None
     provider: Optional[str] = None
@@ -36,6 +42,7 @@ class ModelRequestData(BaseModel):
 
 class ModelResponseData(BaseModel):
     """Model API response data."""
+
     id: str
     name: str
     description: Optional[str] = None
@@ -53,15 +60,16 @@ class ModelResponseData(BaseModel):
             id=model.id,
             name=model.name,
             description=model.description,
-            provider=extra.get('provider', ''),
+            provider=extra.get("provider", ""),
             model_type=model.type,
             owner=model.owner,
-            created_at=extra.get('created_at'),
-            updated_at=extra.get('updated_at'),
+            created_at=extra.get("created_at"),
+            updated_at=extra.get("updated_at"),
         )
 
 
 class ModelDeleteResponseData(BaseModel):
     """Model delete response API model."""
+
     success: bool = True
     message: str = "Model deleted successfully"

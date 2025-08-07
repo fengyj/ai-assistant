@@ -3,9 +3,10 @@ User repository interface.
 """
 
 from abc import abstractmethod
-from typing import Optional, List
-from .base import BaseRepository
+from typing import List, Optional
+
 from ..models import User
+from .base import BaseRepository
 
 
 class UserRepository(BaseRepository[User]):

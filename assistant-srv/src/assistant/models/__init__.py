@@ -2,27 +2,21 @@
 Models module initialization.
 """
 
+from .session import SessionCreateRequest, SessionResponse, SessionStatus, UserSession
 from .user import (
+    EmailChangeRequest,
+    LoginRequest,
+    OAuthInfo,
+    OAuthProvider,
+    RoleChangeRequest,
+    UsageStats,
     User,
+    UserCreateRequest,
     UserProfile,
+    UserResponse,
     UserRole,
     UserStatus,
-    OAuthProvider,
-    OAuthInfo,
-    UsageStats,
-    UserCreateRequest,
     UserUpdateRequest,
-    EmailChangeRequest,
-    RoleChangeRequest,
-    LoginRequest,
-    UserResponse,
-)
-
-from .session import (
-    UserSession,
-    SessionStatus,
-    SessionCreateRequest,
-    SessionResponse,
 )
 
 __all__ = [

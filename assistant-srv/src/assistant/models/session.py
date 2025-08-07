@@ -2,11 +2,11 @@
 Session management models and services.
 """
 
-from datetime import datetime, timezone, timedelta
-from typing import Optional, Dict, Any, List
 from dataclasses import dataclass, field
-from uuid import uuid4
+from datetime import datetime, timedelta, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional
+from uuid import uuid4
 
 
 class SessionStatus(Enum):
@@ -20,6 +20,7 @@ class SessionStatus(Enum):
 @dataclass
 class SessionMetadata:
     """Session metadata with specific structure."""
+
     login_method: str  # 'password' | 'oauth'
     oauth_provider: Optional[str]
     device_type: str  # 'web' | 'mobile' | 'desktop'
@@ -30,11 +31,7 @@ class SessionMetadata:
 def _default_metadata() -> SessionMetadata:
     """Create default session metadata."""
     return SessionMetadata(
-        login_method="password",
-        oauth_provider=None,
-        device_type="web",
-        location=None,
-        security_flags=[]
+        login_method="password", oauth_provider=None, device_type="web", location=None, security_flags=[]
     )
 
 
@@ -56,9 +53,7 @@ class UserSession:
     status: SessionStatus = SessionStatus.ACTIVE
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     last_accessed: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    expires_at: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc) + timedelta(hours=24)
-    )
+    expires_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc) + timedelta(hours=24))
 
     # Additional data
     metadata: SessionMetadata = field(default_factory=_default_metadata)
@@ -71,12 +66,12 @@ class UserSession:
         """Check if session is active."""
         return self.status == SessionStatus.ACTIVE and not self.is_expired()
 
-    def refresh(self, extend_hours: int = 24):
+    def refresh(self, extend_hours: int = 24) -> None:
         """Refresh session expiration."""
         self.last_accessed = datetime.now(timezone.utc)
         self.expires_at = datetime.now(timezone.utc) + timedelta(hours=extend_hours)
 
-    def terminate(self):
+    def terminate(self) -> None:
         """Terminate the session."""
         self.status = SessionStatus.TERMINATED
 

@@ -1,0 +1,9 @@
+[flake8]
+max-line-length = 120
+exclude =
+    tests/*
+    docs/*
+    build/*
+    dist/*
+    .venv/*
+    __pycache__/*

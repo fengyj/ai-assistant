@@ -2,11 +2,12 @@
 Database initialization and migration script.
 """
 
-import os
 import json
+import os
 from datetime import datetime, timezone
+
 from ..core import config
-from ..models import User, UserRole, UserStatus, UserProfile
+from ..models import User, UserProfile, UserRole, UserStatus
 from ..utils.security import PasswordHasher
 
 
@@ -48,7 +49,7 @@ def create_default_admin_user() -> None:
     with open(users_file, "w", encoding="utf-8") as f:
         json.dump(users_data, f, indent=2, ensure_ascii=False)
 
-    print(f"Default admin user created: admin/admin123")
+    print("Default admin user created: admin/admin123")
 
 
 def initialize_database() -> None:

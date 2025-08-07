@@ -4,10 +4,10 @@ OAuth state management for security and session tracking.
 
 import json
 import os
-from datetime import datetime, timezone, timedelta
-from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
-from uuid import uuid4
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, Optional
+
 from ..core import config
 from ..utils.security import TokenGenerator
 
@@ -54,7 +54,7 @@ class OAuthState:
 class OAuthStateManager:
     """Manages OAuth state tokens for security."""
 
-    def __init__(self, data_dir: str = None) -> None:
+    def __init__(self, data_dir: Optional[str] = None) -> None:
         """Initialize state manager."""
         self.data_dir = data_dir or config.data_dir
         self.state_file = os.path.join(self.data_dir, "oauth_states.json")
@@ -89,10 +89,7 @@ class OAuthStateManager:
     def _save_states(self) -> None:
         """Save states to JSON file."""
         # Filter out expired states before saving
-        active_states = [
-            state for state in self._states_cache.values()
-            if not state.is_expired()
-        ]
+        active_states = [state for state in self._states_cache.values() if not state.is_expired()]
 
         states_data = [state.to_dict() for state in active_states]
 
@@ -100,17 +97,9 @@ class OAuthStateManager:
             json.dump(states_data, f, indent=2, ensure_ascii=False)
 
         # Update cache to only include active states
-        self._states_cache = {
-            state.state_token: state
-            for state in active_states
-        }
+        self._states_cache = {state.state_token: state for state in active_states}
 
-    def create_state(
-        self,
-        provider: str,
-        redirect_uri: str,
-        metadata: Optional[Dict[str, Any]] = None
-    ) -> str:
+    def create_state(self, provider: str, redirect_uri: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """Create a new OAuth state token."""
         state_token = TokenGenerator.generate_token(32)
 
@@ -128,9 +117,7 @@ class OAuthStateManager:
 
         return state_token
 
-    def validate_and_consume_state(
-        self, state_token: str, provider: str
-    ) -> Optional[OAuthState]:
+    def validate_and_consume_state(self, state_token: str, provider: str) -> Optional[OAuthState]:
         """Validate and consume (remove) a state token."""
         if state_token not in self._states_cache:
             return None
@@ -158,11 +145,7 @@ class OAuthStateManager:
         initial_count = len(self._states_cache)
 
         # Remove expired states
-        self._states_cache = {
-            token: state
-            for token, state in self._states_cache.items()
-            if not state.is_expired()
-        }
+        self._states_cache = {token: state for token, state in self._states_cache.items() if not state.is_expired()}
 
         self._save_states()
 

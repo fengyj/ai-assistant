@@ -3,16 +3,12 @@ Session service for session management.
 """
 
 from datetime import datetime, timezone
-from typing import Optional, List
-from ..models.session import (
-    UserSession,
-    SessionCreateRequest,
-    SessionResponse,
-    SessionStatus,
-)
+from typing import List, Optional
+
+from ..core.exceptions import ValidationError
+from ..models.session import SessionCreateRequest, UserSession
 from ..repositories.session_repository import SessionRepository
 from ..utils.security import TokenGenerator
-from ..core.exceptions import ValidationError
 
 
 class SessionService:
@@ -61,18 +57,14 @@ class SessionService:
         """Get session by ID."""
         return await self.session_repository.get_by_id(session_id)
 
-    async def get_user_sessions(
-        self, user_id: str, active_only: bool = False
-    ) -> List[UserSession]:
+    async def get_user_sessions(self, user_id: str, active_only: bool = False) -> List[UserSession]:
         """Get all sessions for a user."""
         if active_only:
             return await self.session_repository.get_active_sessions(user_id)
         else:
             return await self.session_repository.get_by_user_id(user_id)
 
-    async def refresh_session(
-        self, token: str, extend_hours: int = 24
-    ) -> Optional[UserSession]:
+    async def refresh_session(self, token: str, extend_hours: int = 24) -> Optional[UserSession]:
         """Refresh session expiration."""
         session = await self.session_repository.get_by_token(token)
 

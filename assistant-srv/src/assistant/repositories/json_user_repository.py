@@ -5,17 +5,18 @@ JSON file-based user repository implementation.
 import json
 import os
 from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any
+from typing import Dict, List, Optional
+
 from ..core import config
-from ..core.exceptions import UserNotFoundError, UserAlreadyExistsError
-from ..models import User, UserStatus, OAuthProvider
+from ..core.exceptions import UserAlreadyExistsError, UserNotFoundError
+from ..models import OAuthProvider, User, UserStatus
 from .user_repository import UserRepository
 
 
 class JsonUserRepository(UserRepository):
     """JSON file-based user repository."""
 
-    def __init__(self, data_dir: str = None):
+    def __init__(self, data_dir: Optional[str] = None):
         """Initialize repository with data directory."""
         self.data_dir = data_dir or config.data_dir
         self.users_file = os.path.join(self.data_dir, config.users_file)
@@ -23,11 +24,11 @@ class JsonUserRepository(UserRepository):
         self._users_cache: Dict[str, User] = {}
         self._load_users()
 
-    def _ensure_data_dir(self):
+    def _ensure_data_dir(self) -> None:
         """Ensure data directory exists."""
         os.makedirs(self.data_dir, exist_ok=True)
 
-    def _load_users(self):
+    def _load_users(self) -> None:
         """Load users from JSON file."""
         if not os.path.exists(self.users_file):
             self._users_cache = {}
@@ -46,7 +47,7 @@ class JsonUserRepository(UserRepository):
             self._users_cache = {}
             print(f"Warning: Error loading users file {self.users_file}: {e}")
 
-    def _save_users(self):
+    def _save_users(self) -> None:
         """Save users to JSON file."""
         users_data = [user.to_dict() for user in self._users_cache.values()]
 
@@ -135,10 +136,7 @@ class JsonUserRepository(UserRepository):
 
         for user in self._users_cache.values():
             for oauth_info in user.oauth_info:
-                if (
-                    oauth_info.provider == oauth_provider
-                    and oauth_info.provider_id == provider_id
-                ):
+                if oauth_info.provider == oauth_provider and oauth_info.provider_id == provider_id:
                     return user
         return None
 
@@ -151,10 +149,7 @@ class JsonUserRepository(UserRepository):
             if (
                 query_lower in user.username.lower()
                 or query_lower in user.email.lower()
-                or (
-                    user.profile.display_name
-                    and query_lower in user.profile.display_name.lower()
-                )
+                or (user.profile.display_name and query_lower in user.profile.display_name.lower())
             ):
                 results.append(user)
                 if len(results) >= limit:
@@ -164,8 +159,4 @@ class JsonUserRepository(UserRepository):
 
     async def get_active_users(self) -> List[User]:
         """Get all active users."""
-        return [
-            user
-            for user in self._users_cache.values()
-            if user.status == UserStatus.ACTIVE
-        ]
+        return [user for user in self._users_cache.values() if user.status == UserStatus.ACTIVE]

@@ -2,26 +2,15 @@
 Integration test for user management module.
 """
 
-import pytest
-import asyncio
-import tempfile
 import shutil
-from datetime import datetime
+import tempfile
 
-from assistant.models import (
-    User,
-    UserCreateRequest,
-    UserUpdateRequest,
-    UserRole,
-    UserStatus,
-)
+import pytest
+
+from assistant.core.exceptions import InvalidCredentialsError, UserAlreadyExistsError
+from assistant.models import UserCreateRequest, UserRole, UserStatus, UserUpdateRequest
 from assistant.repositories.json_user_repository import JsonUserRepository
 from assistant.services.user_service import UserService
-from assistant.core.exceptions import (
-    UserAlreadyExistsError,
-    UserNotFoundError,
-    InvalidCredentialsError,
-)
 
 
 class TestUserManagementIntegration:
@@ -35,13 +24,13 @@ class TestUserManagementIntegration:
         shutil.rmtree(temp_dir)
 
     @pytest.fixture
-    def user_service(self, temp_dir):
+    def user_service(self, temp_dir) -> UserService:
         """Create user service with temporary repository."""
         repo = JsonUserRepository(temp_dir)
         return UserService(repo)
 
     @pytest.mark.asyncio
-    async def test_complete_user_lifecycle(self, user_service):
+    async def test_complete_user_lifecycle(self, user_service) -> None:
         """Test complete user lifecycle: create, read, update, delete."""
 
         # 1. Create user
@@ -67,9 +56,7 @@ class TestUserManagementIntegration:
         assert retrieved_user.username == "testuser"
 
         # 3. Authenticate user
-        authenticated_user = await user_service.authenticate_user(
-            "testuser", "securepass123"
-        )
+        authenticated_user = await user_service.authenticate_user("testuser", "securepass123")
         assert authenticated_user.id == user.id
         assert authenticated_user.last_login is not None
 
@@ -95,15 +82,11 @@ class TestUserManagementIntegration:
         assert len(all_users) == 1
 
         # 7. Change password
-        success = await user_service.change_password(
-            user.id, "securepass123", "newsecurepass456"
-        )
+        success = await user_service.change_password(user.id, "securepass123", "newsecurepass456")
         assert success is True
 
         # 8. Test new password
-        new_auth_user = await user_service.authenticate_user(
-            "testuser", "newsecurepass456"
-        )
+        new_auth_user = await user_service.authenticate_user("testuser", "newsecurepass456")
         assert new_auth_user.id == user.id
 
         # 9. Delete user
@@ -115,40 +98,32 @@ class TestUserManagementIntegration:
         assert deleted_user is None
 
     @pytest.mark.asyncio
-    async def test_duplicate_user_prevention(self, user_service):
+    async def test_duplicate_user_prevention(self, user_service) -> None:
         """Test prevention of duplicate users."""
 
         # Create first user
-        create_request1 = UserCreateRequest(
-            username="duplicate", email="duplicate@example.com", password="password123"
-        )
+        create_request1 = UserCreateRequest(username="duplicate", email="duplicate@example.com", password="password123")
 
         await user_service.create_user(create_request1)
 
         # Try to create user with same username
-        create_request2 = UserCreateRequest(
-            username="duplicate", email="different@example.com", password="password123"
-        )
+        create_request2 = UserCreateRequest(username="duplicate", email="different@example.com", password="password123")
 
         with pytest.raises(UserAlreadyExistsError):
             await user_service.create_user(create_request2)
 
         # Try to create user with same email
-        create_request3 = UserCreateRequest(
-            username="different", email="duplicate@example.com", password="password123"
-        )
+        create_request3 = UserCreateRequest(username="different", email="duplicate@example.com", password="password123")
 
         with pytest.raises(UserAlreadyExistsError):
             await user_service.create_user(create_request3)
 
     @pytest.mark.asyncio
-    async def test_authentication_failures(self, user_service):
+    async def test_authentication_failures(self, user_service) -> None:
         """Test authentication failure scenarios."""
 
         # Create user
-        create_request = UserCreateRequest(
-            username="authtest", email="auth@example.com", password="correctpass"
-        )
+        create_request = UserCreateRequest(username="authtest", email="auth@example.com", password="correctpass")
 
         user = await user_service.create_user(create_request)
 
@@ -168,7 +143,7 @@ class TestUserManagementIntegration:
             await user_service.authenticate_user("authtest", "correctpass")
 
     @pytest.mark.asyncio
-    async def test_admin_user_creation(self, user_service):
+    async def test_admin_user_creation(self, user_service) -> None:
         """Test admin user creation."""
 
         create_request = UserCreateRequest(

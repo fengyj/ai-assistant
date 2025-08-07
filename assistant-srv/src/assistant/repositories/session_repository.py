@@ -3,9 +3,10 @@ Session repository interface.
 """
 
 from abc import abstractmethod
-from typing import Optional, List
-from .base import BaseRepository
+from typing import List, Optional
+
 from ..models.session import UserSession
+from .base import BaseRepository
 
 
 class SessionRepository(BaseRepository[UserSession]):

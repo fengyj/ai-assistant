@@ -2,18 +2,19 @@
 Generate API documentation for user management.
 """
 
-from fastapi.openapi.utils import get_openapi
 import json
-import sys
 import os
+import sys
+from typing import Any, Dict
 
-# Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from assistant.main import app
+from fastapi.openapi.utils import get_openapi  # noqa: E402
+
+from assistant.main import app  # noqa: E402
 
 
-def generate_api_docs():
+def generate_api_docs() -> Dict[str, Any]:
     """Generate OpenAPI documentation."""
 
     openapi_schema = get_openapi(
@@ -64,7 +65,7 @@ def generate_api_docs():
     return openapi_schema
 
 
-def save_api_docs():
+def save_api_docs() -> None:
     """Save API documentation to file."""
     docs = generate_api_docs()
 

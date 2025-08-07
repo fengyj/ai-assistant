@@ -3,14 +3,10 @@ User service layer for business logic.
 """
 
 from datetime import datetime, timezone
-from typing import Optional, List
-from ..core.exceptions import (
-    UserNotFoundError,
-    UserAlreadyExistsError,
-    InvalidCredentialsError,
-    ValidationError,
-)
-from ..models import User, UserCreateRequest, UserUpdateRequest, UserRole, UserStatus
+from typing import List, Optional
+
+from ..core.exceptions import InvalidCredentialsError, UserAlreadyExistsError, UserNotFoundError, ValidationError
+from ..models import User, UserCreateRequest, UserRole, UserStatus, UserUpdateRequest
 from ..repositories.user_repository import UserRepository
 from ..utils.security import PasswordHasher
 
@@ -43,11 +39,7 @@ class UserService:
         user = User(
             username=request.username,
             email=request.email,
-            password_hash=(
-                self.password_hasher.hash_password(request.password)
-                if request.password
-                else None
-            ),
+            password_hash=(self.password_hasher.hash_password(request.password) if request.password else None),
             role=request.role,
             status=UserStatus.ACTIVE,
         )
@@ -78,9 +70,7 @@ class UserService:
             raise InvalidCredentialsError("Invalid username or password")
 
         if not user.password_hash:
-            raise InvalidCredentialsError(
-                "Password authentication not available for this user"
-            )
+            raise InvalidCredentialsError("Password authentication not available for this user")
 
         if not self.password_hasher.verify_password(password, user.password_hash):
             raise InvalidCredentialsError("Invalid username or password")
@@ -107,9 +97,7 @@ class UserService:
             # Check username uniqueness
             existing_user = await self.user_repository.get_by_username(request.username)
             if existing_user and existing_user.id != user_id:
-                raise UserAlreadyExistsError(
-                    f"Username {request.username} already exists"
-                )
+                raise UserAlreadyExistsError(f"Username {request.username} already exists")
             user.username = request.username
 
         if request.display_name is not None:
@@ -153,9 +141,7 @@ class UserService:
         """Search users by query."""
         return await self.user_repository.search_users(query, limit)
 
-    async def change_password(
-        self, user_id: str, old_password: str, new_password: str
-    ) -> bool:
+    async def change_password(self, user_id: str, old_password: str, new_password: str) -> bool:
         """Change user password."""
         user = await self.user_repository.get_by_id(user_id)
 
@@ -163,9 +149,7 @@ class UserService:
             raise UserNotFoundError(f"User with ID {user_id} not found")
 
         if not user.password_hash:
-            raise InvalidCredentialsError(
-                "Password authentication not available for this user"
-            )
+            raise InvalidCredentialsError("Password authentication not available for this user")
 
         if not self.password_hasher.verify_password(old_password, user.password_hash):
             raise InvalidCredentialsError("Invalid current password")
@@ -175,15 +159,11 @@ class UserService:
 
         return True
 
-    async def get_user_by_oauth(
-        self, provider: str, provider_id: str
-    ) -> Optional[User]:
+    async def get_user_by_oauth(self, provider: str, provider_id: str) -> Optional[User]:
         """Get user by OAuth provider and provider ID."""
         return await self.user_repository.get_by_oauth(provider, provider_id)
 
-    async def update_user_activity(
-        self, user_id: str, api_calls: int = 0, tokens: int = 0
-    ) -> bool:
+    async def update_user_activity(self, user_id: str, api_calls: int = 0, tokens: int = 0) -> bool:
         """Update user activity statistics."""
         user = await self.user_repository.get_by_id(user_id)
 
@@ -200,9 +180,7 @@ class UserService:
         await self.user_repository.update(user)
         return True
 
-    async def request_email_change(
-        self, user_id: str, new_email: str, password: str
-    ) -> bool:
+    async def request_email_change(self, user_id: str, new_email: str, password: str) -> bool:
         """Request email change with password verification."""
         user = await self.user_repository.get_by_id(user_id)
 
@@ -211,9 +189,7 @@ class UserService:
 
         # Verify current password
         if not user.password_hash:
-            raise InvalidCredentialsError(
-                "Password authentication not available for this user"
-            )
+            raise InvalidCredentialsError("Password authentication not available for this user")
 
         if not self.password_hasher.verify_password(password, user.password_hash):
             raise InvalidCredentialsError("Invalid password")
@@ -256,7 +232,10 @@ class UserService:
 
         # TODO: Log the role change for audit purposes
         print(
-            f"Role change: User {target_user.username} ({target_user_id}) changed from {old_role.value} to {new_role.value} by admin {admin_user.username} ({admin_user_id}). Reason: {reason or 'No reason provided'}"
+            f"Role change: User {target_user.username} ({target_user_id}) "
+            f"changed from {old_role.value} to {new_role.value} "
+            f"by admin {admin_user.username} ({admin_user_id}). "
+            f"Reason: {reason or 'No reason provided'}"
         )
 
         await self.user_repository.update(target_user)

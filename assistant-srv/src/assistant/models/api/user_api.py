@@ -4,6 +4,7 @@ Separated from core domain models following separation of concerns.
 """
 
 from typing import Optional
+
 from pydantic import BaseModel, EmailStr
 
 

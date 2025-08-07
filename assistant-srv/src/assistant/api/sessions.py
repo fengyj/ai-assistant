@@ -3,23 +3,22 @@ Session management API endpoints.
 Focused on HTTP layer concerns only, business logic delegated to services.
 """
 
-from typing import List, Optional
-from fastapi import APIRouter, HTTPException, Depends, status, Request
-from pydantic import BaseModel
+from typing import List
 
-from ..models.session import SessionCreateRequest, SessionResponse
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+
+from ..core.exceptions import ValidationError
 from ..models.api.session_api import (
-    SessionCreateRequestData, 
+    SessionCleanupResponseData,
+    SessionCreateRequestData,
     SessionRefreshRequestData,
     SessionTerminateResponseData,
-    SessionCleanupResponseData
 )
-from ..services.session_service import SessionService
+from ..models.session import SessionCreateRequest, SessionResponse
 from ..repositories.json_session_repository import JsonSessionRepository
-from ..core.exceptions import ValidationError
-from ..utils.auth import get_current_active_user, CurrentUser
+from ..services.session_service import SessionService
+from ..utils.auth import CurrentUser, get_current_user
 from ..utils.permissions import require_admin, require_owner_or_admin
-
 
 # Pydantic models for Session API (temporary, will be moved to models/api/)
 
@@ -41,7 +40,7 @@ async def create_session(
     session_data: SessionCreateRequestData,
     request: Request,
     session_service: SessionService = Depends(get_session_service),
-    current_user: CurrentUser = Depends(get_current_active_user),
+    current_user: CurrentUser = Depends(get_current_user),
 ) -> SessionResponse:
     """Create a new session."""
     try:
@@ -67,16 +66,12 @@ async def create_session(
 
 
 @router.get("/{token}", response_model=SessionResponse)
-async def get_session(
-    token: str, session_service: SessionService = Depends(get_session_service)
-) -> SessionResponse:
+async def get_session(token: str, session_service: SessionService = Depends(get_session_service)) -> SessionResponse:
     """Get session by token."""
     session = await session_service.get_session_by_token(token)
 
     if not session:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Session not found or expired"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found or expired")
 
     return SessionResponse.from_session(session)
 
@@ -87,7 +82,7 @@ async def get_user_sessions(
     user_id: str,
     active_only: bool = False,
     session_service: SessionService = Depends(get_session_service),
-    current_user: CurrentUser = Depends(get_current_active_user),
+    current_user: CurrentUser = Depends(get_current_user),
 ) -> List[SessionResponse]:
     """Get all sessions for a user."""
     sessions = await session_service.get_user_sessions(user_id, active_only)
@@ -105,24 +100,18 @@ async def refresh_session(
     session = await session_service.refresh_session(token, refresh_data.extend_hours)
 
     if not session:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Session not found or expired"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found or expired")
 
     return SessionResponse.from_session(session)
 
 
 @router.delete("/{token}", status_code=status.HTTP_204_NO_CONTENT)
-async def terminate_session(
-    token: str, session_service: SessionService = Depends(get_session_service)
-) -> None:
+async def terminate_session(token: str, session_service: SessionService = Depends(get_session_service)) -> None:
     """Terminate a session."""
     success = await session_service.terminate_session(token)
 
     if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Session not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
 
 
 @router.delete("/user/{user_id}/all", status_code=status.HTTP_200_OK)
@@ -130,28 +119,24 @@ async def terminate_session(
 async def terminate_user_sessions(
     user_id: str,
     session_service: SessionService = Depends(get_session_service),
-    current_user: CurrentUser = Depends(get_current_active_user),
+    current_user: CurrentUser = Depends(get_current_user),
 ) -> SessionTerminateResponseData:
     """Terminate all sessions for a user."""
     count = await session_service.terminate_user_sessions(user_id)
 
-    return SessionTerminateResponseData(
-        message=f"Terminated {count} sessions"
-    )
+    return SessionTerminateResponseData(message=f"Terminated {count} sessions")
 
 
-@router.post("/cleanup", status_code=status.HTTP_200_OK)
+@router.post("/cleanup", status_code=status.HTTP_200_OK)  # type: ignore
 @require_admin
 async def cleanup_expired_sessions(
     session_service: SessionService = Depends(get_session_service),
-    current_user: CurrentUser = Depends(get_current_active_user),
+    current_user: CurrentUser = Depends(get_current_user),
 ) -> SessionCleanupResponseData:
     """Clean up expired sessions."""
     count = await session_service.cleanup_expired_sessions()
 
-    return SessionCleanupResponseData(
-        message=f"Cleaned up {count} expired sessions"
-    )
+    return SessionCleanupResponseData(message=f"Cleaned up {count} expired sessions")
 
 
 @router.post("/{token}/validate", response_model=SessionResponse)

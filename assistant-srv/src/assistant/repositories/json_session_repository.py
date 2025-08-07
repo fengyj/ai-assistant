@@ -5,16 +5,17 @@ JSON file-based session repository implementation.
 import json
 import os
 from datetime import datetime, timezone
-from typing import Optional, List, Dict
+from typing import Dict, List, Optional
+
 from ..core import config
-from ..models.session import UserSession, SessionStatus
+from ..models.session import SessionStatus, UserSession
 from .session_repository import SessionRepository
 
 
 class JsonSessionRepository(SessionRepository):
     """JSON file-based session repository."""
 
-    def __init__(self, data_dir: str = None):
+    def __init__(self, data_dir: str | None = None):
         """Initialize repository with data directory."""
         self.data_dir = data_dir or config.data_dir
         self.sessions_file = os.path.join(self.data_dir, "sessions.json")
@@ -22,11 +23,11 @@ class JsonSessionRepository(SessionRepository):
         self._sessions_cache: Dict[str, UserSession] = {}
         self._load_sessions()
 
-    def _ensure_data_dir(self):
+    def _ensure_data_dir(self) -> None:
         """Ensure data directory exists."""
         os.makedirs(self.data_dir, exist_ok=True)
 
-    def _load_sessions(self):
+    def _load_sessions(self) -> None:
         """Load sessions from JSON file."""
         if not os.path.exists(self.sessions_file):
             self._sessions_cache = {}
@@ -45,7 +46,7 @@ class JsonSessionRepository(SessionRepository):
             self._sessions_cache = {}
             print(f"Warning: Error loading sessions file {self.sessions_file}: {e}")
 
-    def _save_sessions(self):
+    def _save_sessions(self) -> None:
         """Save sessions to JSON file."""
         sessions_data = [session.to_dict() for session in self._sessions_cache.values()]
 
@@ -99,18 +100,12 @@ class JsonSessionRepository(SessionRepository):
 
     async def get_by_user_id(self, user_id: str) -> List[UserSession]:
         """Get all sessions for a user."""
-        return [
-            session
-            for session in self._sessions_cache.values()
-            if session.user_id == user_id
-        ]
+        return [session for session in self._sessions_cache.values() if session.user_id == user_id]
 
     async def get_active_sessions(self, user_id: str) -> List[UserSession]:
         """Get active sessions for a user."""
         return [
-            session
-            for session in self._sessions_cache.values()
-            if session.user_id == user_id and session.is_active()
+            session for session in self._sessions_cache.values() if session.user_id == user_id and session.is_active()
         ]
 
     async def terminate_user_sessions(self, user_id: str) -> int:

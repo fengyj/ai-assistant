@@ -2,7 +2,8 @@
 API request and response models for general application endpoints.
 """
 
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
 from pydantic import BaseModel
 
 

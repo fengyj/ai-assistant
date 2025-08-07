@@ -5,12 +5,12 @@ Core module initialization.
 from .config import config
 from .exceptions import (
     AssistantError,
-    UserError,
-    UserNotFoundError,
-    UserAlreadyExistsError,
-    InvalidCredentialsError,
     AuthenticationError,
     AuthorizationError,
+    InvalidCredentialsError,
+    UserAlreadyExistsError,
+    UserError,
+    UserNotFoundError,
     ValidationError,
 )
 

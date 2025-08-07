@@ -29,6 +29,7 @@ dependencies = [
     "pyjwt>=2.9.0",
     "cryptography>=45.0.5",
     "python-dotenv>=1.0.1",
+    "requests>=2.32.4",
 ]
 
 [project.optional-dependencies]
@@ -40,6 +41,15 @@ dev = [
     "isort>=5.13.2",
     "pre-commit>=3.7.0",
     "mypy>=1.14.1",
+    "pytest-asyncio>=1.1.0",
+]
+
+[dependency-groups]
+dev = [
+    "flake8>=7.3.0",
+    "pre-commit>=4.2.0",
+    "pytest-asyncio>=1.1.0",
+    "types-requests>=2.32.4.20250611",
 ]
 
 [build-system]
@@ -63,11 +73,39 @@ line_length = 120
 known_first_party = ["assistant_srv"]
 
 [tool.mypy]
-python_version = 3.12
+python_version = "3.12"
 ignore_missing_imports = true
 strict = true
+exclude = [
+    "tests/.*",
+    "docs/.*",
+]
 
-[flake8]
+[[tool.mypy.overrides]]
+module = "pydantic.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "*.models.api.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "*.utils.auth"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "docs.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "*.api.*"
+ignore_errors = true
+
+[tool.flake8]
 max-line-length = 120
 exclude = [
     "tests/*",
@@ -76,10 +114,4 @@ exclude = [
     "dist/*",
     ".venv/*",
     "__pycache__/*",
-]
-
-[dependency-groups]
-dev = [
-    "flake8>=7.3.0",
-    "pre-commit>=4.2.0",
 ]

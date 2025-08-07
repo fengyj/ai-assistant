@@ -3,13 +3,12 @@
 测试装饰器权限验证的脚本
 """
 
-import requests
-import json
+import requests  # type: ignore[import-untyped]
 
 BASE_URL = "http://localhost:8000"
 
 
-def test_decorator_permissions():
+def test_decorator_permissions() -> None:
     """测试装饰器权限验证"""
     print("🔧 测试装饰器权限验证系统...")
 

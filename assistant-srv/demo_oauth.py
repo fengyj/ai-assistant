@@ -4,18 +4,17 @@ OAuth system demonstration and testing script.
 """
 
 import asyncio
-import sys
 import os
+import sys
 
-# Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-
+from assistant.core.config import config
 from assistant.services.oauth_service import oauth_manager
 from assistant.services.oauth_state_manager import OAuthStateManager
-from assistant.core.config import config
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 
-async def demo_oauth_system():
+async def demo_oauth_system() -> None:
     """Demonstrate the OAuth system capabilities."""
 
     print("=== OAuth System Demonstration ===\n")
@@ -33,59 +32,57 @@ async def demo_oauth_system():
 
     # 2. Generate authorization URLs
     print("\n2. Authorization URLs:")
-    for provider in available_providers:
+    for provider_name in available_providers:
         try:
-            auth_url, state_token = oauth_manager.generate_authorization_url(
-                provider, {"demo": True}
-            )
-            print(f"   {provider.title()}:")
+            auth_url, state_token = oauth_manager.generate_authorization_url(provider_name, {"demo": True})
+            print(f"   {provider_name.title()}:")
             print(f"     State: {state_token}")
             print(f"     URL: {auth_url[:100]}...")
         except Exception as e:
-            print(f"   {provider.title()}: Error - {e}")
+            print(f"   {provider_name.title()}: Error - {e}")
 
     # 3. Show state management
     print("\n3. OAuth State Management:")
     state_manager = OAuthStateManager()
 
     # Create some test states
-    test_states = []
-    for provider in available_providers[:2]:  # Test first 2 providers
+    test_states: list[tuple[str, str]] = []
+    for provider_name in available_providers[:2]:  # Test first 2 providers
         state_token = state_manager.create_state(
-            provider=provider,
-            redirect_uri=f"http://localhost:8000/api/oauth/{provider}/callback",
+            provider=provider_name,
+            redirect_uri=f"http://localhost:8000/api/oauth/{provider_name}/callback",
             metadata={"test": True, "demo_id": len(test_states)},
         )
-        test_states.append((provider, state_token))
-        print(f"   Created state for {provider}: {state_token[:20]}...")
+        test_states.append((provider_name, state_token))
+        print(f"   Created state for {provider_name}: {state_token[:20]}...")
 
     # Validate states
     print("\n4. State Validation:")
-    for provider, state_token in test_states:
-        oauth_state = state_manager.validate_and_consume_state(state_token, provider)
+    for provider_name, state_token in test_states:
+        oauth_state = state_manager.validate_and_consume_state(state_token, provider_name)
         if oauth_state:
-            print(f"   ✓ {provider}: Valid state (consumed)")
+            print(f"   ✓ {provider_name}: Valid state (consumed)")
         else:
-            print(f"   ✗ {provider}: Invalid state")
+            print(f"   ✗ {provider_name}: Invalid state")
 
     # Try to validate again (should fail as they're consumed)
     print("\n5. State Consumption Test:")
-    for provider, state_token in test_states:
-        oauth_state = state_manager.validate_and_consume_state(state_token, provider)
+    for provider_name, state_token in test_states:
+        oauth_state = state_manager.validate_and_consume_state(state_token, provider_name)
         if oauth_state:
-            print(f"   ✗ {provider}: State reused (security issue!)")
+            print(f"   ✗ {provider_name}: State reused (security issue!)")
         else:
-            print(f"   ✓ {provider}: State properly consumed")
+            print(f"   ✓ {provider_name}: State properly consumed")
 
     # 6. Provider-specific features
     print("\n6. Provider-Specific Features:")
     for provider_name in available_providers:
-        provider = oauth_manager.get_provider(provider_name)
+        provider_obj = oauth_manager.get_provider(provider_name)
         print(f"   {provider_name.title()}:")
-        print(f"     Provider class: {provider.__class__.__name__}")
-        print(f"     Authorization URL: {provider.config.authorization_url}")
-        print(f"     Token URL: {provider.config.token_url}")
-        print(f"     Scopes: {', '.join(provider.config.scope)}")
+        print(f"     Provider class: {provider_obj.__class__.__name__}")
+        print(f"     Authorization URL: {provider_obj.config.authorization_url}")
+        print(f"     Token URL: {provider_obj.config.token_url}")
+        print(f"     Scopes: {', '.join(provider_obj.config.scope)}")
 
     # 7. Configuration info
     print("\n7. Configuration:")
@@ -112,7 +109,7 @@ async def demo_oauth_system():
     print("5. Complete OAuth flow in browser")
 
 
-def show_config_help():
+def show_config_help() -> None:
     """Show configuration help."""
     print("OAuth Configuration Help")
     print("=" * 50)
@@ -134,7 +131,7 @@ def show_config_help():
     print("See OAUTH_SETUP.md for detailed setup instructions.")
 
 
-async def test_oauth_flow():
+async def test_oauth_flow() -> None:
     """Test OAuth flow simulation."""
     print("=== OAuth Flow Test ===\n")
 
@@ -144,26 +141,22 @@ async def test_oauth_flow():
         return
 
     provider_name = available_providers[0]
-    print(f"Testing OAuth flow with {provider_name.title()}")
+    print("Testing OAuth flow with {}".format(provider_name.title()))
 
     try:
         # Step 1: Generate authorization URL
-        auth_url, state_token = oauth_manager.generate_authorization_url(
-            provider_name, {"test_flow": True}
-        )
-        print(f"1. Authorization URL generated")
+        auth_url, state_token = oauth_manager.generate_authorization_url(provider_name, {"test_flow": True})
+        print("1. Authorization URL generated")
         print(f"   State: {state_token}")
         print(f"   URL: {auth_url}")
 
         # Step 2: Simulate callback (this would normally come from OAuth provider)
-        print(f"\n2. Simulating OAuth callback...")
+        print("\n2. Simulating OAuth callback...")
 
         # In a real scenario, the OAuth provider would redirect to our callback
         # with a code and the state token. We'll simulate an error here since
         # we don't have real OAuth credentials.
-        print(
-            "   Note: Real OAuth flow requires valid credentials and user interaction"
-        )
+        print("   Note: Real OAuth flow requires valid credentials and user interaction")
         print("   This demo shows the URL generation and state management only")
 
         # Step 3: State cleanup
@@ -174,7 +167,7 @@ async def test_oauth_flow():
         print(f"Error during OAuth flow test: {e}")
 
 
-async def main():
+async def main() -> None:
     """Main demo function."""
     if len(sys.argv) > 1:
         if sys.argv[1] == "config":

@@ -1,0 +1,18 @@
+[
+  {
+    "state_token": "Ws3PXNWZnNk81MI2CTHOlKjX4F5_Ks4gu85rCqou_v8",
+    "provider": "google",
+    "created_at": "2025-08-07T01:44:07.414025+00:00",
+    "expires_at": "2025-08-07T01:54:07.414030+00:00",
+    "redirect_uri": "<MagicMock name='config.base_url' id='131015492312416'>/api/oauth/google/callback",
+    "metadata": {}
+  },
+  {
+    "state_token": "YCItLLxcNsOyCDl-Gg8U5mK1fO9YyN87Bpt2XM0FuPY",
+    "provider": "google",
+    "created_at": "2025-08-07T01:50:41.855155+00:00",
+    "expires_at": "2025-08-07T02:00:41.855158+00:00",
+    "redirect_uri": "<MagicMock name='config.base_url' id='124113583279136'>/api/oauth/google/callback",
+    "metadata": {}
+  }
+]

@@ -2,30 +2,24 @@
 OAuth system integration tests.
 """
 
-import pytest
-import asyncio
-import tempfile
 import shutil
-from unittest.mock import patch, AsyncMock
+import tempfile
+from collections.abc import Iterator
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
-from assistant.services.oauth_providers import (
-    GoogleOAuthProvider,
-    MicrosoftOAuthProvider,
-    AppleOAuthProvider,
-    OAuthConfig,
-    OAuthTokenResponse,
-    OAuthUserProfile,
-)
-from assistant.services.oauth_state_manager import OAuthStateManager
-from assistant.services.oauth_service import OAuthServiceManager
+import pytest
+
 from assistant.core.exceptions import ValidationError
+from assistant.services.oauth_providers import GoogleOAuthProvider, MicrosoftOAuthProvider, OAuthConfig
+from assistant.services.oauth_service import OAuthServiceManager
+from assistant.services.oauth_state_manager import OAuthStateManager
 
 
 class TestOAuthProviders:
     """Test OAuth provider implementations."""
 
-    @pytest.fixture
-    def google_config(self):
+    @pytest.fixture()
+    def google_config(self) -> OAuthConfig:
         """Create Google OAuth config for testing."""
         return OAuthConfig(
             client_id="test_google_client_id",
@@ -37,17 +31,17 @@ class TestOAuthProviders:
             user_info_url="https://www.googleapis.com/oauth2/v2/userinfo",
         )
 
-    @pytest.fixture
-    def google_provider(self, google_config):
+    @pytest.fixture()
+    def google_provider(self, google_config: OAuthConfig) -> GoogleOAuthProvider:
         """Create Google OAuth provider for testing."""
         return GoogleOAuthProvider(google_config)
 
-    def test_google_provider_initialization(self, google_provider):
+    def test_google_provider_initialization(self, google_provider: GoogleOAuthProvider) -> None:
         """Test Google provider initialization."""
         assert google_provider.provider_name == "google"
         assert google_provider.config.client_id == "test_google_client_id"
 
-    def test_authorization_url_generation(self, google_provider):
+    def test_authorization_url_generation(self, google_provider: GoogleOAuthProvider) -> None:
         """Test authorization URL generation."""
         state = "test_state_token"
         auth_url = google_provider.generate_authorization_url(state)
@@ -58,7 +52,7 @@ class TestOAuthProviders:
         assert "scope=openid+email+profile" in auth_url
 
     @pytest.mark.asyncio
-    async def test_token_exchange_success(self, google_provider):
+    async def test_token_exchange_success(self, google_provider: GoogleOAuthProvider) -> None:
         """Test successful token exchange."""
         mock_response_data = {
             "access_token": "test_access_token",
@@ -68,21 +62,19 @@ class TestOAuthProviders:
         }
 
         with patch.object(google_provider.http_client, "post") as mock_post:
-            mock_response = AsyncMock()
+            mock_response = Mock()
             mock_response.status_code = 200
             mock_response.json.return_value = mock_response_data
             mock_post.return_value = mock_response
 
-            token_response = await google_provider.exchange_code_for_token(
-                "test_code", "test_state"
-            )
+            token_response = await google_provider.exchange_code_for_token("test_code", "test_state")
 
             assert token_response.access_token == "test_access_token"
             assert token_response.refresh_token == "test_refresh_token"
             assert token_response.expires_in == 3600
 
     @pytest.mark.asyncio
-    async def test_user_profile_retrieval(self, google_provider):
+    async def test_user_profile_retrieval(self, google_provider: GoogleOAuthProvider) -> None:
         """Test user profile retrieval."""
         mock_user_data = {
             "sub": "google_user_123",
@@ -95,7 +87,7 @@ class TestOAuthProviders:
         }
 
         with patch.object(google_provider.http_client, "get") as mock_get:
-            mock_response = AsyncMock()
+            mock_response = Mock()
             mock_response.status_code = 200
             mock_response.json.return_value = mock_user_data
             mock_get.return_value = mock_response
@@ -111,19 +103,19 @@ class TestOAuthProviders:
 class TestOAuthStateManager:
     """Test OAuth state management."""
 
-    @pytest.fixture
-    def temp_dir(self):
+    @pytest.fixture()
+    def temp_dir(self) -> Iterator[str]:
         """Create temporary directory for testing."""
         temp_dir = tempfile.mkdtemp()
         yield temp_dir
         shutil.rmtree(temp_dir)
 
-    @pytest.fixture
-    def state_manager(self, temp_dir):
+    @pytest.fixture()
+    def state_manager(self, temp_dir: str) -> OAuthStateManager:
         """Create state manager for testing."""
         return OAuthStateManager(temp_dir)
 
-    def test_state_creation(self, state_manager):
+    def test_state_creation(self, state_manager: OAuthStateManager) -> None:
         """Test OAuth state creation."""
         state_token = state_manager.create_state(
             provider="google",
@@ -134,11 +126,9 @@ class TestOAuthStateManager:
         assert len(state_token) > 20  # Should be a long random token
         assert state_token in state_manager._states_cache
 
-    def test_state_validation_and_consumption(self, state_manager):
+    def test_state_validation_and_consumption(self, state_manager: OAuthStateManager) -> None:
         """Test state validation and consumption."""
-        state_token = state_manager.create_state(
-            provider="google", redirect_uri="http://localhost:8000/callback"
-        )
+        state_token = state_manager.create_state(provider="google", redirect_uri="http://localhost:8000/callback")
 
         # First validation should succeed
         oauth_state = state_manager.validate_and_consume_state(state_token, "google")
@@ -149,29 +139,25 @@ class TestOAuthStateManager:
         oauth_state = state_manager.validate_and_consume_state(state_token, "google")
         assert oauth_state is None
 
-    def test_state_provider_mismatch(self, state_manager):
+    def test_state_provider_mismatch(self, state_manager: OAuthStateManager) -> None:
         """Test state validation with wrong provider."""
-        state_token = state_manager.create_state(
-            provider="google", redirect_uri="http://localhost:8000/callback"
-        )
+        state_token = state_manager.create_state(provider="google", redirect_uri="http://localhost:8000/callback")
 
         # Validation with wrong provider should fail
         oauth_state = state_manager.validate_and_consume_state(state_token, "microsoft")
         assert oauth_state is None
 
-    def test_invalid_state_token(self, state_manager):
+    def test_invalid_state_token(self, state_manager: OAuthStateManager) -> None:
         """Test validation with invalid state token."""
-        oauth_state = state_manager.validate_and_consume_state(
-            "invalid_token", "google"
-        )
+        oauth_state = state_manager.validate_and_consume_state("invalid_token", "google")
         assert oauth_state is None
 
 
 class TestOAuthServiceManager:
     """Test OAuth service manager."""
 
-    @pytest.fixture
-    def mock_config(self):
+    @pytest.fixture()
+    def mock_config(self) -> Iterator[MagicMock | AsyncMock]:
         """Mock configuration with OAuth credentials."""
         with patch("assistant.services.oauth_service.config") as mock_config:
             mock_config.google_client_id = "test_google_id"
@@ -184,7 +170,7 @@ class TestOAuthServiceManager:
             mock_config.port = 8000
             yield mock_config
 
-    def test_service_manager_initialization(self, mock_config):
+    def test_service_manager_initialization(self, mock_config: MagicMock | AsyncMock) -> None:
         """Test service manager initialization."""
         manager = OAuthServiceManager()
 
@@ -193,7 +179,7 @@ class TestOAuthServiceManager:
         assert "microsoft" in available_providers
         assert "apple" not in available_providers  # Not configured
 
-    def test_provider_availability(self, mock_config):
+    def test_provider_availability(self, mock_config: MagicMock | AsyncMock) -> None:
         """Test provider availability checking."""
         manager = OAuthServiceManager()
 
@@ -202,7 +188,7 @@ class TestOAuthServiceManager:
         assert not manager.is_provider_available("apple")
         assert not manager.is_provider_available("invalid")
 
-    def test_get_provider(self, mock_config):
+    def test_get_provider(self, mock_config: MagicMock | AsyncMock) -> None:
         """Test getting specific providers."""
         manager = OAuthServiceManager()
 
@@ -215,7 +201,7 @@ class TestOAuthServiceManager:
         with pytest.raises(ValidationError):
             manager.get_provider("invalid")
 
-    def test_authorization_url_generation(self, mock_config):
+    def test_authorization_url_generation(self, mock_config: MagicMock | AsyncMock) -> None:
         """Test authorization URL generation through manager."""
         manager = OAuthServiceManager()
 
@@ -226,7 +212,7 @@ class TestOAuthServiceManager:
         assert state_token in manager.state_manager._states_cache
 
     @pytest.mark.asyncio
-    async def test_callback_handling_invalid_state(self, mock_config):
+    async def test_callback_handling_invalid_state(self, mock_config: MagicMock | AsyncMock) -> None:
         """Test callback handling with invalid state."""
         manager = OAuthServiceManager()
 

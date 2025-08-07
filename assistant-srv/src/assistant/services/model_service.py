@@ -6,6 +6,7 @@ Model management service for unified model storage and secure key management.
 """
 
 from typing import List, Optional
+
 from ..models.model import Model
 from ..repositories.model_repository import ModelRepository
 
@@ -24,40 +25,28 @@ class ModelService:
         return await self.model_repository.list_models_by_owner(user_id)
 
     async def get_model(
-        self,
-        model_id: str,
-        load_api_key: bool = False,
-        user_id: Optional[str] = None
+        self, model_id: str, load_api_key: bool = False, user_id: Optional[str] = None
     ) -> Optional[Model]:
         """Get a model by id, optionally loading api_key."""
         model = await self.model_repository.get_by_id(model_id)
         if model and load_api_key and user_id:
-            model.api_key = await self.model_repository.get_user_api_key(
-                user_id, model.id
-            )
+            model.api_key = await self.model_repository.get_user_api_key(user_id, model.id)
         elif model:
             model.api_key = None
         return model
 
     async def add_model(self, model: Model) -> Model:
         """Add a new model, ensuring name uniqueness and handling api_key."""
-        if await self.model_repository.model_name_exists(
-            model.owner, model.name
-        ):
-            raise ValueError(
-                f"Model name '{model.name}' already exists "
-                f"for owner '{model.owner}'"
-            )
-        
+        if await self.model_repository.model_name_exists(model.owner, model.name):
+            raise ValueError(f"Model name '{model.name}' already exists " f"for owner '{model.owner}'")
+
         api_key = model.api_key
         model.api_key = None
         result = await self.model_repository.create(model)
-        
+
         if api_key:
-            await self.model_repository.set_user_api_key(
-                model.owner, result.id, api_key
-            )
-        
+            await self.model_repository.set_user_api_key(model.owner, result.id, api_key)
+
         return result
 
     async def update_model(self, model: Model) -> Optional[Model]:
@@ -66,21 +55,19 @@ class ModelService:
         existing_model = await self.model_repository.get_by_id(model.id)
         if not existing_model:
             return None
-        
+
         # Handle API key separately
         api_key = model.api_key
         model.api_key = None  # Don't store api_key in model data
-        
+
         try:
             # Update the model (this will check name uniqueness)
             updated_model = await self.model_repository.update(model)
-            
+
             # Update API key if provided
             if api_key:
-                await self.model_repository.set_user_api_key(
-                    model.owner, model.id, api_key
-                )
-            
+                await self.model_repository.set_user_api_key(model.owner, model.id, api_key)
+
             return updated_model
         except ValueError:
             return None
@@ -91,14 +78,14 @@ class ModelService:
         model = await self.model_repository.get_by_id(model_id)
         if not model or model.owner != owner:
             return False
-            
+
         # Delete the model
         success = await self.model_repository.delete(model_id)
-        
+
         # Remove associated API key
         if success:
             await self.model_repository.remove_user_api_key(owner, model_id)
-        
+
         return success
 
     # Key management methods

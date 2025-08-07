@@ -2,12 +2,13 @@
 Model entity definition for LLM model management.
 """
 
-from typing import Optional, Dict, Any, List, Union, TypedDict
+from typing import Any, Dict, List, Optional, TypedDict, Union
 
 
 # Model related types
 class ModelDefaultParams(TypedDict, total=False):
     """Model default parameters with specific types."""
+
     temperature: float
     max_tokens: int
     top_p: float
@@ -18,6 +19,7 @@ class ModelDefaultParams(TypedDict, total=False):
 
 class ModelExtraData(TypedDict, total=False):
     """Model extra data with specific fields."""
+
     provider: str
     version: str
     capabilities: List[str]
@@ -66,10 +68,7 @@ class Model:
     @staticmethod
     def from_dict(data: Dict[str, Any]) -> "Model":
         # Extract known fields and create extra data from remaining fields
-        known_fields = {
-            "id", "name", "type", "description",
-            "default_params", "owner", "api_key"
-        }
+        known_fields = {"id", "name", "type", "description", "default_params", "owner", "api_key"}
 
         extra_data: ModelExtraData = {}
         for k, v in data.items():
@@ -81,7 +80,7 @@ class Model:
             name=str(data.get("name", "")),
             type=str(data.get("type", "")),
             description=str(data.get("description", "")),
-            default_params=data.get("default_params", {}),  # type: ignore
+            default_params=data.get("default_params", {}),
             owner=str(data.get("owner", "system")),
             api_key=data.get("api_key"),
             extra=extra_data if extra_data else None,

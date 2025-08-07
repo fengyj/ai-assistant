@@ -3,12 +3,14 @@ API request and response models for OAuth authentication.
 Separated from core domain models following separation of concerns.
 """
 
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
+
 from pydantic import BaseModel, EmailStr
 
 
 class OAuthCallbackRequestData(BaseModel):
     """OAuth callback request data."""
+
     code: str
     state: str
     error: Optional[str] = None
@@ -17,6 +19,7 @@ class OAuthCallbackRequestData(BaseModel):
 
 class OAuthUserInfoData(BaseModel):
     """OAuth user information data."""
+
     provider_id: str
     email: EmailStr
     name: Optional[str] = None
@@ -25,6 +28,7 @@ class OAuthUserInfoData(BaseModel):
 
 class OAuthLoginResponseData(BaseModel):
     """OAuth login response data."""
+
     user_id: str
     username: str
     email: str
@@ -38,7 +42,7 @@ class OAuthLoginResponseData(BaseModel):
 
 class OAuthProvidersResponseData(BaseModel):
     """OAuth providers response data."""
-    
+
     providers: List[str]
     configured_providers: Dict[str, bool]
 
@@ -52,6 +56,7 @@ class OAuthCleanupResponseData(BaseModel):
 
 class OAuthAuthorizeResponseData(BaseModel):
     """OAuth authorization response data."""
+
     authorize_url: str
     state: str
     provider: str

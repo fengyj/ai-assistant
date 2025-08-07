@@ -5,9 +5,10 @@ JSON file-based model repository implementation.
 import json
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from threading import Lock
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from ..models.model import Model
 from .model_repository import ModelRepository
 
@@ -28,11 +29,11 @@ class JsonModelRepository(ModelRepository):
         self._load_models()
         self._load_keys()
 
-    def _ensure_data_dir(self):
+    def _ensure_data_dir(self) -> None:
         """Ensure data directory exists."""
         os.makedirs(self.data_dir, exist_ok=True)
 
-    def _load_models(self):
+    def _load_models(self) -> None:
         """Load models from JSON file."""
         if not os.path.exists(self.models_file):
             self._models_cache = {}
@@ -49,20 +50,16 @@ class JsonModelRepository(ModelRepository):
         except (json.JSONDecodeError, KeyError, ValueError) as e:
             # If file is corrupted, start fresh
             self._models_cache = {}
-            print(
-                f"Warning: Error loading models file {self.models_file}: {e}"
-            )
+            print(f"Warning: Error loading models file {self.models_file}: {e}")
 
-    def _save_models(self):
+    def _save_models(self) -> None:
         """Save models to JSON file."""
-        models_data = [
-            model.to_dict() for model in self._models_cache.values()
-        ]
+        models_data = [model.to_dict() for model in self._models_cache.values()]
 
         with open(self.models_file, "w", encoding="utf-8") as f:
             json.dump(models_data, f, indent=2, ensure_ascii=False)
 
-    def _load_keys(self):
+    def _load_keys(self) -> None:
         """Load API keys from JSON file."""
         if not os.path.exists(self.keys_file):
             self._keys_cache = []
@@ -76,7 +73,7 @@ class JsonModelRepository(ModelRepository):
             self._keys_cache = []
             print(f"Warning: Error loading keys file {self.keys_file}: {e}")
 
-    def _save_keys(self):
+    def _save_keys(self) -> None:
         """Save API keys to JSON file."""
         with open(self.keys_file, "w", encoding="utf-8") as f:
             json.dump(self._keys_cache, f, indent=2, ensure_ascii=False)
@@ -93,10 +90,7 @@ class JsonModelRepository(ModelRepository):
 
         # Check name uniqueness
         if await self.model_name_exists(entity.owner, entity.name):
-            raise ValueError(
-                f"Model name '{entity.name}' already exists "
-                f"for owner '{entity.owner}'"
-            )
+            raise ValueError(f"Model name '{entity.name}' already exists " f"for owner '{entity.owner}'")
 
         # Save to cache and file
         with self._models_lock:
@@ -124,14 +118,10 @@ class JsonModelRepository(ModelRepository):
             raise ValueError("Owner mismatch - cannot update model")
 
         # Check name uniqueness if name is being changed
-        if (entity.name != existing_model.name and
-                await self.model_name_exists(
-                    entity.owner, entity.name, exclude_id=entity.id
-                )):
-            raise ValueError(
-                f"Model name '{entity.name}' already exists "
-                f"for owner '{entity.owner}'"
-            )
+        if entity.name != existing_model.name and await self.model_name_exists(
+            entity.owner, entity.name, exclude_id=entity.id
+        ):
+            raise ValueError(f"Model name '{entity.name}' already exists " f"for owner '{entity.owner}'")
 
         # Save to cache and file
         with self._models_lock:
@@ -151,10 +141,7 @@ class JsonModelRepository(ModelRepository):
 
         # Also remove any associated API keys
         with self._keys_lock:
-            self._keys_cache = [
-                k for k in self._keys_cache
-                if k.get("model_id") != entity_id
-            ]
+            self._keys_cache = [k for k in self._keys_cache if k.get("model_id") != entity_id]
             self._save_keys()
 
         return True
@@ -165,64 +152,50 @@ class JsonModelRepository(ModelRepository):
 
     async def list_models_by_owner(self, user_id: str) -> List[Model]:
         """List all models available to the user (system + user)."""
-        return [
-            model for model in self._models_cache.values()
-            if model.owner in ("system", user_id)
-        ]
+        return [model for model in self._models_cache.values() if model.owner in ("system", user_id)]
 
-    async def model_name_exists(
-        self, owner: str, name: str, exclude_id: Optional[str] = None
-    ) -> bool:
+    async def model_name_exists(self, owner: str, name: str, exclude_id: Optional[str] = None) -> bool:
         """Check if a model name exists for an owner."""
         for model in self._models_cache.values():
-            if (model.owner == owner and model.name == name and
-                    (exclude_id is None or model.id != exclude_id)):
+            if model.owner == owner and model.name == name and (exclude_id is None or model.id != exclude_id):
                 return True
         return False
 
-    async def get_user_api_key(
-        self, user_id: str, model_id: str
-    ) -> Optional[str]:
+    async def get_user_api_key(self, user_id: str, model_id: str) -> Optional[str]:
         """Get API key for a specific user and model."""
         for key_data in self._keys_cache:
-            if (key_data.get("user_id") == user_id and
-                    key_data.get("model_id") == model_id):
+            if key_data.get("user_id") == user_id and key_data.get("model_id") == model_id:
                 return key_data.get("api_key")
         return None
 
-    async def set_user_api_key(
-        self, user_id: str, model_id: str, api_key: str
-    ) -> None:
+    async def set_user_api_key(self, user_id: str, model_id: str, api_key: str) -> None:
         """Set API key for a specific user and model."""
         found = False
         for key_data in self._keys_cache:
-            if (key_data.get("user_id") == user_id and
-                    key_data.get("model_id") == model_id):
+            if key_data.get("user_id") == user_id and key_data.get("model_id") == model_id:
                 key_data["api_key"] = api_key
                 key_data["last_used"] = None  # Will be updated when used
                 found = True
                 break
 
         if not found:
-            self._keys_cache.append({
-                "user_id": user_id,
-                "model_id": model_id,
-                "api_key": api_key,
-                "created_at": datetime.utcnow().isoformat(),
-                "last_used": None
-            })
+            self._keys_cache.append(
+                {
+                    "user_id": user_id,
+                    "model_id": model_id,
+                    "api_key": api_key,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "last_used": None,
+                }
+            )
 
         with self._keys_lock:
             self._save_keys()
 
-    async def remove_user_api_key(
-        self, user_id: str, model_id: str
-    ) -> None:
+    async def remove_user_api_key(self, user_id: str, model_id: str) -> None:
         """Remove API key for a specific user and model."""
         with self._keys_lock:
             self._keys_cache = [
-                k for k in self._keys_cache
-                if not (k.get("user_id") == user_id and
-                        k.get("model_id") == model_id)
+                k for k in self._keys_cache if not (k.get("user_id") == user_id and k.get("model_id") == model_id)
             ]
             self._save_keys()

@@ -4,16 +4,19 @@ FastAPI application configuration and setup.
 
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+from typing import AsyncGenerator
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .api.users import router as users_router
+
 from .api.oauth import router as oauth_router
 from .api.sessions import router as sessions_router
-from .models.api.general_api import StatusResponseData, HealthCheckResponseData
+from .api.users import router as users_router
+from .models.api.general_api import HealthCheckResponseData, StatusResponseData
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan events."""
     # Startup
     print("Starting Personal AI Assistant Server...")
@@ -45,7 +48,7 @@ app.include_router(oauth_router)
 app.include_router(sessions_router)
 
 
-@app.get("/", response_model=StatusResponseData)
+@app.get("/", response_model=StatusResponseData)  # type: ignore
 async def root() -> StatusResponseData:
     """Root endpoint."""
     return StatusResponseData(
@@ -53,26 +56,19 @@ async def root() -> StatusResponseData:
         data={
             "message": "Personal AI Assistant Server",
             "version": "0.1.0",
-        }
+        },
     )
 
 
-@app.get("/health", response_model=HealthCheckResponseData)
+@app.get("/health", response_model=HealthCheckResponseData)  # type: ignore
 async def health_check() -> HealthCheckResponseData:
     """Health check endpoint."""
-    return HealthCheckResponseData(
-        status="healthy",
-        timestamp=datetime.now(timezone.utc).isoformat()
-    )
+    return HealthCheckResponseData(status="healthy", timestamp=datetime.now(timezone.utc).isoformat())
 
 
 if __name__ == "__main__":
     import uvicorn
+
     from .core.config import config
-    
-    uvicorn.run(
-        "assistant.main:app",
-        host=config.host,
-        port=config.port,
-        reload=config.debug
-    )
+
+    uvicorn.run("assistant.main:app", host=config.host, port=config.port, reload=config.debug)

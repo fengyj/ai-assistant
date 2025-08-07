@@ -2,10 +2,10 @@
 User data models and enums.
 """
 
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional, Dict, Any, List
-from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 
@@ -77,9 +77,10 @@ class ModelAPIUsage:
     last_used: Optional[datetime] = None
 
 
-@dataclass    
+@dataclass
 class UserPreferences:
     """User preferences with specific structure."""
+
     theme: str  # 'light' | 'dark' | 'auto'
     language: str
     timezone: str
@@ -155,16 +156,12 @@ class User:
                         "name": usage.name,
                         "tokens_consumed": usage.tokens_consumed,
                         "api_calls_count": usage.api_calls_count,
-                        "last_used": (
-                            usage.last_used.isoformat() if usage.last_used else None
-                        ),
+                        "last_used": (usage.last_used.isoformat() if usage.last_used else None),
                     }
                     for usage in self.usage_stats.model_api_usage
                 ],
                 "last_activity": (
-                    self.usage_stats.last_activity.isoformat()
-                    if self.usage_stats.last_activity
-                    else None
+                    self.usage_stats.last_activity.isoformat() if self.usage_stats.last_activity else None
                 ),
                 "total_sessions": self.usage_stats.total_sessions,
                 "created_prompts": self.usage_stats.created_prompts,
@@ -208,11 +205,7 @@ class User:
                     name=usage.get("name", ""),
                     tokens_consumed=usage.get("tokens_consumed", 0),
                     api_calls_count=usage.get("api_calls_count", 0),
-                    last_used=(
-                        datetime.fromisoformat(usage["last_used"])
-                        if usage.get("last_used")
-                        else None
-                    ),
+                    last_used=(datetime.fromisoformat(usage["last_used"]) if usage.get("last_used") else None),
                 )
                 for usage in usage_stats_data.get("model_api_usage", [])
             ],
@@ -239,11 +232,7 @@ class User:
             usage_stats=usage_stats,
             created_at=datetime.fromisoformat(data["created_at"]),
             updated_at=datetime.fromisoformat(data["updated_at"]),
-            last_login=(
-                datetime.fromisoformat(data["last_login"])
-                if data.get("last_login")
-                else None
-            ),
+            last_login=(datetime.fromisoformat(data["last_login"]) if data.get("last_login") else None),
             quota_limits=data.get("quota_limits", {}),
         )
 

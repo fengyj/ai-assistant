@@ -2,16 +2,17 @@
 OAuth service manager for handling multiple providers.
 """
 
-from typing import Dict, Optional, Type
-from ..models import OAuthProvider
+from typing import Any, Dict, Optional
+
 from ..core import config
 from ..core.exceptions import ValidationError
 from .oauth_providers import (
+    AppleOAuthProvider,
     BaseOAuthProvider,
-    OAuthConfig,
     GoogleOAuthProvider,
     MicrosoftOAuthProvider,
-    AppleOAuthProvider,
+    OAuthConfig,
+    OAuthUserProfile,
 )
 from .oauth_state_manager import OAuthStateManager
 
@@ -19,13 +20,13 @@ from .oauth_state_manager import OAuthStateManager
 class OAuthServiceManager:
     """Manages OAuth providers and their configurations."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize OAuth service manager."""
         self.state_manager = OAuthStateManager()
         self._providers: Dict[str, BaseOAuthProvider] = {}
         self._initialize_providers()
 
-    def _initialize_providers(self):
+    def _initialize_providers(self) -> None:
         """Initialize all configured OAuth providers."""
         # Google OAuth
         if config.google_client_id and config.google_client_secret:
@@ -86,7 +87,7 @@ class OAuthServiceManager:
         return provider_name in self._providers
 
     def generate_authorization_url(
-        self, provider_name: str, metadata: Dict = None
+        self, provider_name: str, metadata: Optional[Dict[Any, Any]] = None
     ) -> tuple[str, str]:
         """Generate authorization URL for a provider."""
         if not self.is_provider_available(provider_name):
@@ -105,17 +106,13 @@ class OAuthServiceManager:
 
         return auth_url, state_token
 
-    async def handle_callback(
-        self, provider_name: str, code: str, state: str
-    ) -> "OAuthUserProfile":
+    async def handle_callback(self, provider_name: str, code: str, state: str) -> "OAuthUserProfile":
         """Handle OAuth callback and return user profile."""
         if not self.is_provider_available(provider_name):
             raise ValidationError(f"OAuth provider '{provider_name}' is not available")
 
         # Validate state token
-        oauth_state = self.state_manager.validate_and_consume_state(
-            state, provider_name
-        )
+        oauth_state = self.state_manager.validate_and_consume_state(state, provider_name)
         if not oauth_state:
             raise ValidationError("Invalid or expired OAuth state")
 
@@ -133,7 +130,7 @@ class OAuthServiceManager:
         """Clean up expired OAuth states."""
         return self.state_manager.cleanup_expired_states()
 
-    async def close_all_providers(self):
+    async def close_all_providers(self) -> None:
         """Close all provider HTTP clients."""
         for provider in self._providers.values():
             await provider.close()

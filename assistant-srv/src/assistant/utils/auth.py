@@ -2,19 +2,18 @@
 Authentication and authorization utilities for API endpoints.
 """
 
-from datetime import datetime, timedelta
-from typing import Optional, List, Dict, Union
+from datetime import datetime, timedelta, timezone
+from typing import Dict, List, Optional, Union
+
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from pydantic import BaseModel
 
-from ..models import UserRole, UserStatus
-from ..services.user_service import UserService
-from ..repositories.json_user_repository import JsonUserRepository
 from ..core.config import config
-
-
+from ..models import UserRole, UserStatus
+from ..repositories.json_user_repository import JsonUserRepository
+from ..services.user_service import UserService
 
 # JWT Configuration
 SECRET_KEY = config.jwt_secret_key
@@ -46,15 +45,13 @@ security = HTTPBearer()
 JWTPayload = Dict[str, Union[str, int, float]]
 
 
-def create_access_token(
-    data: JWTPayload, expires_delta: Optional[timedelta] = None
-) -> str:
+def create_access_token(data: JWTPayload, expires_delta: Optional[timedelta] = None) -> str:
     """Create JWT access token."""
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode["exp"] = expire  # type: ignore
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -78,9 +75,7 @@ async def get_current_user(
     )
 
     try:
-        payload = jwt.decode(
-            credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM]
-        )
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload.get("sub")
         if user_id is None:
             raise credentials_exception
@@ -97,9 +92,7 @@ async def get_current_user(
 
     # Check if user is active
     if user.status != UserStatus.ACTIVE:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user"
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user")
 
     return CurrentUser(
         id=user.id,
@@ -110,25 +103,12 @@ async def get_current_user(
     )
 
 
-async def get_current_active_user(
-    current_user: CurrentUser = Depends(get_current_user),
-) -> CurrentUser:
-    """Get current active user."""
-    if current_user.status != UserStatus.ACTIVE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
-        )
-    return current_user
-
-
 async def get_current_admin_user(
-    current_user: CurrentUser = Depends(get_current_active_user),
+    current_user: CurrentUser = Depends(get_current_user),
 ) -> CurrentUser:
     """Get current admin user (requires admin role)."""
     if current_user.role != UserRole.ADMIN:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return current_user
 
 
@@ -139,7 +119,7 @@ def require_user_or_admin():
     """
 
     async def check_user_permission(
-        current_user: CurrentUser = Depends(get_current_active_user),
+        current_user: CurrentUser = Depends(get_current_user),
     ) -> CurrentUser:
         # This will be used in the endpoint to check the specific user_id
         return current_user
@@ -153,9 +133,7 @@ class RoleChecker:
     def __init__(self, allowed_roles: List[UserRole]):
         self.allowed_roles = allowed_roles
 
-    def __call__(
-        self, current_user: CurrentUser = Depends(get_current_active_user)
-    ) -> CurrentUser:
+    def __call__(self, current_user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
         if current_user.role not in self.allowed_roles:
             allowed_roles_str = [role.value for role in self.allowed_roles]
             raise HTTPException(

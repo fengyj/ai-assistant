@@ -3,7 +3,7 @@ Abstract base repository interface.
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Optional, TypeVar, Generic
+from typing import Generic, List, Optional, TypeVar
 
 T = TypeVar("T")
 
