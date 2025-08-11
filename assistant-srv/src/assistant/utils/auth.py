@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 # Import centralized dependencies
 from ..core.dependencies import get_session_service, get_user_service
+from ..core.exceptions import TokenExpiredError
 from ..models import UserRole, UserStatus
 from ..models.api.exceptions import ForbiddenException, UnauthorizedException
 from ..services.session_service import SessionService
@@ -30,47 +31,73 @@ class CurrentUser(BaseModel):
 credentials = HTTPBearer()
 
 
+async def _get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(credentials),
+    session_service: SessionService = Depends(get_session_service),
+    user_service: UserService = Depends(get_user_service),
+    verify_expiry: bool = True,
+) -> CurrentUser:
+    """Get current authenticated user from session token."""
+    credentials_exception = UnauthorizedException(detail="Could not validate token")
+
+    try:
+        # Decode the JWT token
+        token_data = TokenGenerator.decode_jwt_token(credentials.credentials, verify_expiry=verify_expiry)
+
+        if token_data is None:
+            raise credentials_exception
+
+        # Extract user information from the token
+        sid = TokenGenerator.extract_session_id_from_dict(token_data)
+        user_id = TokenGenerator.extract_user_id_from_dict(token_data)
+        user_name = TokenGenerator.extract_user_name_from_dict(token_data)
+        user_role = TokenGenerator.extract_user_role_from_dict(token_data)
+        user_email = TokenGenerator.extract_user_email_from_dict(token_data)
+        user_status = TokenGenerator.extract_user_status_from_dict(token_data)
+
+        if sid is None or user_id is None:
+            raise credentials_exception
+
+        current_user = CurrentUser(
+            id=user_id,
+            session_id=sid,
+            username=user_name if user_name else "Unknown",
+            email=user_email if user_email else "Unknown",
+            role=UserRole(user_role),
+            status=UserStatus(user_status) if user_status else UserStatus.INACTIVE,
+        )
+
+        return current_user
+    except TokenExpiredError as e:
+        raise UnauthorizedException(detail=e.message)
+
+
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(credentials),
     session_service: SessionService = Depends(get_session_service),
     user_service: UserService = Depends(get_user_service),
 ) -> CurrentUser:
     """Get current authenticated session from session token only (no JWT required)."""
-    credentials_exception = UnauthorizedException(
-        detail="Could not validate session",
-        headers={"WWW-Authenticate": "Session"},
+    return await _get_current_user(
+        credentials=credentials,
+        session_service=session_service,
+        user_service=user_service,
+        verify_expiry=True,
     )
 
-    token_data = TokenGenerator.decode_jwt_token(credentials.credentials)
 
-    if token_data is None:
-        raise credentials_exception
-
-    sid = TokenGenerator.extract_session_id_from_dict(token_data)
-    user_id = TokenGenerator.extract_user_id_from_dict(token_data)
-    user_name = TokenGenerator.extract_user_name_from_dict(token_data)
-    user_role = TokenGenerator.extract_user_role_from_dict(token_data)
-    user_email = TokenGenerator.extract_user_email_from_dict(token_data)
-    user_status = TokenGenerator.extract_user_status_from_dict(token_data)
-
-    if sid is None or user_id is None:
-        raise credentials_exception
-
-    # Get session by JWT token (this automatically updates last_accessed and extends expiry)
-    session = await session_service.get_by_session_id_and_user_id(sid, user_id)
-    if session is None:
-        raise credentials_exception
-
-    current_user = CurrentUser(
-        id=user_id,
-        session_id=sid,
-        username=user_name if user_name else "Unknown",
-        email=user_email if user_email else "Unknown",
-        role=UserRole(user_role),
-        status=UserStatus(user_status) if user_status else UserStatus.INACTIVE,
+async def get_current_user_no_expiry_verify(
+    credentials: HTTPAuthorizationCredentials = Depends(credentials),
+    session_service: SessionService = Depends(get_session_service),
+    user_service: UserService = Depends(get_user_service),
+) -> CurrentUser:
+    """Get current authenticated user without verifying token expiry."""
+    return await _get_current_user(
+        credentials=credentials,
+        session_service=session_service,
+        user_service=user_service,
+        verify_expiry=False,
     )
-
-    return current_user
 
 
 def get_user_or_admin(

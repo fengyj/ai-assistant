@@ -25,7 +25,7 @@ from ..models.user import UserStatus
 # Project internal imports
 from ..services.session_service import SessionService
 from ..services.user_service import UserService
-from ..utils.auth import CurrentUser, get_current_user
+from ..utils.auth import CurrentUser, get_current_user, get_current_user_no_expiry_verify
 from ..utils.security import TokenGenerator
 
 # Router
@@ -103,7 +103,7 @@ async def refresh_access_token(
     http_request: Request,
     session_service: SessionService = Depends(get_session_service),
     user_service: UserService = Depends(get_user_service),
-    current_user: CurrentUser = Depends(get_current_user),
+    current_user: CurrentUser = Depends(get_current_user_no_expiry_verify),
 ) -> RefreshTokenResponseData:
     """
     Refresh access token using session ID.

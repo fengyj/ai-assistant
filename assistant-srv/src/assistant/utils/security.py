@@ -9,6 +9,8 @@ from typing import Any, Dict, Optional
 import bcrypt
 import jwt
 
+from ..core.exceptions import TokenExpiredError
+
 
 class PasswordHasher:
     """Password hashing utility using bcrypt with configurable rounds."""
@@ -183,6 +185,8 @@ class TokenGenerator:
             from typing import Any, Dict, cast
 
             return cast(Dict[str, Any], payload)
+        except jwt.ExpiredSignatureError:
+            raise TokenExpiredError()
         except jwt.PyJWTError:
             # Any JWT error means invalid token
             return None
