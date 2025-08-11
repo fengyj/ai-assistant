@@ -47,6 +47,10 @@ class Config:
     apple_client_id: Optional[str] = None
     apple_client_secret: Optional[str] = None
 
+    # Model API Keys (temporary, should be moved to secure storage)
+    deepseek_api_key: Optional[str] = None
+    openrouter_api_key: Optional[str] = None
+
     @classmethod
     def from_env(cls) -> "Config":
         """Load configuration from environment variables."""
@@ -74,6 +78,8 @@ class Config:
             microsoft_client_secret=os.getenv("MICROSOFT_CLIENT_SECRET"),
             apple_client_id=os.getenv("APPLE_CLIENT_ID"),
             apple_client_secret=os.getenv("APPLE_CLIENT_SECRET"),
+            deepseek_api_key=os.getenv("DEEPSEEK_API_KEY"),
+            openrouter_api_key=os.getenv("OPENROUTER_API_KEY"),
         )
 
 

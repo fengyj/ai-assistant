@@ -25,6 +25,8 @@ class ModelExtraData(TypedDict, total=False):
     capabilities: List[str]
     pricing: Dict[str, float]
     context_length: int
+    base_url: str
+    model: str
 
 
 class Model:

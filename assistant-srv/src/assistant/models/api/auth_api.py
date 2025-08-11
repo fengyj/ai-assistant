@@ -16,6 +16,7 @@ class LoginResponseData(BaseModel):
     access_token: str
     token_type: str
     expires_in: int  # in seconds
+    session_id: str
     user: UserResponseData
 
 

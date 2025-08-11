@@ -86,7 +86,11 @@ async def login(
         )
 
         return LoginResponseData(
-            access_token=jwt_token, token_type="Bearer", user=user_data, expires_in=int(config.jwt_expire_hours * 3600)
+            access_token=jwt_token,
+            token_type="Bearer",
+            user=user_data,
+            session_id=session.id,
+            expires_in=int(config.jwt_expire_hours * 3600),
         )
 
     except InvalidCredentialsError as e:

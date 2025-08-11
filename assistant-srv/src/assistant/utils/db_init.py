@@ -2,13 +2,12 @@
 Database initialization and migration script.
 """
 
-import json
+import asyncio
 import os
-from datetime import datetime, timezone
 
 from ..core import config
-from ..models import User, UserProfile, UserRole, UserStatus
-from ..utils.security import PasswordHasher
+from ..core.dependencies import get_model_service
+from ..models.model import Model
 
 
 def ensure_data_directory() -> None:
@@ -18,38 +17,120 @@ def ensure_data_directory() -> None:
 
 
 def create_default_admin_user() -> None:
-    """Create default admin user if no users exist."""
-    users_file = os.path.join(config.data_dir, config.users_file)
+    """Create default admin user if no users exist, using UserService."""
 
-    if os.path.exists(users_file):
-        with open(users_file, "r", encoding="utf-8") as f:
-            try:
-                users_data = json.load(f)
-                if users_data:  # Users already exist
-                    print("Users already exist, skipping default admin creation")
-                    return
-            except json.JSONDecodeError:
-                pass  # File is corrupted, proceed to create admin
+    async def _init_admin() -> None:
+        from ..core.dependencies import get_user_service
+        from ..models.user import UserCreateRequest, UserRole
 
-    # Create default admin user
-    password_hasher = PasswordHasher()
-    admin_user = User(
-        username="admin",
-        email="admin@localhost",
-        password_hash=password_hasher.hash_password("admin123"),
-        role=UserRole.ADMIN,
-        status=UserStatus.ACTIVE,
-        profile=UserProfile(display_name="System Administrator", language="en"),
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
-    )
+        user_service = get_user_service()
+        # 检查是否已有用户
+        users = await user_service.get_all_users()
+        if users:
+            print("Users already exist, skipping default admin creation")
+            return
+        admin_request = UserCreateRequest(
+            username="admin",
+            email="admin@localhost",
+            password="admin123",
+            display_name="System Administrator",
+            role=UserRole.ADMIN,
+        )
+        await user_service.create_user(admin_request)
+        print("Default admin user created: admin/admin123")
 
-    # Save to file
-    users_data = [admin_user.to_dict()]
-    with open(users_file, "w", encoding="utf-8") as f:
-        json.dump(users_data, f, indent=2, ensure_ascii=False)
+    asyncio.run(_init_admin())
 
-    print("Default admin user created: admin/admin123")
+
+def initialize_models_data() -> None:
+    """Initialize model data with default models."""
+
+    async def _init_models() -> None:
+        model_service = get_model_service()
+        # 检查是否已有系统模型
+        system_models = await model_service.list_system_models()
+        if system_models:
+            print("Model data already exists, skipping initialization.")
+            return
+        default_models = [
+            Model(
+                id="openrouter-deepseek-chat",
+                name="OpenRouter DeepSeek Chat",
+                type="openrouter",
+                description="deepseek-chat-v3-0324:free",
+                default_params={"temperature": 0.1, "max_tokens": 163840},
+                owner="system",
+                api_key=config.openrouter_api_key,
+                extra={"model": "deepseek/deepseek-chat-v3-0324:free", "base_url": "https://openrouter.ai/api/v1"},
+            ),
+            Model(
+                id="openrouter-deepseek-r1",
+                name="OpenRouter DeepSeek R1",
+                type="openrouter",
+                description="deepseek-r1-0528:free",
+                default_params={"temperature": 0.1, "max_tokens": 163840},
+                owner="system",
+                api_key=config.openrouter_api_key,
+                extra={"model": "deepseek/deepseek-r1-0528:free", "base_url": "https://openrouter.ai/api/v1"},
+            ),
+            Model(
+                id="openrouter-qwen-qwen3-coder",
+                name="OpenRouter Qwen Qwen 3 Coder",
+                type="openrouter",
+                description="qwen-qwen3-coder:free",
+                default_params={"temperature": 0.1, "max_tokens": 262144},
+                owner="system",
+                api_key=config.openrouter_api_key,
+                extra={"model": "qwen/qwen3-coder:free", "base_url": "https://openrouter.ai/api/v1"},
+            ),
+            Model(
+                id="openrouter-qwen-qwen3-235b-a22b",
+                name="OpenRouter Qwen 3 35B A22B",
+                type="openrouter",
+                description="Qwen 3 35B A22B - 高质量中文MoE模型",
+                default_params={"temperature": 0.1, "max_tokens": 40960},
+                owner="system",
+                api_key=config.openrouter_api_key,
+                extra={"model": "qwen/qwen3-235b-a22b:free", "base_url": "https://openrouter.ai/api/v1"},
+            ),
+            Model(
+                id="openrouter-claude-3-5-sonnet",
+                name="OpenRouter Claude 3.5 Sonnet",
+                type="openrouter",
+                description="Claude 3.5 Sonnet - 高质量推理模型",
+                default_params={"temperature": 0.1, "max_tokens": 4096},
+                owner="system",
+                api_key=config.openrouter_api_key,
+                extra={"model": "anthropic/claude-3.5-sonnet", "base_url": "https://openrouter.ai/api/v1"},
+            ),
+            Model(
+                id="openrouter-openai-gpt-oss-20b",
+                name="OpenRouter OpenAI GPT OSS 20B",
+                type="openrouter",
+                description="GPT OSS 20B - OpenAI开源模型",
+                default_params={"temperature": 0.1, "max_tokens": 131072},
+                owner="system",
+                api_key=config.openrouter_api_key,
+                extra={"model": "openai/gpt-oss-20b:free", "base_url": "https://openrouter.ai/api/v1"},
+            ),
+            Model(
+                id="deepseek-v3-chat",
+                name="DeepSeek V3 Chat",
+                type="deepseek",
+                description="DeepSeek V3 Chat - 官方DeepSeek API",
+                default_params={"temperature": 0.1, "max_tokens": 4096},
+                owner="system",
+                api_key=config.deepseek_api_key,
+                extra={"model": "deepseek-chat", "base_url": "https://api.deepseek.com/v1"},
+            ),
+        ]
+        from ..models.user import UserRole
+
+        for m in default_models:
+            await model_service.add_model(m, user_id="system", user_role=UserRole.ADMIN)
+        print("Default model data initialized via ModelService.")
+
+    asyncio.run(_init_models())
 
 
 def initialize_database() -> None:
@@ -58,6 +139,7 @@ def initialize_database() -> None:
 
     ensure_data_directory()
     create_default_admin_user()
+    initialize_models_data()
 
     print("Database initialization completed!")
 

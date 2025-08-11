@@ -15,6 +15,7 @@ assistant-srv/.pytest_cache/
 assistant-srv/.coverage
 assistant-srv/.cache/
 assistant-srv/.DS_Store
+assistant-srv/data/
 
 # Node/Vite/React
 assistant-ui/node_modules/
