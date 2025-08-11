@@ -11,7 +11,6 @@ from pydantic import BaseModel
 class SessionCreateRequestData(BaseModel):
     """Session creation API request data."""
 
-    user_id: str
     device_info: Optional[str] = None
     extend_hours: int = 24
 

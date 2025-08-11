@@ -18,8 +18,9 @@ def test_user_permissions() -> None:
     # Step 1: Login as admin to create test user
     print("1. Logging in as admin...")
     admin_login = {"username": "admin", "password": "admin123"}
-    response = client.post("/api/users/login", json=admin_login)
+    response = client.post("/api/auth/login", json=admin_login)
     admin_auth = response.json()
+    assert "access_token" in admin_auth, f"Login failed, response: {admin_auth}"
     admin_token = admin_auth["access_token"]
     admin_headers = {"Authorization": f"Bearer {admin_token}"}
 
@@ -49,7 +50,7 @@ def test_user_permissions() -> None:
     print("\n3. Logging in as regular user...")
     user_login = {"username": "regularuser", "password": "userpass123"}
 
-    response = client.post("/api/users/login", json=user_login)
+    response = client.post("/api/auth/login", json=user_login)
     user_auth = response.json()
     user_token = user_auth["access_token"]
     user_headers = {"Authorization": f"Bearer {user_token}"}

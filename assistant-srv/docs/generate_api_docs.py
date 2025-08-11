@@ -40,7 +40,7 @@ def generate_api_docs() -> Dict[str, Any]:
         - `GET /api/users/` - Get all users
         - `PUT /api/users/{user_id}` - Update user
         - `DELETE /api/users/{user_id}` - Delete user
-        - `POST /api/users/login` - User login
+        - `POST /api/auth/login` - User login
         - `POST /api/users/{user_id}/change-password` - Change password
         - `GET /api/users/search/{query}` - Search users
 

@@ -1,0 +1,443 @@
+[
+  {
+    "id": "93cc7229-bc64-4853-b9a4-96c191de5391",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:15:18.476963+00:00",
+    "last_accessed": "2025-08-11T03:15:18.476963+00:00",
+    "expires_at": "2025-08-12T03:15:18.476937+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "b4c7b2f7-8fb9-42d4-ab15-852cd7dc7fce",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:22:32.667487+00:00",
+    "last_accessed": "2025-08-11T03:22:32.667487+00:00",
+    "expires_at": "2025-08-12T03:22:32.667458+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "0ac2ba4e-b546-481b-a51a-5ad75cd18045",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:22:40.851248+00:00",
+    "last_accessed": "2025-08-11T03:22:40.851248+00:00",
+    "expires_at": "2025-08-12T03:22:40.851227+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "e96e3bc4-b3d0-47f9-a70f-c511c51a3ba6",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:22:45.076550+00:00",
+    "last_accessed": "2025-08-11T03:22:45.076550+00:00",
+    "expires_at": "2025-08-12T03:22:45.076534+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "4d40961d-b841-4364-8d70-a34501aa05ee",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:22:49.015874+00:00",
+    "last_accessed": "2025-08-11T03:22:49.015874+00:00",
+    "expires_at": "2025-08-12T03:22:49.015853+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "4911244a-541a-42db-be33-2b44c46f21cd",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:29:28.528176+00:00",
+    "last_accessed": "2025-08-11T03:29:28.528176+00:00",
+    "expires_at": "2025-08-12T03:29:28.528145+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "1e893636-b84f-425b-bd63-87c25d2ee042",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:29:36.719176+00:00",
+    "last_accessed": "2025-08-11T03:29:36.719176+00:00",
+    "expires_at": "2025-08-12T03:29:36.719155+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "7961a6c3-7b74-4e81-83f0-136b3209ba99",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:29:41.483083+00:00",
+    "last_accessed": "2025-08-11T03:29:41.483084+00:00",
+    "expires_at": "2025-08-12T03:29:41.483064+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "4f83caee-130c-4f04-8314-0f5f7cc2b306",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:29:45.306620+00:00",
+    "last_accessed": "2025-08-11T03:29:45.306620+00:00",
+    "expires_at": "2025-08-12T03:29:45.306601+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "7638570e-4db6-479b-a8df-504cab6239bb",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:32:47.821706+00:00",
+    "last_accessed": "2025-08-11T03:32:47.821707+00:00",
+    "expires_at": "2025-08-12T03:32:47.821678+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "77b006ff-1276-44d0-a050-f77f6f203465",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:32:59.111296+00:00",
+    "last_accessed": "2025-08-11T03:32:59.111297+00:00",
+    "expires_at": "2025-08-12T03:32:59.111272+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "a5196941-4ece-4493-88e7-4ab4a1c6fbbb",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:33:00.177474+00:00",
+    "last_accessed": "2025-08-11T03:33:00.177474+00:00",
+    "expires_at": "2025-08-12T03:33:00.177456+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "17e4cde0-0a1a-45ad-8343-7523b320d982",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:33:03.978337+00:00",
+    "last_accessed": "2025-08-11T03:33:03.978338+00:00",
+    "expires_at": "2025-08-12T03:33:03.978318+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "98509d12-0cb8-41e9-88cb-82d594f4bed3",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:39:35.630750+00:00",
+    "last_accessed": "2025-08-11T03:39:35.630751+00:00",
+    "expires_at": "2025-08-12T03:39:35.630722+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "1210942b-62f5-4277-864a-029c92bd330e",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:39:44.121355+00:00",
+    "last_accessed": "2025-08-11T03:39:44.121355+00:00",
+    "expires_at": "2025-08-12T03:39:44.121336+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "c41193ea-1596-4b64-9f59-f597f6737598",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:39:44.783775+00:00",
+    "last_accessed": "2025-08-11T03:39:44.783776+00:00",
+    "expires_at": "2025-08-12T03:39:44.783755+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "f7c4a1d0-8677-4a93-8166-c22ce377a230",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T03:39:48.537625+00:00",
+    "last_accessed": "2025-08-11T03:39:48.537626+00:00",
+    "expires_at": "2025-08-12T03:39:48.537605+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "99793eb1-1da1-40c8-8917-1587f8b7b654",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T04:31:57.573902+00:00",
+    "last_accessed": "2025-08-11T04:31:57.573903+00:00",
+    "expires_at": "2025-08-12T04:31:57.573877+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "bc0068f3-d788-45a0-bc5c-81712ede0a67",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T04:32:05.449420+00:00",
+    "last_accessed": "2025-08-11T04:32:05.449420+00:00",
+    "expires_at": "2025-08-12T04:32:05.449404+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "df5df289-e873-4e7f-8d6c-4fdb5048a2c8",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T04:32:06.103659+00:00",
+    "last_accessed": "2025-08-11T04:32:06.103660+00:00",
+    "expires_at": "2025-08-12T04:32:06.103643+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  },
+  {
+    "id": "62fad1ea-693a-4b44-8ca2-de0da0b139a5",
+    "user_id": "b3cb268a-6621-4ec8-9d37-c8b070b88a8e",
+    "user_agent": "testclient",
+    "device_info": "Web Browser",
+    "status": "active",
+    "created_at": "2025-08-11T04:32:09.694618+00:00",
+    "last_accessed": "2025-08-11T04:32:09.694619+00:00",
+    "expires_at": "2025-08-12T04:32:09.694601+00:00",
+    "metadata": {
+      "login_method": "password",
+      "oauth_provider": null,
+      "device_type": "web",
+      "location": null,
+      "security_flags": [],
+      "initial_ip": "testclient",
+      "last_known_ips": [
+        "testclient"
+      ]
+    }
+  }
+]

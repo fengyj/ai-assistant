@@ -36,17 +36,24 @@ class ModelService:
         return await self.list_user_models(user_id) + await self.list_system_models()
 
     async def get_model(
-        self, model_id: str, load_api_key: bool = False, user_id: Optional[str] = None
+        self, model_id: str, user_id: str, user_role: UserRole, load_api_key: bool = False
     ) -> Optional[Model]:
-        """Get a model by id, optionally loading api_key."""
+        """
+        Get a model by id, with user_id and user_role for permission and type logic.
+        Admin can only access system models; users can access their own and system models.
+        """
         model = await self.model_repository.get_by_id(model_id)
         if not model:
             return None
-        if not model.is_system_model() and model.owner != user_id:
-            return None
+        if user_role == UserRole.ADMIN:
+            if not model.is_system_model():
+                return None
+        else:
+            if not model.is_system_model() and model.owner != user_id:
+                return None
         if load_api_key:
             model.api_key = await self.model_repository.get_api_key(model.owner, model.id)
-        elif model:
+        else:
             model.api_key = None
         return model
 

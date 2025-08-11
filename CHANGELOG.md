@@ -1,4 +1,60 @@
+- 2025-08-11
+- Refactored model get_model API and ModelService.get_model method.
+- Service layer now handles user_id and user_role logic for model access and type.
+- Improved code comments and endpoint documentation for clarity and maintainability.
+# 2025-08-11
+- Refactored session management APIs, SessionService, SessionRepository, and JsonSessionRepository.
+- All user_id related session queries now consistently use repository methods for searching sessions by user_id.
+- Improved code comments and endpoint documentation for clarity and maintainability.
+## [2025-08-09] Refactor session creation usage
+
+- Refactored all usages of `SessionService.create_session` to accept `UserSession` directly in `api/auth.py` and `api/oauth.py`.
+- Removed unused imports of `SessionCreateRequest` in affected files.
+- Ensured IP tracking and device info logic is preserved.
+## [2025-08-09] Refactor SessionService.create_session
+- Refactored `SessionService.create_session` to accept a `UserSession` instance directly instead of `SessionCreateRequest`.
+- Removed unused import of `SessionCreateRequest`.
+- Updated docstring for clarity.
+- This change improves flexibility and simplifies session creation logic.
+## 2025-08-08
+
+### Enhanced
+
+- **完善JWT + Session混合认证架构**:
+  - 修复`extract_session_id_from_jwt`方法使用`decode_jwt_token_ignore_expiry`，确保JWT过期时仍能提取session_id
+  - 新增`generate_jwt_token_with_user_info`方法支持在JWT中包含用户基本信息
+  - JWT默认过期时间调整为15分钟，Session保持30天
+  - JWT将包含用户安全信息：username, display_name, role, permissions, status等
+  - 实现分级验证：常规API验证JWT+Session有效性，敏感API要求额外验证
+  - 支持用户信息更新后强制所有session过期，确保JWT数据一致性
+
 ## 2025-08-07
+
+### Changed
+
+- **重构Session架构以优化JWT认证系统**:
+  - 移除了`UserSession`模型中的token字段，消除了循环依赖问题
+  - **实现IP地址追踪机制** - 将IP地址移到SessionMetadata中仅用于安全分析，不用于验证：
+    - `initial_ip`: 记录session创建时的IP地址
+    - `last_known_ips`: 追踪最近使用的IP地址列表（最多保留5个）
+    - 用户在session有效期内可以合法地变更IP地址，不会影响认证
+    - 提供`update_ip_tracking()`方法用于安全审计和异常检测
+  - **重构登录流程使用session-based认证**:
+    - `POST /api/auth/login` 现在在密码验证成功后创建session并返回JWT token
+    - `POST /api/oauth/login` 同样使用session创建流程
+    - JWT token包含session_id用于后续的session查找和验证
+    - 移除了直接创建access token的旧方式，统一使用session-based认证
+  - **优化Session API结构** - 移除冗余的API端点：
+    - 移除 `POST /sessions/` (session创建通过login处理)
+    - 移除 `POST /{token}/refresh` (token刷新通过auth模块处理)  
+    - 移除 `POST /{token}/validate` (每个API调用自动验证)
+    - 保留session管理API用于用户设备管理和管理员维护
+  - 实现了配置化的JWT系统，支持环境变量配置issuer和算法
+  - 重构`SessionService`，将`get_session_by_token`重命名为`get_session_from_jwt`以提升语义准确性
+  - 改进了token生成策略，JWT动态生成而非存储在session中
+  - 更新了所有认证流程使用新的架构，确保关注点分离
+  - 保持了Fernet加密的向后兼容性，同时优先使用JWT
+  - 所有API和权限检查均已更新使用新的方法命名
 
 ### Fixed
 

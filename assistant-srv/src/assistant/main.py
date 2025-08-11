@@ -9,6 +9,7 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .api.auth import router as auth_router
 from .api.oauth import router as oauth_router
 from .api.sessions import router as sessions_router
 from .api.users import router as users_router
@@ -43,12 +44,13 @@ app.add_middleware(
 )
 
 # Include routers
+app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(oauth_router)
 app.include_router(sessions_router)
 
 
-@app.get("/", response_model=StatusResponseData)  # type: ignore
+@app.get("/", response_model=StatusResponseData)  # type: ignore[misc]
 async def root() -> StatusResponseData:
     """Root endpoint."""
     return StatusResponseData(
@@ -60,7 +62,7 @@ async def root() -> StatusResponseData:
     )
 
 
-@app.get("/health", response_model=HealthCheckResponseData)  # type: ignore
+@app.get("/health", response_model=HealthCheckResponseData)  # type: ignore[misc]
 async def health_check() -> HealthCheckResponseData:
     """Health check endpoint."""
     return HealthCheckResponseData(status="healthy", timestamp=datetime.now(timezone.utc).isoformat())

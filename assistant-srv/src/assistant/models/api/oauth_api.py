@@ -7,6 +7,19 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, EmailStr
 
+from .user_api import UserResponseData
+
+
+class OAuthLoginRequestData(BaseModel):
+    """OAuth login API request model."""
+
+    provider: str
+    provider_id: str
+    email: str
+    username: str
+    display_name: Optional[str] = None
+    avatar: Optional[str] = None
+
 
 class OAuthCallbackRequestData(BaseModel):
     """OAuth callback request data."""
@@ -29,15 +42,10 @@ class OAuthUserInfoData(BaseModel):
 class OAuthLoginResponseData(BaseModel):
     """OAuth login response data."""
 
-    user_id: str
-    username: str
-    email: str
-    display_name: Optional[str]
-    avatar_url: Optional[str]
-    role: str
-    status: str
+    access_token: str
+    token_type: str
+    user: UserResponseData
     is_new_user: bool
-    access_token: Optional[str] = None  # For future JWT implementation
 
 
 class OAuthProvidersResponseData(BaseModel):

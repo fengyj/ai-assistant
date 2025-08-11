@@ -18,8 +18,9 @@ def test_security_endpoints() -> None:
     print("1. Logging in as admin...")
     admin_login = {"username": "admin", "password": "admin123"}
 
-    response = client.post("/api/users/login", json=admin_login)
+    response = client.post("/api/auth/login", json=admin_login)
     admin_auth = response.json()
+    assert "access_token" in admin_auth, f"Login failed, response: {admin_auth}"
     admin_token = admin_auth["access_token"]
     admin_headers = {"Authorization": f"Bearer {admin_token}"}
     admin_id = admin_auth["user"]["id"]
@@ -46,7 +47,7 @@ def test_security_endpoints() -> None:
             user_id = test_user["id"]
             # Try to login with a common password or reset password
             user_login = {"username": test_user["username"], "password": "password123"}
-            response = client.post("/api/users/login", json=user_login)
+            response = client.post("/api/auth/login", json=user_login)
 
             if response.status_code != 200:
                 # If login fails, let's reset the password as admin
@@ -55,7 +56,7 @@ def test_security_endpoints() -> None:
                 # Note: This endpoint might not exist, so we'll handle the error
                 reset_response = client.post("/api/users/reset-password", json=password_reset, headers=admin_headers)
                 if reset_response.status_code == 200:
-                    response = client.post("/api/users/login", json=user_login)
+                    response = client.post("/api/auth/login", json=user_login)
                 else:
                     print("   Password reset failed, creating new user...")
                     # Create a new test user with unique name
@@ -73,7 +74,7 @@ def test_security_endpoints() -> None:
                     if create_response.status_code == 201:
                         print(f"   Created new user: {unique_username}")
                         user_login = {"username": unique_username, "password": "password123"}
-                        response = client.post("/api/users/login", json=user_login)
+                        response = client.post("/api/auth/login", json=user_login)
                     else:
                         print(f"   Failed to create user: {create_response.json()}")
                         return
@@ -94,7 +95,7 @@ def test_security_endpoints() -> None:
             if create_response.status_code == 201:
                 print(f"   Created new user: {unique_username}")
                 user_login = {"username": unique_username, "password": "password123"}
-                response = client.post("/api/users/login", json=user_login)
+                response = client.post("/api/auth/login", json=user_login)
             else:
                 print(f"   Failed to create user: {create_response.json()}")
                 return

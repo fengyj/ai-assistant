@@ -91,16 +91,16 @@ class JsonSessionRepository(SessionRepository):
         """Check if session exists."""
         return entity_id in self._sessions_cache
 
-    async def get_by_token(self, token: str) -> Optional[UserSession]:
-        """Get session by token."""
-        for session in self._sessions_cache.values():
-            if session.token == token:
-                return session
-        return None
-
     async def get_by_user_id(self, user_id: str) -> List[UserSession]:
         """Get all sessions for a user."""
         return [session for session in self._sessions_cache.values() if session.user_id == user_id]
+
+    async def get_by_session_id_and_user_id(self, session_id: str, user_id: str) -> Optional[UserSession]:
+        """Get session by ID and user ID."""
+        session = self._sessions_cache.get(session_id)
+        if session and session.user_id == user_id:
+            return session
+        return None
 
     async def get_active_sessions(self, user_id: str) -> List[UserSession]:
         """Get active sessions for a user."""

@@ -22,12 +22,15 @@ const AppContent: React.FC = () => {
       setAuthenticated(authStatus);
     };
 
-    // 监听自定义tokenChanged事件
+    // 监听新的authChanged事件（从新的auth.ts发出）
+    window.addEventListener('authChanged', checkAuth);
+    // 保持对旧的tokenChanged事件的兼容性
     window.addEventListener('tokenChanged', checkAuth);
     // 监听storage事件（当localStorage在其他标签页改变时触发）
     window.addEventListener('storage', checkAuth);
 
     return () => {
+      window.removeEventListener('authChanged', checkAuth);
       window.removeEventListener('tokenChanged', checkAuth);
       window.removeEventListener('storage', checkAuth);
     };

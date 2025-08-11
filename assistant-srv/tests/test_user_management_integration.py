@@ -26,8 +26,11 @@ class TestUserManagementIntegration:
     @pytest.fixture
     def user_service(self, temp_dir) -> UserService:
         """Create user service with temporary repository."""
-        repo = JsonUserRepository(temp_dir)
-        return UserService(repo)
+        user_repo = JsonUserRepository(temp_dir)
+        from assistant.repositories.json_session_repository import JsonSessionRepository
+
+        session_repo = JsonSessionRepository(temp_dir)
+        return UserService(user_repo, session_repo)
 
     @pytest.mark.asyncio
     async def test_complete_user_lifecycle(self, user_service) -> None:

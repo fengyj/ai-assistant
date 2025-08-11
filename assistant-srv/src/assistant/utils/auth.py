@@ -1,148 +1,111 @@
 """
 Authentication and authorization utilities for API endpoints.
+Session-based authentication system.
 """
 
-from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional, Union
-
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jose import JWTError, jwt
 from pydantic import BaseModel
 
-from ..core.config import config
+# Import centralized dependencies
+from ..core.dependencies import get_session_service, get_user_service
 from ..models import UserRole, UserStatus
-from ..repositories.json_user_repository import JsonUserRepository
+from ..models.api.exceptions import ForbiddenException, UnauthorizedException
+from ..services.session_service import SessionService
 from ..services.user_service import UserService
-
-# JWT Configuration
-SECRET_KEY = config.jwt_secret_key
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-
-class TokenData(BaseModel):
-    """Token data model."""
-
-    user_id: Optional[str] = None
-    username: Optional[str] = None
+from .security import TokenGenerator
 
 
 class CurrentUser(BaseModel):
     """Current authenticated user model."""
 
     id: str
+    session_id: str
     username: str
     email: str
     role: UserRole
     status: UserStatus
 
 
-# Security scheme
-security = HTTPBearer()
-
-
-JWTPayload = Dict[str, Union[str, int, float]]
-
-
-def create_access_token(data: JWTPayload, expires_delta: Optional[timedelta] = None) -> str:
-    """Create JWT access token."""
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode["exp"] = expire  # type: ignore
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-
-def get_user_service() -> UserService:
-    """Get user service instance."""
-    user_repository = JsonUserRepository()
-    return UserService(user_repository)
+credentials = HTTPBearer()
 
 
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
+    credentials: HTTPAuthorizationCredentials = Depends(credentials),
+    session_service: SessionService = Depends(get_session_service),
     user_service: UserService = Depends(get_user_service),
 ) -> CurrentUser:
-    """Get current authenticated user from JWT token."""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+    """Get current authenticated session from session token only (no JWT required)."""
+    credentials_exception = UnauthorizedException(
+        detail="Could not validate session",
+        headers={"WWW-Authenticate": "Session"},
     )
 
-    try:
-        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-        if user_id is None:
-            raise credentials_exception
-        token_data = TokenData(user_id=user_id)
-    except JWTError:
+    token_data = TokenGenerator.decode_jwt_token(credentials.credentials)
+
+    if token_data is None:
         raise credentials_exception
 
-    if token_data.user_id is None:
+    sid = TokenGenerator.extract_session_id_from_dict(token_data)
+    user_id = TokenGenerator.extract_user_id_from_dict(token_data)
+    user_name = TokenGenerator.extract_user_name_from_dict(token_data)
+    user_role = TokenGenerator.extract_user_role_from_dict(token_data)
+    user_email = TokenGenerator.extract_user_email_from_dict(token_data)
+    user_status = TokenGenerator.extract_user_status_from_dict(token_data)
+
+    if sid is None or user_id is None:
         raise credentials_exception
 
-    user = await user_service.get_user_by_id(token_data.user_id)
-    if user is None:
+    # Get session by JWT token (this automatically updates last_accessed and extends expiry)
+    session = await session_service.get_by_session_id_and_user_id(sid, user_id)
+    if session is None:
         raise credentials_exception
 
-    # Check if user is active
-    if user.status != UserStatus.ACTIVE:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user")
-
-    return CurrentUser(
-        id=user.id,
-        username=user.username,
-        email=user.email,
-        role=user.role,
-        status=user.status,
+    current_user = CurrentUser(
+        id=user_id,
+        session_id=sid,
+        username=user_name if user_name else "Unknown",
+        email=user_email if user_email else "Unknown",
+        role=UserRole(user_role),
+        status=UserStatus(user_status) if user_status else UserStatus.INACTIVE,
     )
 
-
-async def get_current_admin_user(
-    current_user: CurrentUser = Depends(get_current_user),
-) -> CurrentUser:
-    """Get current admin user (requires admin role)."""
-    if current_user.role != UserRole.ADMIN:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return current_user
 
 
-def require_user_or_admin():
-    """
-    Create a dependency that requires user to be accessing their own data
-    or be an admin. The actual user_id will be checked in the endpoint.
-    """
-
-    async def check_user_permission(
-        current_user: CurrentUser = Depends(get_current_user),
-    ) -> CurrentUser:
-        # This will be used in the endpoint to check the specific user_id
-        return current_user
-
-    return check_user_permission
+def get_user_or_admin(
+    current_user: CurrentUser = Depends(get_current_user),
+) -> CurrentUser:
+    """Check if the current session user is a user or an admin."""
+    if current_user.role not in [UserRole.USER, UserRole.ADMIN]:
+        raise ForbiddenException(detail="Access denied: You must be a user or an admin")
+    return current_user
 
 
-class RoleChecker:
-    """Role-based access control checker."""
-
-    def __init__(self, allowed_roles: List[UserRole]):
-        self.allowed_roles = allowed_roles
-
-    def __call__(self, current_user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
-        if current_user.role not in self.allowed_roles:
-            allowed_roles_str = [role.value for role in self.allowed_roles]
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Access denied: Requires one of {allowed_roles_str}",
-            )
-        return current_user
+def get_admin(
+    current_user: CurrentUser = Depends(get_current_user),
+) -> CurrentUser:
+    """Check if the current session user is an admin."""
+    if current_user.role != UserRole.ADMIN:
+        raise ForbiddenException(detail="Access denied: You must be an admin")
+    return current_user
 
 
-# Common role checkers
-admin_only = RoleChecker([UserRole.ADMIN])
-user_or_admin = RoleChecker([UserRole.USER, UserRole.ADMIN])
+def get_owner_or_admin(
+    user_id: str,
+    current_user: CurrentUser = Depends(get_current_user),
+) -> CurrentUser:
+    """Check if the current session user is the owner or an admin."""
+    if current_user.role != UserRole.ADMIN and user_id != current_user.id:
+        raise ForbiddenException(detail="Access denied: You can only access your own resources")
+    return current_user
+
+
+def get_owner(
+    user_id: str,
+    current_user: CurrentUser = Depends(get_current_user),
+) -> CurrentUser:
+    """Check if the current session user is the owner."""
+    if user_id != current_user.id:
+        raise ForbiddenException(detail="Access denied: You can only access your own resources")
+    return current_user

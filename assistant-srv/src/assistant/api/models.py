@@ -4,64 +4,54 @@ Model management API endpoints.
 
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
+# Import centralized dependencies
+from ..core.dependencies import get_model_service
+from ..models.api.exceptions import (
+    BadRequestException,
+    ForbiddenException,
+    NotFoundException,
+)
 from ..models.api.model_api import ModelDeleteResponseData, ModelRequestData, ModelResponseData
 from ..models.model import Model
-from ..models.user import UserRole
-from ..repositories.json_model_repository import JsonModelRepository
 from ..services.model_service import ModelService
-from ..utils.auth import CurrentUser, get_current_user
-from ..utils.permissions import require_owner_or_admin
+from ..utils.auth import CurrentUser, get_current_user, get_owner_or_admin
+
+router = APIRouter(prefix="/api/models", tags=["models"])
 
 
-# Dependency injection
-def get_model_service() -> ModelService:
-    """Get model service instance."""
-    model_repository = JsonModelRepository()
-    return ModelService(model_repository)
-
-
-router = APIRouter(prefix="/models", tags=["models"])
-
-
-@router.get("/{model_id}", response_model=ModelResponseData)
-@require_owner_or_admin
+@router.get("/user/{user_id}/{model_id}", response_model=ModelResponseData)
 async def get_model(
+    user_id: str,
     model_id: str,
-    current_user: CurrentUser = Depends(get_current_user),
+    current_user: CurrentUser = Depends(get_owner_or_admin),
     model_service: ModelService = Depends(get_model_service),
 ) -> ModelResponseData:
-    """Get model details: user sees own+system, admin sees only system."""
-    user_id = current_user.id
+    """
+    Get model details: user sees own+system, admin sees only system.
+    Now delegates user_id logic to service layer.
+    """
     role = current_user.role
-    model = await model_service.get_model(model_id)
+    model = await model_service.get_model(model_id, user_id, role)
     if not model:
-        raise HTTPException(status_code=404, detail="Model not found")
-    if role == UserRole.ADMIN:
-        if not model.is_system_model():
-            raise HTTPException(status_code=403, detail="Forbidden")
-    else:
-        if not model.is_system_model() and model.owner != user_id:
-            raise HTTPException(status_code=403, detail="Forbidden")
+        raise NotFoundException(detail="Model not found")
     return ModelResponseData.from_model(model)
 
 
-@router.get("/", response_model=List[ModelResponseData])
-@require_owner_or_admin
+@router.get("/user/{user_id}", response_model=List[ModelResponseData])
 async def list_models(
-    current_user: CurrentUser = Depends(get_current_user),
+    user_id: str,
+    current_user: CurrentUser = Depends(get_owner_or_admin),
     model_service: ModelService = Depends(get_model_service),
 ) -> List[ModelResponseData]:
     """List models: user sees own+system, admin sees only system."""
-    user_id = current_user.id
     role = current_user.role
     models = await model_service.list_models(user_id, role)
     return [ModelResponseData.from_model(m) for m in models]
 
 
 @router.post("/", response_model=ModelResponseData)
-@require_owner_or_admin
 async def add_model(
     model_data: ModelRequestData,
     current_user: CurrentUser = Depends(get_current_user),
@@ -74,32 +64,25 @@ async def add_model(
         model = await model_service.add_model(Model.from_dict(model_data.model_dump()), user_id, role)
         return ModelResponseData.from_model(model)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BadRequestException(detail=str(e))
 
 
-@router.patch("/{model_id}", response_model=ModelResponseData)
-@require_owner_or_admin
+@router.patch("/user/{user_id}/{model_id}", response_model=ModelResponseData)
 async def update_model(
+    user_id: str,
     model_id: str,
     updates: ModelRequestData,
-    current_user: CurrentUser = Depends(get_current_user),
+    current_user: CurrentUser = Depends(get_owner_or_admin),
     model_service: ModelService = Depends(get_model_service),
 ) -> ModelResponseData:
     """Update model: admin can only update system model, user only own."""
-    user_id = current_user.id
     role = current_user.role
 
     try:
         # Get existing model first
-        existing_model = await model_service.get_model(model_id)
+        existing_model = await model_service.get_model(model_id, user_id, role)
         if not existing_model:
-            raise HTTPException(status_code=404, detail="Model not found")
-        if role == UserRole.ADMIN:
-            if not existing_model.is_system_model():
-                raise HTTPException(status_code=403, detail="Forbidden")
-        else:
-            if not existing_model.is_system_model() and existing_model.owner != user_id:
-                raise HTTPException(status_code=403, detail="Forbidden")
+            raise NotFoundException(detail="Model not found")
 
         updated_model = Model.from_dict(updates.model_dump())
         updated_model.owner = existing_model.owner
@@ -119,39 +102,32 @@ async def update_model(
             updated_model.extra = existing_model.extra
         model = await model_service.update_model(updated_model)
         if not model:
-            raise HTTPException(status_code=404, detail="Model not found")
+            raise NotFoundException(detail="Model not found")
         return ModelResponseData.from_model(model)
     except PermissionError:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise ForbiddenException(detail="Forbidden")
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BadRequestException(detail=str(e))
 
 
-@router.delete("/{model_id}")
-@require_owner_or_admin
+@router.delete("/user/{user_id}/{model_id}")
 async def delete_model(
+    user_id: str,
     model_id: str,
-    current_user: CurrentUser = Depends(get_current_user),
+    current_user: CurrentUser = Depends(get_owner_or_admin),
     model_service: ModelService = Depends(get_model_service),
 ) -> ModelDeleteResponseData:
     """Delete model: admin can only delete system model, user only own."""
-    user_id = current_user.id
     role = current_user.role
     try:
         # Get existing model first
-        existing_model = await model_service.get_model(model_id)
+        existing_model = await model_service.get_model(model_id, user_id, role)
         if not existing_model:
-            raise HTTPException(status_code=404, detail="Model not found")
-        if role == UserRole.ADMIN:
-            if not existing_model.is_system_model():
-                raise HTTPException(status_code=403, detail="Forbidden")
-        else:
-            if not existing_model.is_system_model() and existing_model.owner != user_id:
-                raise HTTPException(status_code=403, detail="Forbidden")
+            raise NotFoundException(detail="Model not found")
 
         success = await model_service.delete_model(model_id)
         if not success:
-            raise HTTPException(status_code=404, detail="Model not found")
+            raise NotFoundException(detail="Model not found")
         return ModelDeleteResponseData()
     except PermissionError:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise ForbiddenException(detail="Forbidden")

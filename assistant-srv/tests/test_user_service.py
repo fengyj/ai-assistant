@@ -16,8 +16,11 @@ class TestUserService:
     @pytest.fixture
     def user_service(self, tmp_path):
         """Create user service with temporary repository."""
-        repo = JsonUserRepository(str(tmp_path))
-        return UserService(repo)
+        user_repo = JsonUserRepository(str(tmp_path))
+        from assistant.repositories.json_session_repository import JsonSessionRepository
+
+        session_repo = JsonSessionRepository(str(tmp_path))
+        return UserService(user_repo, session_repo)
 
     @pytest.mark.asyncio
     async def test_create_user(self, user_service):

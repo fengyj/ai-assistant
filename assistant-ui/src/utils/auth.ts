@@ -1,46 +1,89 @@
-// Utility functions for authentication
-export const getToken = () => localStorage.getItem("token");
+// Enhanced authentication utilities with JWT + Session support
 
-export const setToken = (token: string) => {
-  localStorage.setItem("token", token);
-  // 触发自定义事件，用于通知其他组件token变化
-  window.dispatchEvent(new CustomEvent('tokenChanged'));
+export interface UserInfo {
+  id: string;
+  username: string;
+  display_name?: string;
+  role: string;
+  status: string;
+  email?: string;
+  permissions?: string[];
+}
+
+export interface AuthTokens {
+  access_token: string;
+  session_id: string;
+  expires_in: number;
+  user: UserInfo;
+}
+
+// Token management
+export const getAccessToken = () => localStorage.getItem("access_token");
+export const getSessionId = () => localStorage.getItem("session_id");
+export const getUserInfo = (): UserInfo | null => {
+  const userStr = localStorage.getItem("user_info");
+  return userStr ? JSON.parse(userStr) : null;
 };
 
-export const removeToken = () => {
-  localStorage.removeItem("token");
-  // 触发自定义事件，用于通知其他组件token变化
-  window.dispatchEvent(new CustomEvent('tokenChanged'));
-};
-
-export const isAuthenticated = () => {
-  const token = getToken();
-  if (!token) return false;
+export const setAuthData = (tokens: AuthTokens) => {
+  localStorage.setItem("access_token", tokens.access_token);
+  localStorage.setItem("session_id", tokens.session_id);
+  localStorage.setItem("user_info", JSON.stringify(tokens.user));
+  localStorage.setItem("token_expires_at", (Date.now() + tokens.expires_in * 1000).toString());
   
-  try {
-    // 检查token是否过期（简单的JWT解析）
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const currentTime = Math.floor(Date.now() / 1000);
-    return payload.exp > currentTime;
-  } catch (error) {
-    // 如果token格式不正确，则认为未认证
-    console.warn('Invalid token format:', error);
-    removeToken();
-    return false;
-  }
+  // 触发自定义事件，用于通知其他组件token变化
+  window.dispatchEvent(new CustomEvent('authChanged', { detail: tokens.user }));
 };
 
-// 从token中获取用户信息
-export const getUserInfo = () => {
-  const token = getToken();
-  if (!token) return null;
+export const clearAuthData = () => {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("session_id");
+  localStorage.removeItem("user_info");
+  localStorage.removeItem("token_expires_at");
   
+  // 触发自定义事件，用于通知其他组件token变化
+  window.dispatchEvent(new CustomEvent('authChanged', { detail: null }));
+};
+
+// 检查access token是否即将过期（5分钟内）
+export const isTokenNearExpiry = (): boolean => {
+  const expiresAt = localStorage.getItem("token_expires_at");
+  if (!expiresAt) return true;
+  
+  const expiryTime = parseInt(expiresAt);
+  const now = Date.now();
+  const fiveMinutes = 5 * 60 * 1000; // 5分钟
+  
+  return (expiryTime - now) < fiveMinutes;
+};
+
+// 检查用户是否已认证（有有效的session）
+export const isAuthenticated = (): boolean => {
+  const accessToken = getAccessToken();
+  const sessionId = getSessionId();
+  
+  // 如果没有session_id，说明没有长期认证
+  if (!sessionId) return false;
+  
+  // 如果有session但没有access token，需要刷新
+  if (!accessToken) return true; // 这里返回true，让拦截器去刷新token
+  
+  // 如果access token即将过期，仍然认为已认证，让拦截器处理刷新
+  return true;
+};
+
+// 从JWT中解析用户信息（备用方法）
+export const parseTokenUserInfo = (token: string): Partial<UserInfo> | null => {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
     return {
       id: payload.sub,
       username: payload.username,
-      // 可以根据需要添加更多字段
+      display_name: payload.display_name,
+      role: payload.role,
+      status: payload.status,
+      email: payload.email,
+      permissions: payload.permissions
     };
   } catch (error) {
     console.warn('Failed to parse user info from token:', error);
@@ -49,7 +92,62 @@ export const getUserInfo = () => {
 };
 
 // 登出功能
-export const logout = () => {
-  removeToken();
-  // 可以在这里添加其他登出逻辑，如清除其他存储的数据
+export const logout = async (): Promise<void> => {
+  const accessToken = getAccessToken();
+  
+  // 如果有access token，尝试调用后端登出API
+  if (accessToken) {
+    try {
+      // 动态导入API实例以避免循环依赖
+      const { logout: logoutAPI } = await import('../api/auth');
+      await logoutAPI();
+      return; // API调用成功，已在auth.ts中处理了清理和跳转
+    } catch (error) {
+      console.warn('Logout API call failed:', error);
+      // 继续本地清理
+    }
+  }
+  
+  clearAuthData();
 };
+
+// 刷新access token
+export const refreshAccessToken = async (): Promise<string | null> => {
+  const sessionId = getSessionId();
+  
+  if (!sessionId) {
+    clearAuthData();
+    return null;
+  }
+  
+  try {
+    // 动态导入API实例以避免循环依赖
+    const { default: api } = await import('../api/request');
+    
+    const response = await api.post('/api/auth/refresh', {
+      session_id: sessionId,
+      extend_session: true
+    });
+    
+    const newAccessToken = response.data.access_token;
+    const expiresIn = response.data.expires_in || 900; // 默认15分钟
+    
+    localStorage.setItem("access_token", newAccessToken);
+    localStorage.setItem("token_expires_at", (Date.now() + expiresIn * 1000).toString());
+    
+    return newAccessToken;
+    
+  } catch (error) {
+    console.error('Token refresh failed:', error);
+    clearAuthData();
+    return null;
+  }
+};
+
+// Legacy support - 保持向后兼容
+export const getToken = getAccessToken;
+export const setToken = (token: string) => {
+  localStorage.setItem("access_token", token);
+  window.dispatchEvent(new CustomEvent('tokenChanged'));
+};
+export const removeToken = clearAuthData;

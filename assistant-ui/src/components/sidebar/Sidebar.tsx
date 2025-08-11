@@ -30,8 +30,17 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
       setUserInfo(getUserInfo());
     };
 
+    // 监听新的authChanged事件
+    window.addEventListener('authChanged', handleAuthChange);
+    // 保持对旧事件的兼容性
     window.addEventListener('authStateChanged', handleAuthChange);
-    return () => window.removeEventListener('authStateChanged', handleAuthChange);
+    window.addEventListener('tokenChanged', handleAuthChange);
+    
+    return () => {
+      window.removeEventListener('authChanged', handleAuthChange);
+      window.removeEventListener('authStateChanged', handleAuthChange);
+      window.removeEventListener('tokenChanged', handleAuthChange);
+    };
   }, []);
 
   // 处理登出按钮点击
@@ -123,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
                       {conv.title}
                     </div>
                     <div className="conversation-meta">
-                      <span className="conversation-time">{conv.lastUpdated}</span>
+                      <span className="conversation-time">{conv.time}</span>
                       <button 
                         className="conversation-delete-btn"
                         title="删除对话"
@@ -149,9 +158,11 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
             </div>
             {!isCollapsed && (
               <div className="user-info">
-                <div className="user-name">{userInfo?.username || '用户'}</div>
+                <div className="user-name">
+                  {userInfo?.display_name || userInfo?.username || '用户'}
+                </div>
                 <div className="user-status-text">
-                  已登录
+                  {userInfo?.role === 'admin' ? '管理员' : '已登录'}
                 </div>
               </div>
             )}

@@ -20,8 +20,9 @@ def test_security_endpoints() -> None:
     print("1. Logging in as admin...")
     admin_login = {"username": "admin", "password": "admin123"}
 
-    response = client.post("/api/users/login", json=admin_login)
+    response = client.post("/api/auth/login", json=admin_login)
     admin_auth = response.json()
+    assert "access_token" in admin_auth, f"Login failed, response: {admin_auth}"
     admin_token = admin_auth["access_token"]
     admin_headers = {"Authorization": f"Bearer {admin_token}"}
     admin_id = admin_auth["user"]["id"]
@@ -52,7 +53,7 @@ def test_security_endpoints() -> None:
     print("\n3. Logging in as test user...")
     user_login = {"username": unique_username, "password": "testpass123"}
 
-    response = client.post("/api/users/login", json=user_login)
+    response = client.post("/api/auth/login", json=user_login)
     user_auth = response.json()
     user_token = user_auth["access_token"]
     user_headers = {"Authorization": f"Bearer {user_token}"}

@@ -42,7 +42,7 @@ def test_decorator_permissions() -> None:
     print("\n3. 测试登录端点...")
     login_data = {"username": "invalid_user", "password": "invalid_password"}
     try:
-        response = requests.post(f"{BASE_URL}/api/users/login", json=login_data)
+        response = requests.post(f"{BASE_URL}/api/auth/login", json=login_data)
         print(f"   状态码: {response.status_code}")
         if response.status_code == 401:
             print("   ✅ 登录端点正常响应认证失败")

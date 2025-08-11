@@ -13,13 +13,13 @@ class SessionRepository(BaseRepository[UserSession]):
     """Session repository interface."""
 
     @abstractmethod
-    async def get_by_token(self, token: str) -> Optional[UserSession]:
-        """Get session by token."""
+    async def get_by_user_id(self, user_id: str) -> List[UserSession]:
+        """Get all sessions for a user."""
         pass
 
     @abstractmethod
-    async def get_by_user_id(self, user_id: str) -> List[UserSession]:
-        """Get all sessions for a user."""
+    async def get_by_session_id_and_user_id(self, session_id: str, user_id: str) -> Optional[UserSession]:
+        """Get session by ID and user ID."""
         pass
 
     @abstractmethod

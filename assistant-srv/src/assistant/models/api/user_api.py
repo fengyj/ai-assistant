@@ -42,13 +42,6 @@ class RoleChangeRequestData(BaseModel):
     reason: Optional[str] = None
 
 
-class LoginRequestData(BaseModel):
-    """Login API request model."""
-
-    username: str
-    password: str
-
-
 class PasswordChangeRequestData(BaseModel):
     """Password change API request model."""
 
@@ -63,17 +56,6 @@ class UserRoleUpdateRequestData(BaseModel):
     reason: Optional[str] = None
 
 
-class OAuthLoginRequestData(BaseModel):
-    """OAuth login API request model."""
-
-    provider: str
-    provider_id: str
-    email: str
-    username: str
-    display_name: Optional[str] = None
-    avatar: Optional[str] = None
-
-
 class UserResponseData(BaseModel):
     """User response API model."""
 
@@ -86,14 +68,6 @@ class UserResponseData(BaseModel):
     status: str
     created_at: str
     last_login: Optional[str] = None
-
-
-class TokenResponseData(BaseModel):
-    """Token response API model."""
-
-    access_token: str
-    token_type: str
-    user: UserResponseData
 
 
 class PasswordChangeResponseData(BaseModel):

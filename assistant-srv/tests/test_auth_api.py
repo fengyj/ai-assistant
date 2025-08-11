@@ -29,7 +29,7 @@ async def test_user_api() -> None:
         login_data = {"username": "admin", "password": "admin123"}
 
         try:
-            response = await client.post(f"{BASE_URL}/api/users/login", json=login_data)
+            response = await client.post(f"{BASE_URL}/api/auth/login", json=login_data)
             print(f"   Status: {response.status_code}")
 
             if response.status_code == 200:

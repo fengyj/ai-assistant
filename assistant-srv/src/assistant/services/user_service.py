@@ -7,6 +7,7 @@ from typing import List, Optional
 
 from ..core.exceptions import InvalidCredentialsError, UserAlreadyExistsError, UserNotFoundError, ValidationError
 from ..models import User, UserCreateRequest, UserRole, UserStatus, UserUpdateRequest
+from ..repositories.session_repository import SessionRepository
 from ..repositories.user_repository import UserRepository
 from ..utils.security import PasswordHasher
 
@@ -14,10 +15,11 @@ from ..utils.security import PasswordHasher
 class UserService:
     """User service for business logic."""
 
-    def __init__(self, user_repository: UserRepository):
+    def __init__(self, user_repository: UserRepository, session_repository: SessionRepository):
         """Initialize user service."""
         self.user_repository = user_repository
         self.password_hasher = PasswordHasher()
+        self._session_repository = session_repository
 
     async def create_user(self, request: UserCreateRequest) -> User:
         """Create a new user."""
@@ -78,6 +80,12 @@ class UserService:
         if user.status != UserStatus.ACTIVE:
             raise InvalidCredentialsError("User account is not active")
 
+        # Check if password hash needs upgrading (for security improvements)
+        if self.password_hasher.needs_rehash(user.password_hash):
+            # Rehash the password with current settings and update user
+            user.password_hash = self.password_hasher.hash_password(password)
+            await self.user_repository.update(user)
+
         # Update last login
         user.last_login = datetime.now(timezone.utc)
         user.usage_stats.total_sessions += 1
@@ -118,7 +126,19 @@ class UserService:
         if request.preferences is not None:
             user.profile.preferences.update(request.preferences)
 
-        return await self.user_repository.update(user)
+        # Check if any JWT-sensitive fields were updated
+        jwt_sensitive_fields = ["username", "display_name"]
+        should_invalidate_sessions = any(getattr(request, field, None) is not None for field in jwt_sensitive_fields)
+
+        # Update user in database
+        updated_user = await self.user_repository.update(user)
+
+        # Force session expiration if JWT-sensitive fields were changed
+        if should_invalidate_sessions and self._session_repository:
+            # Directly expire sessions in session_repository
+            await self._session_repository.terminate_user_sessions(user_id)
+
+        return updated_user
 
     async def delete_user(self, user_id: str) -> bool:
         """Delete a user."""
