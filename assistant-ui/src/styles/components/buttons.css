@@ -23,6 +23,23 @@
   @apply p-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded transition-colors duration-200 shadow-sm hover:shadow-md;
 }
 
+/* ===== 模态框按钮样式 ===== */
+.btn-modal-cancel {
+  @apply px-4 py-2 text-sm font-medium;
+  @apply text-gray-700 dark:text-gray-300;
+  @apply bg-gray-100 dark:bg-gray-600;
+  @apply hover:bg-gray-200 dark:hover:bg-gray-500;
+  @apply rounded-lg transition-colors;
+}
+
+.btn-modal-save {
+  @apply px-4 py-2 text-sm font-medium text-white;
+  @apply bg-blue-600 hover:bg-blue-700;
+  @apply disabled:bg-gray-400 disabled:cursor-not-allowed;
+  @apply rounded-lg transition-colors;
+  @apply flex items-center space-x-2;
+}
+
 .send-btn.cancel-mode {
   @apply bg-red-600 hover:bg-red-700 text-white;
 }
