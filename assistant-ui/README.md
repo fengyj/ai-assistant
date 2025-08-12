@@ -113,7 +113,7 @@
 - **遵循语义化设计原则**：语义化组件类设计，按功能模块分组，使用描述性命名
   - 按模块分组：比如`.btn-*`、`.message-*`、`.sidebar-*`、`.chat-*`
   - 描述功能而非样式：比如`.btn-primary`（不是`.blue-button`）
-- **合理组织文件结构**：在 `src/index.css` 中按顺序组织
+- **合理组织文件结构**：在 `src/styles/index.css` 中按顺序组织
   - 首先重置基础样式
   - 然后是布局组件（比如`.app-container`、`.main-layout`）
   - 然后是各个功能组件部分
