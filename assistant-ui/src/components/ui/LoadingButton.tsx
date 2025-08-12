@@ -65,9 +65,7 @@ export const LoadingButton: React.FC<LoadingButtonProps> = ({
       {...props}
       disabled={isDisabled}
       className={`
-        relative inline-flex items-center justify-center font-medium rounded-md border transition-colors duration-200
-        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-        disabled:opacity-50 disabled:cursor-not-allowed
+        btn-base
         ${variantClasses[variant]}
         ${sizeClasses[size]}
         ${className}

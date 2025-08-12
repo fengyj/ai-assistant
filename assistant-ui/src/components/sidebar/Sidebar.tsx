@@ -204,7 +204,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
       )}
 
       {/* 底部：用户状态栏 */}
-      <div className="user-status" style={{ marginTop: 'auto' }}>
+      <div className="user-status">
         {authenticated ? (
           <div className="user-status-content">
             <div className="user-avatar">
@@ -248,15 +248,15 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
       {/* 登出确认对话框 */}
       {showLogoutDialog && (
         <div 
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          className="modal-overlay"
           onClick={handleDialogBackdropClick}
         >
           <div 
-            className="bg-white dark:bg-gray-900 rounded-xl p-6 w-80 max-w-sm mx-4 shadow-2xl border border-gray-200 dark:border-gray-700"
+            className="modal-content p-6 w-80 max-w-sm mx-4 shadow-2xl border border-gray-200 dark:border-gray-700"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mr-3">
+              <div className="icon-container w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full mr-3">
                 <ArrowRightOnRectangleIcon className="w-5 h-5 text-red-600 dark:text-red-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">

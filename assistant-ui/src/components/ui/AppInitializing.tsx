@@ -18,11 +18,11 @@ export const AppInitializing: React.FC<AppInitializingProps> = ({
   showDetails = false
 }) => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+    <div className="centered-page min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="text-center max-w-md mx-auto px-4">
         {/* Logo 或品牌区域 */}
         <div className="mb-8">
-          <div className="mx-auto w-16 h-16 bg-blue-500 rounded-lg flex items-center justify-center">
+          <div className="icon-container mx-auto w-16 h-16 bg-blue-500">
             <span className="text-white text-2xl font-bold">AI</span>
           </div>
           <h1 className="mt-4 text-2xl font-semibold text-gray-900 dark:text-gray-100">

@@ -78,17 +78,17 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="mb-6 text-2xl font-bold text-center text-gray-800">登录</h2>
+    <div className="centered-page bg-gray-50 dark:bg-gray-900">
+      <form onSubmit={handleSubmit} className="login-card p-8 w-96">
+        <h2 className="mb-6 text-2xl font-bold text-center text-gray-800 dark:text-gray-100">登录</h2>
         
         <div className="mb-4">
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="username" className="login-label">
             用户名
           </label>
           <input
             id="username"
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="login-input"
             type="text"
             placeholder="请输入用户名"
             value={username}
@@ -99,12 +99,12 @@ const Login: React.FC = () => {
         </div>
         
         <div className="mb-6">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="password" className="login-label">
             密码
           </label>
           <input
             id="password"
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="login-input"
             type="password"
             placeholder="请输入密码"
             value={password}
@@ -115,13 +115,13 @@ const Login: React.FC = () => {
         </div>
         
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm">
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-md text-sm">
             {error}
           </div>
         )}
         
         <button 
-          className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white p-3 rounded-md font-medium transition-colors duration-200 flex items-center justify-center" 
+          className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 dark:disabled:bg-blue-700 text-white p-3 rounded-md font-medium transition-colors duration-200 centered-container" 
           type="submit"
           disabled={isLoading}
         >

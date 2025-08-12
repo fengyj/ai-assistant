@@ -282,7 +282,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
                 placeholder="输入消息..."
                 className="chat-input-field"
                 rows={1}
-                style={{ minHeight: '24px', maxHeight: '120px', resize: 'none', overflow: 'hidden' }}
                 value={inputValue}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}

@@ -40,7 +40,7 @@ export const ModelInfoModal: React.FC<ModelInfoModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="centered-container fixed inset-0 z-50">
       {/* 背景遮罩 */}
       <div 
         className="absolute inset-0 bg-black bg-opacity-50" 
@@ -48,7 +48,7 @@ export const ModelInfoModal: React.FC<ModelInfoModalProps> = ({
       />
       
       {/* 模态框内容 */}
-      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[80vh] overflow-y-auto">
+      <div className="modal-content w-full max-w-md mx-4 max-h-[80vh] overflow-y-auto">
         {/* 头部 */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-3">
@@ -123,7 +123,7 @@ export const ModelInfoModal: React.FC<ModelInfoModalProps> = ({
               Token 使用情况
             </h3>
             {isLoading ? (
-              <div className="flex items-center justify-center py-4">
+              <div className="centered-container py-4">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500" />
                 <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
                   加载中...
@@ -160,12 +160,12 @@ export const ModelInfoModal: React.FC<ModelInfoModalProps> = ({
                       {formatUsagePercentage(modelInfo.tokenUsage.used, modelInfo.tokenUsage.total)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                  <div className="progress-bar-container">
                     <div 
-                      className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                      className="progress-bar"
                       style={{ 
-                        width: `${formatUsagePercentage(modelInfo.tokenUsage.used, modelInfo.tokenUsage.total)}%` 
-                      }}
+                        '--progress-width': `${formatUsagePercentage(modelInfo.tokenUsage.used, modelInfo.tokenUsage.total)}%` 
+                      } as React.CSSProperties}
                     />
                   </div>
                 </div>

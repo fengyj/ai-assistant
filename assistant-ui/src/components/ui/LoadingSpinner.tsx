@@ -40,7 +40,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   showBackground = true
 }) => {
   const content = (
-    <div className={`flex flex-col items-center justify-center ${className}`}>
+    <div className={`centered-container flex-col ${className}`}>
       {/* 旋转加载图标 */}
       <div
         className={`animate-spin rounded-full border-b-2 border-blue-500 ${sizeClasses[size]} mb-3`}
@@ -59,7 +59,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
   if (fullScreen) {
     return (
-      <div className={`fixed inset-0 z-50 flex items-center justify-center ${
+      <div className={`centered-container fixed inset-0 z-50 ${
         showBackground 
           ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm' 
           : ''
@@ -70,7 +70,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   }
 
   return (
-    <div className={`flex items-center justify-center p-8 ${
+    <div className={`centered-container p-8 ${
       showBackground 
         ? 'bg-gray-50 dark:bg-gray-800 rounded-lg' 
         : ''

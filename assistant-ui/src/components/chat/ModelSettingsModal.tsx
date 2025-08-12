@@ -47,7 +47,7 @@ export const ModelSettingsModal: React.FC<ModelSettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="centered-container fixed inset-0 z-50">
       {/* 背景遮罩 */}
       <div 
         className="absolute inset-0 bg-black bg-opacity-50" 
@@ -55,7 +55,7 @@ export const ModelSettingsModal: React.FC<ModelSettingsModalProps> = ({
       />
       
       {/* 模态框内容 */}
-      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 max-h-[80vh] overflow-y-auto">
+      <div className="modal-content w-full max-w-md mx-4 max-h-[80vh] overflow-y-auto">
         {/* 头部 */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-3">

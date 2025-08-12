@@ -1,3 +1,4 @@
+
 @import "tailwindcss";
 
 /* 配置Tailwind CSS v4的dark mode使用class策略 */
@@ -179,7 +180,6 @@ body {
 
 .user-status {
   @apply p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900;
-  margin-top: auto;
 }
 
 /* 聊天区域组件 */
@@ -206,53 +206,6 @@ body {
 
 .btn-icon {
   @apply bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 p-2.5 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
-}
-
-.btn-base {
-  @apply relative inline-flex items-center justify-center font-medium rounded-md border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed;
-}
-
-/* 进度条组件 */
-.progress-bar-container {
-  @apply w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2;
-}
-
-.progress-bar {
-  @apply bg-blue-500 h-2 rounded-full transition-all duration-300;
-  width: var(--progress-width, 0%);
-}
-
-/* 通用布局模式 */
-.centered-container {
-  @apply flex items-center justify-center;
-}
-
-.centered-page {
-  @apply flex flex-col items-center justify-center min-h-screen;
-}
-
-.modal-overlay {
-  @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50;
-}
-
-.modal-content {
-  @apply bg-white dark:bg-gray-800 rounded-lg shadow-xl relative;
-}
-
-.login-card {
-  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md;
-}
-
-.login-input {
-  @apply w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
-}
-
-.login-label {
-  @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2;
-}
-
-.icon-container {
-  @apply flex items-center justify-center rounded-lg;
 }
 
 /* 侧边栏详细样式 */
@@ -394,9 +347,6 @@ body {
 
 .chat-input-field {
   @apply w-full resize-none border-0 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-0 text-sm leading-relaxed;
-  min-height: 24px;
-  max-height: 120px;
-  overflow: hidden;
 }
 
 .chat-input-toolbar {
