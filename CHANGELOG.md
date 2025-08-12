@@ -1,5 +1,16 @@
 ## [Unreleased]
 
+### File Structure Refactoring
+
+- **Reorganized CSS files**: Moved main `index.css` from `src/` to `src/styles/` directory for better organization
+- **Updated imports**: Updated `main.tsx` to import styles from the new location (`./styles/index.css`)
+- **Improved project structure**: Aligned with existing styles organization where other CSS files were already placed in the styles directory
+
+### UI Improvements
+
+- **Login page icon standardization**: Replaced custom SVG loading spinner with Heroicons `ArrowPathIcon` for consistency with the rest of the application
+- **Better icon management**: All loading states now use the same standardized icon from the project's icon library
+
 ### UI Improvements for Sidebar and Chat Interface
 
 - **Unified header heights**: Fixed alignment between sidebar header and chat header by setting consistent height (h-16)
