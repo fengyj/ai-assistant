@@ -1,3 +1,15 @@
+/* Keyframes for animations */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ===== Markdown 渲染器样式 ===== */
 .markdown-content {
   @apply text-gray-900 dark:text-gray-100 leading-relaxed;
@@ -5,16 +17,29 @@
 
 /* ===== 代码块样式 ===== */
 .code-block-wrapper {
-  @apply rounded-lg overflow-hidden relative;
-  box-shadow: none !important;
+  @apply my-6 md:my-8;
+  /* 移除所有内部边距，让header和内容紧密相连 */
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 .code-block-header {
-  @apply flex items-center justify-between text-xs;
+  @apply px-3 md:px-4 py-2 border rounded-t-lg flex items-center justify-between;
+  @apply bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-600;
+  /* 移除底部边距 */
+  margin-bottom: 0 !important;
+}
+
+.code-block-language {
+  @apply text-xs md:text-sm font-medium uppercase tracking-wide;
+  @apply text-gray-600 dark:text-gray-400;
 }
 
 .code-block-copy-btn {
-  @apply opacity-0 transition-opacity duration-200 p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 rounded;
+  @apply relative transition-all duration-200 px-2 py-1 rounded;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
+  @apply opacity-0;
+  @apply hover:bg-blue-100 dark:hover:bg-blue-900;
 }
 
 .code-block-wrapper:hover .code-block-copy-btn {
@@ -27,156 +52,365 @@
   /* 统一样式设置，替代customStyle */
   margin: 0 !important;
   border-radius: 0 0 0.5rem 0.5rem !important;
-  font-size: 0.875rem !important;
-  border: 1px solid !important;
+  /* 与header紧密连接，移除顶部边框 */
+  border: 1px solid rgb(209 213 219) !important;
   border-top: none !important;
+  /* 添加背景色和内边距，与Mermaid保持一致 */
+  background-color: #ffffff !important;
+  padding: 0.75rem 1rem !important;
 }
 
-/* 明亮主题下的代码块样式 */
-.markdown-content .syntax-highlighter {
-  border-color: #e5e7eb !important;
-  background-color: #f9fafb !important;
+.dark .markdown-content .syntax-highlighter {
+  border-color: rgb(75 85 99) !important;
+  background-color: #111827 !important;
 }
 
-/* 深色主题下的代码块样式 */
-html.dark .markdown-content .syntax-highlighter {
-  border-color: #374151 !important;
-  background-color: #1f2937 !important;
+.markdown-content .syntax-highlighter code {
+  font-size: 0.875rem !important;
+  /* 移除code元素的额外样式 */
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
 }
 
 .markdown-content .syntax-highlighter pre {
-  @apply m-0 bg-transparent font-mono;
+  /* 移除pre元素的额外样式 */
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
 }
 
-.markdown-content .inline-code {
-  @apply font-mono;
+/* ===== 内联代码样式 ===== */
+.chat-inline-code {
+  @apply bg-gray-100 dark:bg-gray-800;
+  @apply text-pink-700 dark:text-pink-400;
+  @apply px-1.5 py-0.5 rounded;
+  @apply text-[0.95em] font-mono;
+  @apply border border-gray-200 dark:border-gray-700;
 }
 
-/* ===== 表格样式 ===== */
-.table-wrapper {
-  @apply bg-white dark:bg-gray-900;
+/* ===== 表格组件样式 ===== */
+.chat-table-wrapper {
+  @apply overflow-x-auto my-4;
 }
 
-.table-wrapper table {
-  @apply w-full;
+.chat-table-base {
+  @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700;
 }
 
-/* ===== 图像样式 ===== */
-.image-wrapper {
-  @apply text-center;
+.chat-table-head {
+  @apply bg-gray-50 dark:bg-gray-800;
 }
 
-.image-wrapper img {
-  @apply mx-auto;
+.chat-table-body {
+  @apply bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700;
+}
+
+.chat-table-row {
+  @apply hover:bg-gray-50 dark:hover:bg-gray-800;
+}
+
+.chat-table-header-cell {
+  @apply px-6 py-3 text-left text-xs font-medium;
+  @apply text-gray-500 dark:text-gray-400;
+  @apply uppercase tracking-wider;
+}
+
+.chat-table-data-cell {
+  @apply px-6 py-4 whitespace-nowrap text-sm;
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+/* ===== 图片组件样式 ===== */
+.chat-image-wrapper {
+  @apply my-4;
+}
+
+.chat-image-base {
+  @apply max-w-full h-auto rounded-lg shadow-sm;
+}
+
+/* ===== 引用块样式 ===== */
+.chat-blockquote-base {
+  @apply border-l-4 border-gray-300 dark:border-gray-600;
+  @apply pl-4 py-2 my-4;
+  @apply italic text-gray-600 dark:text-gray-400;
+  @apply bg-gray-50 dark:bg-gray-800 rounded-r-lg;
+}
+
+/* ===== 标题样式 ===== */
+.chat-heading-1 {
+  @apply text-3xl font-bold text-gray-900 dark:text-gray-100;
+  @apply mt-8 mb-4 border-b border-gray-200 dark:border-gray-700 pb-2;
+}
+
+.chat-heading-2 {
+  @apply text-2xl font-semibold text-gray-900 dark:text-gray-100;
+  @apply mt-6 mb-3 border-b border-gray-200 dark:border-gray-700 pb-2;
+}
+
+.chat-heading-3 {
+  @apply text-xl font-semibold text-gray-900 dark:text-gray-100;
+  @apply mt-5 mb-3;
+}
+
+.chat-heading-4 {
+  @apply text-lg font-semibold text-gray-900 dark:text-gray-100;
+  @apply mt-4 mb-2;
+}
+
+.chat-heading-5 {
+  @apply text-base font-semibold text-gray-900 dark:text-gray-100;
+  @apply mt-4 mb-2;
+}
+
+.chat-heading-6 {
+  @apply text-sm font-semibold text-gray-900 dark:text-gray-100;
+  @apply mt-4 mb-2;
+}
+
+.markdown-content .syntax-highlighter code {
+  font-size: 0.875rem !important;
 }
 
 /* ===== Mermaid 图表样式 ===== */
-.mermaid-wrapper {
-  @apply rounded-lg overflow-hidden relative;
+.chat-mermaid-wrapper {
+  @apply my-6 md:my-8;
 }
 
-.mermaid-header {
-  @apply flex items-center justify-between text-xs;
+.chat-mermaid-header {
+  @apply px-3 md:px-4 py-2 border rounded-t-lg flex items-center justify-between;
 }
 
-.mermaid-copy-btn {
-  @apply opacity-0 transition-opacity duration-200 p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 rounded;
+.chat-mermaid-header--success {
+  @apply bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-600;
 }
 
-.mermaid-wrapper:hover .mermaid-copy-btn {
+.chat-mermaid-header--error {
+  @apply bg-red-50 dark:bg-red-900 border-red-300 dark:border-red-700;
+}
+
+.chat-mermaid-title {
+  @apply text-xs md:text-sm font-medium uppercase tracking-wide;
+}
+
+.chat-mermaid-title--success {
+  @apply text-gray-600 dark:text-gray-400;
+}
+
+.chat-mermaid-title--error {
+  @apply text-red-700 dark:text-red-300;
+}
+
+.chat-mermaid-copy-btn {
+  @apply relative transition-all duration-200 px-2 py-1 rounded;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
+  @apply opacity-0;
+}
+
+.chat-mermaid-wrapper:hover .chat-mermaid-copy-btn {
   @apply opacity-100;
 }
 
-.mermaid-chart {
-  @apply flex justify-center items-center min-h-[200px];
+.chat-mermaid-copy-btn--default {
+  @apply hover:bg-blue-100 dark:hover:bg-blue-900;
 }
 
-.mermaid-chart svg {
-  @apply max-w-full h-auto;
+.chat-mermaid-copy-btn--disabled {
+  @apply opacity-60 cursor-not-allowed;
 }
 
-/* ===== 用户消息中的 Markdown 样式覆盖 ===== */
-.message-bubble-user .markdown-content {
-  @apply text-gray-900 dark:text-white;
+.chat-mermaid-toggle-btn {
+  @apply ml-2 px-2 py-1 text-xs md:text-sm rounded;
+  @apply bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200;
+  @apply hover:bg-gray-300 dark:hover:bg-gray-600;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
 }
 
-.message-bubble-user .markdown-content h1,
-.message-bubble-user .markdown-content h2,
-.message-bubble-user .markdown-content h3,
-.message-bubble-user .markdown-content h4,
-.message-bubble-user .markdown-content h5,
-.message-bubble-user .markdown-content h6 {
-  @apply text-gray-900 dark:text-white;
+.chat-mermaid-error-content {
+  @apply bg-gray-50 dark:bg-gray-800 border border-red-300 dark:border-red-700 border-t-0 rounded-b-lg overflow-x-auto;
 }
 
-.message-bubble-user .markdown-content strong {
-  @apply text-gray-900 dark:text-white font-semibold;
+.chat-mermaid-error-message {
+  @apply p-3 md:p-4 text-sm md:text-base text-red-700 dark:text-red-300 font-semibold;
 }
 
-.message-bubble-user .markdown-content em {
-  @apply text-gray-900 dark:text-white;
+.chat-mermaid-source-code {
+  @apply p-3 md:p-4 text-xs md:text-sm text-gray-800 dark:text-gray-200;
+  @apply overflow-x-auto whitespace-pre-wrap font-mono;
+  @apply border-t border-gray-200 dark:border-gray-700;
 }
 
-.message-bubble-user .markdown-content li {
-  @apply text-gray-900 dark:text-white;
+.chat-mermaid-chart {
+  @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-600 border-t-0 rounded-b-lg;
+  @apply p-3 md:p-4 overflow-x-auto min-h-[200px];
 }
 
-.message-bubble-user .markdown-content a {
-  @apply text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200;
+.chat-mermaid-copy-feedback {
+  @apply absolute left-full ml-2 px-2 py-0.5 text-xs;
+  @apply bg-green-500 text-white rounded shadow;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-.message-bubble-user .markdown-content .inline-code {
-  @apply bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200;
+/* ===== 内联代码样式 ===== */
+.markdown-inline-code {
+  @apply bg-gray-100 dark:bg-gray-800;
+  @apply text-pink-700 dark:text-pink-400;
+  @apply px-1.5 py-0.5 rounded;
+  @apply text-[0.95em] font-mono;
+  @apply border border-gray-200 dark:border-gray-700;
 }
 
-.message-bubble-user .markdown-content blockquote {
-  @apply border-gray-400 dark:border-gray-500 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200;
+/* ===== Markdown表格组件样式 ===== */
+.markdown-table-wrapper {
+  @apply overflow-x-auto my-4;
 }
 
-/* 用户消息中的代码块样式 */
-.message-bubble-user .code-block-header {
-  @apply bg-gray-200 dark:bg-gray-600 border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-200;
+.markdown-table-base {
+  @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700;
 }
 
-.message-bubble-user .code-block-copy-btn {
-  @apply text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-500;
+.markdown-table-head {
+  @apply bg-gray-50 dark:bg-gray-800;
 }
 
-/* 用户消息中的表格样式 */
-.message-bubble-user .table-wrapper {
-  @apply bg-gray-100 dark:bg-gray-600 border-gray-300 dark:border-gray-500;
+.markdown-table-body {
+  @apply bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700;
 }
 
-.message-bubble-user .table-wrapper th {
-  @apply bg-gray-200 dark:bg-gray-500 text-gray-800 dark:text-gray-200;
+.markdown-table-row {
+  @apply hover:bg-gray-50 dark:hover:bg-gray-800;
 }
 
-.message-bubble-user .table-wrapper td {
+.markdown-table-header-cell {
+  @apply px-6 py-3 text-left text-xs font-medium;
+  @apply text-gray-500 dark:text-gray-400;
+  @apply uppercase tracking-wider;
+}
+
+.markdown-table-data-cell {
+  @apply px-6 py-4 whitespace-nowrap text-sm;
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+/* ===== Markdown图片组件样式 ===== */
+.markdown-image-wrapper {
+  @apply my-4;
+}
+
+.markdown-image-base {
+  @apply max-w-full h-auto rounded-lg shadow-sm;
+}
+
+/* ===== Markdown引用块样式 ===== */
+.markdown-blockquote {
+  @apply border-l-4 border-gray-300 dark:border-gray-600;
+  @apply pl-4 py-2 my-4;
+  @apply italic text-gray-600 dark:text-gray-400;
+  @apply bg-gray-50 dark:bg-gray-800 rounded-r-lg;
+}
+
+/* ===== Markdown标题样式 ===== */
+.markdown-heading-1 {
+  @apply text-3xl font-bold text-gray-900 dark:text-gray-100;
+  @apply mt-8 mb-4 border-b border-gray-200 dark:border-gray-700 pb-2;
+}
+
+.markdown-heading-2 {
+  @apply text-2xl font-semibold text-gray-900 dark:text-gray-100;
+  @apply mt-6 mb-3 border-b border-gray-200 dark:border-gray-700 pb-2;
+}
+
+.markdown-heading-3 {
+  @apply text-xl font-semibold text-gray-900 dark:text-gray-100;
+  @apply mt-5 mb-3;
+}
+
+.markdown-heading-4 {
+  @apply text-lg font-semibold text-gray-900 dark:text-gray-100;
+  @apply mt-4 mb-2;
+}
+
+.markdown-heading-5 {
+  @apply text-base font-semibold text-gray-900 dark:text-gray-100;
+  @apply mt-4 mb-2;
+}
+
+.markdown-heading-6 {
+  @apply text-sm font-semibold text-gray-900 dark:text-gray-100;
+  @apply mt-4 mb-2;
+}
+
+/* ===== Mermaid 图表样式 ===== */
+.mermaid-chart-wrapper {
+  @apply my-6 md:my-8;
+}
+
+.mermaid-chart-header {
+  @apply px-3 md:px-4 py-2 border rounded-t-lg flex items-center justify-between;
+}
+
+.mermaid-chart-header--success {
+  @apply bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-600;
+}
+
+.mermaid-chart-header--error {
+  @apply bg-red-50 dark:bg-red-900 border-red-300 dark:border-red-700;
+}
+
+.mermaid-chart-title {
+  @apply text-xs md:text-sm font-medium uppercase tracking-wide;
+}
+
+.mermaid-chart-title--success {
+  @apply text-gray-600 dark:text-gray-400;
+}
+
+.mermaid-chart-title--error {
+  @apply text-red-700 dark:text-red-300;
+}
+
+.mermaid-chart-copy-btn {
+  @apply relative transition-all duration-200 px-2 py-1 rounded;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.mermaid-chart-copy-btn--default {
+  @apply hover:bg-blue-100 dark:hover:bg-blue-900;
+}
+
+.mermaid-chart-copy-btn--disabled {
+  @apply opacity-60 cursor-not-allowed;
+}
+
+.mermaid-chart-toggle-btn {
+  @apply ml-2 px-2 py-1 text-xs md:text-sm;
+  @apply bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200;
+  @apply rounded hover:bg-gray-300 dark:hover:bg-gray-600;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.mermaid-error-content {
+  @apply bg-gray-50 dark:bg-gray-800;
+  @apply border border-red-300 dark:border-red-700 border-t-0;
+  @apply rounded-b-lg overflow-x-auto;
+}
+
+.mermaid-error-message {
+  @apply p-3 md:p-4 text-sm md:text-base;
+  @apply text-red-700 dark:text-red-300 font-semibold;
+}
+
+.mermaid-source-code {
+  @apply p-3 md:p-4 text-xs md:text-sm;
   @apply text-gray-800 dark:text-gray-200;
+  @apply overflow-x-auto whitespace-pre-wrap font-mono;
+  @apply border-t border-gray-200 dark:border-gray-700;
 }
 
-.message-bubble-user .table-wrapper tr:hover {
-  @apply bg-gray-200 dark:bg-gray-500;
-}
-
-/* 用户消息中的图像样式 */
-.message-bubble-user .image-wrapper img {
-  @apply border-gray-300 dark:border-gray-500;
-}
-
-.message-bubble-user .image-wrapper p {
-  @apply text-gray-600 dark:text-gray-300;
-}
-
-/* 用户消息中的 Mermaid 图表样式 */
-.message-bubble-user .mermaid-header {
-  @apply bg-gray-200 dark:bg-gray-600 border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-200;
-}
-
-.message-bubble-user .mermaid-copy-btn {
-  @apply text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-500;
-}
-
-.message-bubble-user .mermaid-chart {
-  @apply bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-500;
+.mermaid-chart-canvas {
+  @apply bg-white dark:bg-gray-900;
+  @apply border border-gray-200 dark:border-gray-600 border-t-0;
+  @apply rounded-b-lg p-3 md:p-4 overflow-x-auto min-h-[200px];
 }

@@ -76,3 +76,32 @@
 .message-bubble:hover .message-action-buttons {
   @apply opacity-100;
 }
+
+/* ===== 代码块组件样式 ===== */
+.code-block-wrapper {
+  @apply my-4;
+}
+
+.code-block-header {
+  @apply bg-gray-100 dark:bg-gray-800 px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-t-lg flex items-center justify-between;
+}
+
+.code-block-language {
+  @apply text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide;
+}
+
+.code-block-copy-btn {
+  @apply relative transition-colors duration-200 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700;
+}
+
+.code-block-icon {
+  @apply w-4 h-4 transition-colors duration-200;
+}
+
+.code-block-icon--copied {
+  @apply text-green-500;
+}
+
+.code-block-icon--default {
+  @apply text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200;
+}

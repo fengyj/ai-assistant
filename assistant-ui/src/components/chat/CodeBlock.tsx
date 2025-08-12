@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vs, dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { vs, vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { CheckIcon } from '@heroicons/react/24/solid';
 
@@ -24,26 +24,26 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ language, value, theme, rest }) =
   };
 
   return (
-    <div className="code-block-wrapper my-4">
-      <div className="code-block-header bg-gray-100 dark:bg-gray-800 px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-t-lg flex items-center justify-between">
-        <span className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+    <div className="code-block-wrapper">
+      <div className="code-block-header">
+        <span className="code-block-language">
           {language}
         </span>
         <button
-          className="code-block-copy-btn relative"
+          className="code-block-copy-btn"
           onClick={handleCopy}
           title={copied ? '已复制' : '复制代码'}
         >
           {/* 复制后图标变为√，否则显示原图标 */}
           {copied ? (
-            <CheckIcon className="w-4 h-4 text-green-500 transition" />
+            <CheckIcon className="code-block-icon code-block-icon--copied" />
           ) : (
-            <ClipboardDocumentIcon className="w-4 h-4" />
+            <ClipboardDocumentIcon className="code-block-icon code-block-icon--default" />
           )}
         </button>
       </div>
       <SyntaxHighlighter
-        style={theme === 'dark' ? dark : vs}
+        style={theme === 'dark' ? vscDarkPlus : vs}
         language={language}
         PreTag="div"
         className="syntax-highlighter"

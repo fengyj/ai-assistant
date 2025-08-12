@@ -1,0 +1,57 @@
+/* ===== Tooltip 组件样式 ===== */
+
+.tooltip-trigger {
+  @apply relative;
+}
+
+.tooltip-content {
+  @apply absolute left-1/2 -translate-x-1/2 bottom-full mb-2;
+  @apply px-2 py-1 text-xs;
+  @apply bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800;
+  @apply rounded;
+  @apply opacity-0;
+  @apply transition-opacity duration-200;
+  @apply pointer-events-none whitespace-nowrap;
+  @apply z-10;
+}
+
+.tooltip-trigger:hover .tooltip-content {
+  @apply opacity-100;
+}
+
+/* Tooltip 箭头（可选增强） */
+.tooltip-content::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -4px;
+  border-width: 4px;
+  border-style: solid;
+  border-color: var(--tooltip-bg) transparent transparent transparent;
+}
+
+:root {
+  --tooltip-bg: rgb(31 41 55); /* gray-800 */
+}
+
+.dark {
+  --tooltip-bg: rgb(229 231 235); /* gray-200 */
+}
+
+/* Tooltip 变体 */
+.tooltip-content--error {
+  @apply bg-red-600 dark:bg-red-500 text-white;
+}
+
+.tooltip-content--success {
+  @apply bg-green-600 dark:bg-green-500 text-white;
+}
+
+.tooltip-content--warning {
+  @apply bg-yellow-600 dark:bg-yellow-500 text-white;
+}
+
+.tooltip-content--info {
+  @apply bg-blue-600 dark:bg-blue-500 text-white;
+}

@@ -10,9 +10,9 @@ interface TooltipProps {
  */
 const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
   return (
-    <span className="relative group">
+    <span className="tooltip-trigger">
       {children}
-      <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-2 py-1 text-xs bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-10">
+      <span className="tooltip-content">
         {content}
       </span>
     </span>

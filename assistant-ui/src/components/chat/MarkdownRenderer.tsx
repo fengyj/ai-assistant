@@ -11,8 +11,6 @@ interface MarkdownRendererProps {
   theme?: 'light' | 'dark';
 }
 
-
-
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ 
   content, 
   className = '', 
@@ -28,7 +26,6 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({
 
       // Mermaid 图表渲染，异常时友好提示
       if (!inline && language === 'mermaid') {
-        // MermaidChart 需在内部处理错误，若渲染失败则显示错误提示
         return (
           <MermaidChart 
             chart={String(children).replace(/\n$/, '')} 
@@ -52,7 +49,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({
       // 内联代码样式微调，提升可读性
       return (
         <code 
-          className="bg-gray-100 dark:bg-gray-800 text-pink-700 dark:text-pink-400 px-1.5 py-0.5 rounded text-[0.95em] font-mono border border-gray-200 dark:border-gray-700" 
+          className="chat-inline-code" 
           {...rest}
         >
           {children}
@@ -62,33 +59,33 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({
 
     // 表格组件
     table: (props: any) => (
-      <div className="overflow-x-auto my-4">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700" {...props} />
+      <div className="chat-table-wrapper">
+        <table className="chat-table-base" {...props} />
       </div>
     ),
     thead: (props: any) => (
-      <thead className="bg-gray-50 dark:bg-gray-800" {...props} />
+      <thead className="chat-table-head" {...props} />
     ),
     tbody: (props: any) => (
-      <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700" {...props} />
+      <tbody className="chat-table-body" {...props} />
     ),
     tr: (props: any) => (
-      <tr className="hover:bg-gray-50 dark:hover:bg-gray-800" {...props} />
+      <tr className="chat-table-row" {...props} />
     ),
     th: (props: any) => (
-      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" {...props} />
+      <th className="chat-table-header-cell" {...props} />
     ),
     td: (props: any) => (
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100" {...props} />
+      <td className="chat-table-data-cell" {...props} />
     ),
 
     // 图片组件
     img: (props: any) => (
-      <div className="my-4">
+      <div className="chat-image-wrapper">
         <img 
-          className="max-w-full h-auto rounded-lg shadow-sm" 
+          className="chat-image-base" 
           loading="lazy"
-          {...props} 
+          {...props}
         />
         {props.alt && (
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 text-center italic">
@@ -110,18 +107,18 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({
 
     // 引用块
     blockquote: (props: any) => (
-      <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 py-2 my-4 italic text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-r-lg" {...props} />
+      <blockquote className="chat-blockquote-base" {...props} />
     ),
 
     // 标题组件
     h1: (props: any) => (
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-8 mb-4 border-b border-gray-200 dark:border-gray-700 pb-2" {...props} />
+      <h1 className="chat-heading-1" {...props} />
     ),
     h2: (props: any) => (
-      <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mt-6 mb-3 border-b border-gray-200 dark:border-gray-700 pb-2" {...props} />
+      <h2 className="chat-heading-2" {...props} />
     ),
     h3: (props: any) => (
-      <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mt-5 mb-3" {...props} />
+      <h3 className="chat-heading-3" {...props} />
     ),
     h4: (props: any) => (
       <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mt-4 mb-2" {...props} />
@@ -164,7 +161,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({
   }), [theme]);
 
   return (
-    <div className={`markdown-renderer prose prose-gray dark:prose-invert max-w-none ${className}`}>
+    <div className={`markdown-content ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={components}
@@ -176,3 +173,5 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({
 });
 
 MarkdownRenderer.displayName = 'MarkdownRenderer';
+
+export default MarkdownRenderer;
