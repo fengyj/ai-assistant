@@ -1,11 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import '../../styles/ChatArea.css';
 import '../../styles/FileUpload.css';
-import { useUserSession } from '../../hooks/useUserSession';
-import { getUserModels, type Model } from '../../api/models';
 import { useEditingMessage } from '../../hooks/useEditingMessage';
 import { Button } from '../ui/Button';
-import { ModelSelector } from './ModelSelector';
+import { ModelControl } from './ModelControl';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { useSidebar } from '../../hooks/useSidebar';
 import { useConversation } from '../../hooks/useConversation';
@@ -20,13 +18,11 @@ import {
   StopIcon,
   MicrophoneIcon,
   PlusIcon,
-  CogIcon,
   ClipboardDocumentIcon,
   PencilIcon,
   ArrowPathIcon,
   HandThumbUpIcon,
   HandThumbDownIcon,
-  InformationCircleIcon,
   Bars3Icon
 } from '@heroicons/react/24/outline';
 import { CheckIcon } from '@heroicons/react/24/solid';
@@ -37,37 +33,6 @@ interface ChatAreaProps {
 }
 
 export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
-  // 获取用户信息 context
-  const { user } = useUserSession();
-  const userId = user?.id;
-
-  // 模型列表相关 state
-  const [models, setModels] = React.useState<Model[]>([]);
-  const [selectedModelId, setSelectedModelId] = React.useState<string | undefined>();
-
-  // 首次挂载时获取模型列表并缓存
-  useEffect(() => {
-    async function fetchModels() {
-      const cacheKey = 'user_models';
-      const cached = localStorage.getItem(cacheKey);
-      if (cached) {
-        const models = JSON.parse(cached) as Model[];
-        setModels(models);
-        setSelectedModelId(models[0]?.id);
-      } else if (userId) {
-        try {
-          const models = await getUserModels(userId);
-          setModels(models);
-          setSelectedModelId(models[0]?.id);
-          localStorage.setItem(cacheKey, JSON.stringify(models));
-        } catch (error) {
-          // 可选：错误处理
-          console.error('Failed to fetch models:', error);
-        }
-      }
-    }
-    fetchModels();
-  }, [userId]);
   const { toggleMobileOpen } = useSidebar();
   const { currentConversation, sendMessage, cancelResponse, isLoading } = useConversation();
   
@@ -330,19 +295,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ theme, onToggleTheme }) => {
             {/* 下层：工具栏 */}
             <div className="chat-input-toolbar">
               <div className="chat-input-tools-left">
-                <ModelSelector
-                  models={models}
-                  selectedModelId={selectedModelId}
-                  onModelChange={setSelectedModelId}
-                  className="min-w-[160px]"
-                />
-                {/* 下拉列表分行样式由 index.css 控制，option 仅显示 name，description 可用自定义组件实现更丰富效果 */}
-                <button className="tool-icon-btn" title="Token使用统计">
-                  <InformationCircleIcon className="w-3.5 h-3.5" />
-                </button>
-                <button className="tool-icon-btn" title="设置">
-                  <CogIcon className="w-3.5 h-3.5" />
-                </button>
+                <ModelControl />
               </div>
               
               <div className="chat-input-tools-right">

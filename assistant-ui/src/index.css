@@ -662,6 +662,42 @@ html.dark .message-action-buttons .btn-action.text-red-400:hover {
 .model-selector-option-selected .model-description {
   @apply text-blue-600 dark:text-blue-400;
 }
+
+/* 滑块样式 */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-track {
+  @apply bg-gray-200 dark:bg-gray-700 rounded-lg h-2;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  @apply bg-blue-500 rounded-full h-4 w-4 border-2 border-white dark:border-gray-800 shadow-md hover:bg-blue-600 transition-colors duration-200;
+}
+
+.slider::-moz-range-track {
+  @apply bg-gray-200 dark:bg-gray-700 rounded-lg h-2 border-0;
+}
+
+.slider::-moz-range-thumb {
+  @apply bg-blue-500 rounded-full h-4 w-4 border-2 border-white dark:border-gray-800 shadow-md hover:bg-blue-600 transition-colors duration-200;
+  border: none;
+}
+
+.slider:focus {
+  @apply outline-none;
+}
+
+.slider:focus::-webkit-slider-thumb {
+  @apply ring-2 ring-blue-500;
+}
+
 html.dark .message-action-buttons .btn-action.text-green-400:hover {
   color: #22c55e !important;
 }

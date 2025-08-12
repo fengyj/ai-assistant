@@ -1,6 +1,30 @@
 ## [Unreleased]
 
+### Model Management Integration
+
+- Created integrated ModelControl component that combines model selection, token statistics, and settings
+- Implemented ModelContext for centralized model state management:
+  - Supports loading model list from API with caching
+  - Tracks selected model and automatically loads model information
+  - Provides hooks for refreshing model data
+  - Includes interfaces for future model statistics and performance metrics
+- Added ModelInfoModal for displaying detailed model information:
+  - Shows basic model info (name, type, owner, description)
+  - Displays token usage statistics with progress bar
+  - Shows performance metrics (response time, success rate)
+  - Includes last used timestamp and refresh functionality
+- Added ModelSettingsModal for configuring model parameters:
+  - Temperature slider for controlling output randomness
+  - Max tokens setting for response length control
+  - Top P parameter for vocabulary diversity
+  - Reset to defaults functionality
+- Integrated ModelProvider into application context hierarchy
+- Updated ChatArea to use new ModelControl component instead of separate components
+- Added slider styling for model parameter controls
+- Created useModel hook for consuming model context throughout the application
+
 ### Enhanced Authentication State Management
+
 - Enhanced UserSessionContext to include comprehensive token information:
   - Added `tokenType` field for Authorization header construction
   - Added `expiryTime` field for proactive token refresh timing
@@ -13,7 +37,8 @@
 - Added example component demonstrating advanced authentication features
 
 ### Previous Changes
-## [Unreleased]
+
+## [Previous Releases]
 
 - Fixed authentication state persistence: users who were previously logged in now correctly bypass login page on window reopen.
 - Enhanced UserSessionContext with proper initialization state management and automatic token refresh on app startup.

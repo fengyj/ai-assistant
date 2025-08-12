@@ -6,6 +6,7 @@ import { useTheme } from "./hooks/useTheme";
 import { SidebarProvider } from "./context/SidebarContext.tsx";
 import { ConversationProvider } from "./context/ConversationContext.tsx";
 import { UserSessionProvider } from "./context/UserSessionContext.tsx";
+import { ModelProvider } from "./context/ModelContext.tsx";
 import { useUserSession } from "./hooks/useUserSession";
 import { ChatPage } from "./pages/ChatPage";
 import { AppInitializing } from "./components/ui/AppInitializing";
@@ -44,9 +45,11 @@ function App() {
       <ThemeProvider>
         <SidebarProvider>
           <ConversationProvider>
-            <BrowserRouter>
-              <AppContent />
-            </BrowserRouter>
+            <ModelProvider>
+              <BrowserRouter>
+                <AppContent />
+              </BrowserRouter>
+            </ModelProvider>
           </ConversationProvider>
         </SidebarProvider>
       </ThemeProvider>
