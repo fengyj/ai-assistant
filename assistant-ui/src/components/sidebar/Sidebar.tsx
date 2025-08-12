@@ -2,8 +2,8 @@ import { mockConversations } from '../../utils/mockData';
 import React, { useState, useEffect } from 'react';
 import { 
   UserIcon, 
-  TrashIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
+  EllipsisVerticalIcon
 } from '@heroicons/react/24/outline';
 import { 
   Bars3Icon
@@ -21,6 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
   const [authenticated, setAuthenticated] = useState(isAuthenticated());
   const [userInfo, setUserInfo] = useState(getUserInfo());
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const navigate = useNavigate();
   
   // 监听认证状态变化
@@ -60,6 +61,24 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
     setShowLogoutDialog(false);
   };
 
+  // 处理菜单按钮点击
+  const handleMenuClick = (conversationId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setOpenMenuId(openMenuId === conversationId ? null : conversationId);
+  };
+
+  // 处理重命名
+  const handleRename = (conversationId: string) => {
+    console.log('重命名对话:', conversationId);
+    setOpenMenuId(null);
+  };
+
+  // 处理删除
+  const handleDelete = (conversationId: string) => {
+    console.log('删除对话:', conversationId);
+    setOpenMenuId(null);
+  };
+
   // 点击对话框外部关闭
   const handleDialogBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -67,27 +86,45 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
     }
   };
 
-  // 监听ESC键关闭对话框
+  // 监听ESC键关闭对话框和点击外部关闭菜单
   useEffect(() => {
     const handleEscKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && showLogoutDialog) {
-        setShowLogoutDialog(false);
+      if (e.key === 'Escape') {
+        if (showLogoutDialog) {
+          setShowLogoutDialog(false);
+        } else if (openMenuId) {
+          setOpenMenuId(null);
+        }
+      }
+    };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (openMenuId) {
+        const target = e.target as Element;
+        if (!target.closest('.conversation-options-btn') && !target.closest('.conversation-menu')) {
+          setOpenMenuId(null);
+        }
       }
     };
 
     if (showLogoutDialog) {
       document.addEventListener('keydown', handleEscKey);
-      // 防止背景滚动
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
 
+    if (openMenuId) {
+      document.addEventListener('keydown', handleEscKey);
+      document.addEventListener('click', handleClickOutside);
+    }
+
     return () => {
       document.removeEventListener('keydown', handleEscKey);
+      document.removeEventListener('click', handleClickOutside);
       document.body.style.overflow = 'unset';
     };
-  }, [showLogoutDialog]);
+  }, [showLogoutDialog, openMenuId]);
   
   // 模拟对话历史数据
   const conversations = mockConversations;
@@ -131,15 +168,32 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
                     <div className="conversation-title">
                       {conv.title}
                     </div>
-                    <div className="conversation-meta">
-                      <span className="conversation-time">{conv.time}</span>
+                    <div className="relative">
                       <button 
-                        className="conversation-delete-btn"
-                        title="删除对话"
-                        onClick={() => console.log('删除对话:', conv.id)}
+                        className="conversation-options-btn"
+                        title="更多操作"
+                        onClick={(e) => handleMenuClick(conv.id, e)}
                       >
-                        <TrashIcon className="w-4 h-4" />
+                        <EllipsisVerticalIcon className="w-4 h-4" />
                       </button>
+                      
+                      {/* 下拉菜单 */}
+                      {openMenuId === conv.id && (
+                        <div className="conversation-menu right-0">
+                          <button
+                            className="conversation-menu-item"
+                            onClick={() => handleRename(conv.id)}
+                          >
+                            重命名
+                          </button>
+                          <button
+                            className="conversation-menu-item danger"
+                            onClick={() => handleDelete(conv.id)}
+                          >
+                            删除
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}

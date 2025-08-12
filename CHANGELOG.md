@@ -1,5 +1,22 @@
 ## [Unreleased]
 
+### UI Improvements for Sidebar and Chat Interface
+
+- **Unified header heights**: Fixed alignment between sidebar header and chat header by setting consistent height (h-16)
+- **Streamlined conversation history list**:
+  - Removed time display from conversation items for cleaner appearance
+  - Reduced spacing between conversation items for more compact layout
+  - Updated conversation item padding and margins for better visual density
+- **Enhanced conversation actions**:
+  - Replaced custom SVG with standard Heroicons EllipsisVerticalIcon for consistency
+  - Implemented dropdown menu with "Rename" and "Delete" options
+  - Added proper styling for menu items with danger state (red color for delete action)
+  - Implemented click-outside and ESC key handling for menu dismissal
+- **Code improvements**:
+  - Cleaned up unused imports and dependencies
+  - Enhanced menu interaction logic with proper state management
+  - Improved accessibility with proper button titles and keyboard navigation
+
 ### Model Management Integration
 
 - Created integrated ModelControl component that combines model selection, token statistics, and settings

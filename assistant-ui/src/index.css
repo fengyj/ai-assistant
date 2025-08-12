@@ -128,7 +128,7 @@ body {
 }
 
 .sidebar-header {
-  @apply p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-between;
+  @apply h-16 px-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-between;
 }
 
 .sidebar-collapse-btn,
@@ -171,7 +171,7 @@ body {
 }
 
 .conversation-item {
-  @apply flex items-center p-2 mx-1 mb-1 rounded-xl cursor-pointer transition-all duration-200 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700;
+  @apply flex items-center justify-between px-2.5 py-1.5 mx-1 mb-0 rounded-lg cursor-pointer transition-all duration-200 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700;
 }
 
 .conversation-item.active {
@@ -184,7 +184,7 @@ body {
 
 /* 聊天区域组件 */
 .chat-header {
-  @apply flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm;
+  @apply h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm;
 }
 
 .chat-input-container {
@@ -222,7 +222,7 @@ body {
 }
 
 .conversation-list {
-  @apply space-y-1;
+  @apply space-y-0;
 }
 
 .conversation-info {
@@ -230,7 +230,7 @@ body {
 }
 
 .conversation-title {
-  @apply text-sm font-medium text-gray-900 dark:text-gray-100 truncate mb-1;
+  @apply text-sm font-medium text-gray-900 dark:text-gray-100 truncate flex-1;
 }
 
 .conversation-time {
@@ -241,8 +241,26 @@ body {
   @apply opacity-0 transition-opacity duration-200 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 ml-2 p-1 rounded;
 }
 
-.conversation-item:hover .conversation-delete-btn {
+.conversation-options-btn {
+  @apply opacity-0 transition-opacity duration-200 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ml-2 p-1.5 rounded-lg flex-shrink-0;
+}
+
+.conversation-item:hover .conversation-delete-btn,
+.conversation-item:hover .conversation-options-btn {
   @apply opacity-100;
+}
+
+/* 下拉菜单样式 */
+.conversation-menu {
+  @apply absolute z-50 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1 min-w-[120px];
+}
+
+.conversation-menu-item {
+  @apply block w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer;
+}
+
+.conversation-menu-item.danger {
+  @apply text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700 dark:hover:text-red-300;
 }
 
 .user-status-content {
