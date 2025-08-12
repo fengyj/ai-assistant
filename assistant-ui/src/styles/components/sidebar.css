@@ -1,0 +1,127 @@
+/* ===== 侧边栏组件样式 ===== */
+.sidebar {
+  @apply bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full;
+}
+
+.sidebar-header {
+  @apply h-16 px-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-between;
+}
+
+.sidebar-collapse-btn,
+.sidebar-menu-btn {
+  @apply p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+}
+
+.sidebar-title {
+  @apply text-lg font-semibold text-gray-900 dark:text-gray-100 flex-1 min-w-0 truncate ml-2;
+}
+
+/* 折叠状态下的侧边栏样式 */
+.sidebar.collapsed {
+  @apply items-center;
+}
+
+.sidebar.collapsed .sidebar-header {
+  @apply justify-center;
+}
+
+.sidebar.collapsed .user-status {
+  @apply p-2;
+}
+
+.sidebar.collapsed .user-status-content {
+  @apply justify-center px-2;
+}
+
+.sidebar-content {
+  @apply flex-1 overflow-y-auto p-3;
+}
+
+.sidebar-section-title {
+  @apply text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 px-2;
+}
+
+/* ===== 对话列表样式 ===== */
+.conversation-group {
+  @apply mb-6;
+}
+
+.sidebar-group-title {
+  @apply text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 px-2 uppercase tracking-wide;
+}
+
+.conversation-list {
+  @apply space-y-0;
+}
+
+.conversation-item {
+  @apply flex items-center justify-between px-2.5 py-1.5 mx-1 mb-0 rounded-lg cursor-pointer transition-all duration-200 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700;
+}
+
+.conversation-item.active {
+  @apply bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-l-4 border-blue-500 ml-0 pl-4;
+}
+
+.conversation-info {
+  @apply flex-1 min-w-0;
+}
+
+.conversation-title {
+  @apply text-sm font-medium text-gray-900 dark:text-gray-100 truncate flex-1;
+}
+
+.conversation-time {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+.conversation-delete-btn {
+  @apply opacity-0 transition-opacity duration-200 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 ml-2 p-1 rounded;
+}
+
+.conversation-options-btn {
+  @apply opacity-0 transition-opacity duration-200 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ml-2 p-1.5 rounded-lg flex-shrink-0;
+}
+
+.conversation-item:hover .conversation-delete-btn,
+.conversation-item:hover .conversation-options-btn {
+  @apply opacity-100;
+}
+
+/* ===== 下拉菜单样式 ===== */
+.conversation-menu {
+  @apply absolute z-50 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-1 min-w-[120px];
+}
+
+.conversation-menu-item {
+  @apply block w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer;
+}
+
+.conversation-menu-item.danger {
+  @apply text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700 dark:hover:text-red-300;
+}
+
+/* ===== 用户状态栏样式 ===== */
+.user-status {
+  @apply p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900;
+  margin-top: auto;
+}
+
+.user-status-content {
+  @apply flex items-center space-x-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-3 rounded-xl transition-colors duration-200;
+}
+
+.user-avatar {
+  @apply w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center;
+}
+
+.user-info {
+  @apply flex-1 min-w-0;
+}
+
+.user-name {
+  @apply text-sm font-medium text-gray-900 dark:text-gray-100 truncate;
+}
+
+.user-status-text {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}

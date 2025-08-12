@@ -1,0 +1,78 @@
+/* ===== 应用布局组件 ===== */
+.app-container {
+  @apply min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200;
+}
+
+.main-layout {
+  @apply flex h-screen overflow-hidden;
+}
+
+.main-content {
+  @apply flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900;
+}
+
+/* ===== 通用布局模式 ===== */
+.centered-container {
+  @apply flex items-center justify-center;
+}
+
+.centered-page {
+  @apply flex flex-col items-center justify-center min-h-screen;
+}
+
+/* ===== 模态框布局 ===== */
+.modal-overlay {
+  @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50;
+}
+
+.modal-content {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-xl relative;
+}
+
+/* ===== 响应式显示控制 ===== */
+.desktop-only {
+  @apply hidden md:flex;
+}
+
+.mobile-only {
+  @apply flex md:hidden;
+}
+
+/* ===== 侧边栏布局 ===== */
+.sidebar-container {
+  @apply flex-shrink-0 w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300 ease-in-out;
+}
+
+.sidebar-container.collapsed {
+  @apply w-16;
+}
+
+/* 移动端遮罩层 */
+.sidebar-overlay {
+  @apply fixed inset-0 bg-black/50 z-40 md:hidden;
+}
+
+/* 响应式侧边栏 */
+@media (max-width: 768px) {
+  .sidebar-container {
+    @apply w-64;
+  }
+}
+
+@media (max-width: 640px) {
+  .sidebar-container {
+    @apply absolute inset-y-0 left-0 z-50 w-64 transform -translate-x-full transition-transform duration-300;
+  }
+  
+  .sidebar-container.mobile-open {
+    @apply translate-x-0;
+  }
+  
+  .sidebar-container.collapsed {
+    @apply w-64; /* 移动端折叠时保持正常宽度 */
+  }
+  
+  .main-content {
+    @apply w-full;
+  }
+}

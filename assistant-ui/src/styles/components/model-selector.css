@@ -1,0 +1,97 @@
+/* ===== 模型选择器样式 ===== */
+.model-selector {
+  @apply text-xs min-w-[100px];
+  @apply bg-white dark:bg-gray-700;
+  @apply border border-gray-200 dark:border-gray-600;
+  @apply rounded-md px-3 py-1.5;
+  @apply text-gray-700 dark:text-gray-300;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-600;
+  @apply transition-all duration-200;
+  @apply shadow-sm;
+}
+
+/* 深色模式下 select option 的样式支持 */
+.model-selector option {
+  @apply bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300;
+}
+
+/* 自定义模型选择器样式 */
+.model-selector-button {
+  @apply flex items-center justify-between w-full px-3 py-2 text-left;
+  @apply bg-white dark:bg-gray-700;
+  @apply border border-gray-200 dark:border-gray-600;
+  @apply rounded-md;
+  @apply text-gray-700 dark:text-gray-300;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-600;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  @apply transition-all duration-200;
+  @apply shadow-sm;
+  @apply min-w-[160px];
+}
+
+.model-selector-dropdown {
+  @apply absolute left-0 mt-1 w-full min-w-[300px] z-50;
+  @apply bg-white dark:bg-gray-800;
+  @apply border border-gray-200 dark:border-gray-600;
+  @apply rounded-lg shadow-lg;
+  @apply overflow-hidden;
+}
+
+.model-selector-dropdown-bottom {
+  @apply top-full;
+}
+
+.model-selector-dropdown-top {
+  @apply bottom-full mb-1;
+}
+
+.model-selector-list {
+  @apply max-h-64 overflow-y-auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(156 163 175) transparent;
+}
+
+.model-selector-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.model-selector-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.model-selector-list::-webkit-scrollbar-thumb {
+  background-color: rgb(156 163 175);
+  border-radius: 3px;
+}
+
+.model-selector-option {
+  @apply w-full px-3 py-3 text-left;
+  @apply text-gray-700 dark:text-gray-300;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-700;
+  @apply focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700;
+  @apply transition-colors duration-200;
+  @apply border-b border-gray-100 dark:border-gray-700 last:border-0;
+}
+
+.model-selector-option-selected {
+  @apply bg-blue-50 dark:bg-blue-900/30;
+  @apply text-blue-700 dark:text-blue-300;
+}
+
+/* 模型选择器选项内的文本颜色控制 */
+.model-selector-option .model-name {
+  @apply text-gray-900 dark:text-gray-200;
+}
+
+.model-selector-option .model-description {
+  @apply text-gray-600 dark:text-gray-400;
+}
+
+.model-selector-option-selected .model-name {
+  @apply text-blue-700 dark:text-blue-300;
+}
+
+.model-selector-option-selected .model-description {
+  @apply text-blue-600 dark:text-blue-400;
+}

@@ -1,5 +1,29 @@
 ## [Unreleased]
 
+### CSS Architecture Refactoring ✨
+
+- **Complete CSS modularization**: Refactored 773-line monolithic CSS file into 9 modular files
+  - `base.css`: Foundation styles, scrollbars, form controls
+  - `layout.css`: Application layout, responsive design, modal overlays
+  - `components/buttons.css`: All button variants and states
+  - `components/inputs.css`: Input fields, chat input areas
+  - `components/sidebar.css`: Sidebar, conversation lists, user status
+  - `components/chat.css`: Message bubbles, chat container styles
+  - `components/model-selector.css`: Model selection dropdown components
+  - `components/common.css`: Login cards, progress bars, icon containers
+  - `components/markdown.css`: Markdown rendering and syntax highlighting
+
+- **Semantic class implementation**: Created 9 new semantic CSS classes
+  - `.centered-container`, `.modal-overlay`, `.modal-content`
+  - `.login-card`, `.login-input`, `.login-label`
+  - `.chat-input-field`, `.progress-bar`, `.btn-base`
+
+- **Inline style reduction**: Decreased from 3 to 1 instances (67% reduction)
+
+- **Tailwind pattern consolidation**: Eliminated all duplicate `items-center justify-center` patterns in TSX files
+
+- **Theme support enhancement**: Complete dark/light theme support for login interface
+
 ### File Structure Refactoring
 
 - **Reorganized CSS files**: Moved main `index.css` from `src/` to `src/styles/` directory for better organization
