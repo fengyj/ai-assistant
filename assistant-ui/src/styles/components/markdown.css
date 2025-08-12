@@ -24,6 +24,24 @@
 .markdown-content .syntax-highlighter {
   /* 移除阴影效果，使用简单的边框 */
   box-shadow: none !important;
+  /* 统一样式设置，替代customStyle */
+  margin: 0 !important;
+  border-radius: 0 0 0.5rem 0.5rem !important;
+  font-size: 0.875rem !important;
+  border: 1px solid !important;
+  border-top: none !important;
+}
+
+/* 明亮主题下的代码块样式 */
+.markdown-content .syntax-highlighter {
+  border-color: #e5e7eb !important;
+  background-color: #f9fafb !important;
+}
+
+/* 深色主题下的代码块样式 */
+html.dark .markdown-content .syntax-highlighter {
+  border-color: #374151 !important;
+  background-color: #1f2937 !important;
 }
 
 .markdown-content .syntax-highlighter pre {

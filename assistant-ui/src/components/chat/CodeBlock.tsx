@@ -49,16 +49,6 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ language, value, theme, rest }) =
         className="syntax-highlighter"
         showLineNumbers={false}
         wrapLines={true}
-        customStyle={{
-          margin: 0,
-          borderRadius: '0 0 0.5rem 0.5rem',
-          fontSize: '0.875rem',
-          border: '1px solid',
-          borderColor: theme === 'dark' ? '#374151' : '#e5e7eb',
-          borderTop: 'none',
-          backgroundColor: theme === 'dark' ? '#1f2937' : '#f9fafb',
-          boxShadow: 'none',
-        }}
         {...rest}
       >
         {value}
