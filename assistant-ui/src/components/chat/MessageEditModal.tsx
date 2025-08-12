@@ -38,20 +38,20 @@ export const MessageEditModal: React.FC<MessageEditModalProps> = ({
     <div className="modal-overlay p-4">
       <div className="modal-content w-full max-w-2xl max-h-[80vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <div className="modal-header">
+          <h3 className="modal-title">
             编辑消息
           </h3>
           <button
             onClick={onCancel}
-            className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded"
+            className="modal-close-btn"
           >
             <XMarkIcon className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-4">
+        <div className="modal-body">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -60,7 +60,7 @@ export const MessageEditModal: React.FC<MessageEditModalProps> = ({
             className="form-textarea-base"
             autoFocus
           />
-          <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          <div className="modal-help-text">
             按 Ctrl+Enter 保存，Esc 取消
           </div>
         </div>

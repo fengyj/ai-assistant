@@ -33,3 +33,45 @@
   @apply flex items-center justify-end space-x-3 p-4;
   @apply border-t border-gray-200 dark:border-gray-700;
 }
+
+.modal-content {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-xl;
+  @apply border border-gray-200 dark:border-gray-700;
+}
+
+.modal-header {
+  @apply flex items-center justify-between p-4;
+  @apply border-b border-gray-200 dark:border-gray-700;
+}
+
+.modal-title {
+  @apply text-lg font-semibold text-gray-900 dark:text-gray-100;
+}
+
+.modal-close-btn {
+  @apply p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded;
+}
+
+.modal-body {
+  @apply flex-1 p-4;
+}
+
+.modal-help-text {
+  @apply mt-2 text-xs text-gray-500 dark:text-gray-400;
+}
+
+/* ===== 标签和徽章样式 ===== */
+.badge-small {
+  @apply text-xs px-1.5 py-0.5 rounded-full;
+  @apply bg-gray-100 dark:bg-gray-700;
+  @apply text-gray-600 dark:text-gray-300;
+  @apply shrink-0;
+}
+
+.badge-status {
+  @apply absolute -top-1 -right-1 w-2 h-2 rounded-full;
+}
+
+.badge-status--active {
+  @apply bg-blue-500 animate-pulse;
+}

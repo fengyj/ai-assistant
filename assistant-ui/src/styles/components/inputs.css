@@ -58,3 +58,12 @@
 .chat-input-container-inner {
   @apply max-w-4xl mx-auto;
 }
+
+/* ===== 滑块组件样式 ===== */
+.slider-base {
+  @apply w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer;
+}
+
+.slider-labels {
+  @apply flex justify-between text-xs text-gray-500 dark:text-gray-400;
+}

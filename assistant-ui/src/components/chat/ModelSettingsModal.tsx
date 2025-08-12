@@ -119,9 +119,9 @@ export const ModelSettingsModal: React.FC<ModelSettingsModalProps> = ({
                 step="0.1"
                 value={temperature}
                 onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                className="slider-base"
               />
-              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+              <div className="slider-labels">
                 <span>保守 (0)</span>
                 <span>创新 (2)</span>
               </div>
@@ -144,9 +144,9 @@ export const ModelSettingsModal: React.FC<ModelSettingsModalProps> = ({
                 step="256"
                 value={maxTokens}
                 onChange={(e) => setMaxTokens(parseInt(e.target.value))}
-                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                className="slider-base"
               />
-              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+              <div className="slider-labels">
                 <span>256</span>
                 <span>4096</span>
               </div>
