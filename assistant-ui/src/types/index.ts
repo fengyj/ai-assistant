@@ -3,9 +3,12 @@ import React from 'react';
 // 用户相关类型
 export interface User {
   id: string;
-  name: string;
+  userName: string;
   email?: string;
-  avatar?: string;
+  displayName?: string;
+  avatarUrl?: string;
+  role?: 'admin' | 'user' | null;
+  status?: 'active' | 'inactive' | null;
   isLoggedIn: boolean;
 }
 

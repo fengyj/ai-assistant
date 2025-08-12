@@ -12,6 +12,7 @@ export interface UserInfo {
 
 export interface AuthTokens {
   access_token: string;
+  token_type: string;
   session_id: string;
   expires_in: number;
   user: UserInfo;
@@ -19,7 +20,12 @@ export interface AuthTokens {
 
 // Token management
 export const getAccessToken = () => localStorage.getItem("access_token");
+export const getTokenType = () => localStorage.getItem("token_type") || "Bearer";
 export const getSessionId = () => localStorage.getItem("session_id");
+export const getTokenExpiryTime = (): number | null => {
+  const expiresAt = localStorage.getItem("token_expires_at");
+  return expiresAt ? parseInt(expiresAt) : null;
+};
 export const getUserInfo = (): UserInfo | null => {
   const userStr = localStorage.getItem("user_info");
   return userStr ? JSON.parse(userStr) : null;
@@ -27,6 +33,7 @@ export const getUserInfo = (): UserInfo | null => {
 
 export const setAuthData = (tokens: AuthTokens) => {
   localStorage.setItem("access_token", tokens.access_token);
+  localStorage.setItem("token_type", tokens.token_type);
   localStorage.setItem("session_id", tokens.session_id);
   localStorage.setItem("user_info", JSON.stringify(tokens.user));
   localStorage.setItem("token_expires_at", (Date.now() + tokens.expires_in * 1000).toString());
@@ -37,6 +44,7 @@ export const setAuthData = (tokens: AuthTokens) => {
 
 export const clearAuthData = () => {
   localStorage.removeItem("access_token");
+  localStorage.removeItem("token_type");
   localStorage.removeItem("session_id");
   localStorage.removeItem("user_info");
   localStorage.removeItem("token_expires_at");
@@ -130,9 +138,11 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     });
     
     const newAccessToken = response.data.access_token;
+    const tokenType = response.data.token_type || "Bearer";
     const expiresIn = response.data.expires_in || 900; // 默认15分钟
     
     localStorage.setItem("access_token", newAccessToken);
+    localStorage.setItem("token_type", tokenType);
     localStorage.setItem("token_expires_at", (Date.now() + expiresIn * 1000).toString());
     
     return newAccessToken;

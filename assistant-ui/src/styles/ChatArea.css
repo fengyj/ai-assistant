@@ -1,0 +1,39 @@
+/* Model selector styles */
+.model-selector {
+  min-width: 180px;
+}
+.model-option {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 8px;
+}
+.model-option .model-name {
+  font-weight: 500;
+  font-size: 1em;
+}
+.model-option .model-description {
+  font-size: 0.85em;
+  color: var(--tw-prose-muted, #6b7280);
+}
+/* 模型标签样式 */
+.model-tag {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 0.75em;
+  font-weight: 500;
+  background: #e0e7ff;
+  color: #3730a3;
+}
+@media (prefers-color-scheme: dark) {
+  .model-tag {
+    background: #312e81;
+    color: #c7d2fe;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .model-option .model-description {
+    color: #a3a3a3;
+  }
+}

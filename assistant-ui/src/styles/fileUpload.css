@@ -1,4 +1,5 @@
 /* 文件上传组件样式 */
+@import "tailwindcss" reference;
 
 .file-upload-container {
   @apply relative;

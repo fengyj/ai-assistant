@@ -1,20 +1,19 @@
 // Authentication API functions
 import api from './request';
-import { getAccessToken, getSessionId, clearAuthData } from '../utils/auth';
+import { getAccessToken, getSessionId, clearAuthData, setAuthData, type AuthTokens } from '../utils/auth';
 
-export interface RefreshTokenRequest {
-  session_id: string;
-  extend_session?: boolean;
+// Login request/response interfaces
+export interface LoginRequest {
+  username: string;
+  password: string;
 }
 
-export interface RefreshTokenResponse {
+export interface LoginResponse {
   access_token: string;
+  token_type: string;
+  session_id: string;
   expires_in: number;
-}
-
-export interface ValidateTokenResponse {
-  valid: boolean;
-  user?: {
+  user: {
     id: string;
     username: string;
     display_name?: string;
@@ -24,6 +23,46 @@ export interface ValidateTokenResponse {
     permissions?: string[];
   };
 }
+
+// Refresh token interfaces
+export interface RefreshTokenRequest {
+  session_id: string;
+  extend_session?: boolean;
+}
+
+export interface RefreshTokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+}
+
+// Login function
+export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
+  const response = await api.post<LoginResponse>('/api/auth/login', {
+    username: credentials.username.trim(),
+    password: credentials.password
+  });
+
+  const { access_token, token_type, session_id, expires_in, user } = response.data;
+
+  // Validate response data
+  if (!access_token || !session_id || !user) {
+    throw new Error('登录响应数据不完整');
+  }
+
+  // Store authentication data
+  const authTokens: AuthTokens = {
+    access_token,
+    token_type: token_type || 'Bearer',
+    session_id,
+    expires_in: expires_in || 900, // Default to 15 minutes
+    user
+  };
+
+  setAuthData(authTokens);
+  
+  return response.data;
+};
 
 // Refresh access token using session ID
 export const refreshToken = async (extend_session = true): Promise<RefreshTokenResponse> => {
@@ -38,12 +77,6 @@ export const refreshToken = async (extend_session = true): Promise<RefreshTokenR
     extend_session
   });
   
-  return response.data;
-};
-
-// Validate current access token
-export const validateToken = async (): Promise<ValidateTokenResponse> => {
-  const response = await api.get<ValidateTokenResponse>('/api/auth/validate');
   return response.data;
 };
 
@@ -70,7 +103,7 @@ export const logout = async (): Promise<void> => {
 };
 
 export default {
+  login,
   refreshToken,
-  validateToken,
   logout
 };

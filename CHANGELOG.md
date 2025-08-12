@@ -1,4 +1,40 @@
-- 2025-08-11
+## [Unreleased]
+
+### Enhanced Authentication State Management
+- Enhanced UserSessionContext to include comprehensive token information:
+  - Added `tokenType` field for Authorization header construction
+  - Added `expiryTime` field for proactive token refresh timing
+  - Added `isTokenExpiringSoon()` method for checking token status
+- Implemented proactive token refresh strategy (5 minutes before expiry) instead of reactive 401 handling
+- Added automatic token restoration and refresh on application startup
+- Enhanced localStorage management to include `token_type` and better expiry handling
+- Updated API response interfaces to include `token_type` field
+- Created comprehensive utility hooks and functions for authenticated API requests
+- Added example component demonstrating advanced authentication features
+
+### Previous Changes
+## [Unreleased]
+
+- Fixed authentication state persistence: users who were previously logged in now correctly bypass login page on window reopen.
+- Enhanced UserSessionContext with proper initialization state management and automatic token refresh on app startup.
+- Refactored App.tsx to use UserSessionContext directly instead of maintaining separate authentication state.
+- Added initialization loading state to prevent premature redirects while authentication is being restored.
+- Improved token refresh logic to handle expired tokens during app initialization.
+- Removed validateToken API function and related code as backend no longer supports this endpoint.
+- Updated AuthAPIDemo component to remove validateToken functionality and UI elements.
+- Refactored authentication API structure: moved login function from Login.tsx to auth.ts for better code organization.
+- Added comprehensive authentication API functions (login, refreshToken, logout) in auth.ts.
+- Enhanced type safety with proper TypeScript interfaces for all authentication endpoints.
+- Simplified Login.tsx by removing inline API calls and using centralized auth functions.
+- Enhanced UserSessionContext to include token information (accessToken, sessionId, refreshToken method).
+- Created utility functions and hooks for authenticated API requests with automatic token refresh.
+- Added example component demonstrating UserSessionContext usage for API calls.
+- Improved authentication state management by exposing token data through Context API.
+- Removed `assistant-srv/data` directory from git tracking; now ignored by `.gitignore`.
+- Fixed missing type annotations in `assistant-srv/src/assistant/utils/db_init.py` to pass mypy checks.
+
+# 2025-08-11
+
 - Refactored model get_model API and ModelService.get_model method.
 - Service layer now handles user_id and user_role logic for model access and type.
 - Improved code comments and endpoint documentation for clarity and maintainability.

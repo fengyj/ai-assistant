@@ -10,6 +10,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .api.auth import router as auth_router
+from .api.models import router as models_router
 from .api.oauth import router as oauth_router
 from .api.sessions import router as sessions_router
 from .api.users import router as users_router
@@ -45,6 +46,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth_router)
+app.include_router(models_router)
 app.include_router(users_router)
 app.include_router(oauth_router)
 app.include_router(sessions_router)

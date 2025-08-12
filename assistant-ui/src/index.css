@@ -1,37 +1,5 @@
-/* 点赞/点踩按钮颜色样式 - 确保激活状态在非hover时就显示正确颜色 */
-/* 基础激活状态 - light mode */
-.message-action-buttons .btn-action.text-green-600 {
-  color: #16a34a !important;
-}
-.message-action-buttons .btn-action.text-red-600 {
-  color: #dc2626 !important;
-}
 
-/* 基础激活状态 - dark mode */
-html.dark .message-action-buttons .btn-action.text-green-400 {
-  color: #4ade80 !important;
-}
-html.dark .message-action-buttons .btn-action.text-red-400 {
-  color: #f87171 !important;
-}
-
-/* hover状态 - light mode */
-.message-action-buttons .btn-action.text-green-600:hover {
-  color: #15803d !important;
-}
-.message-action-buttons .btn-action.text-red-600:hover {
-  color: #b91c1c !important;
-}
-
-/* hover状态 - dark mode */
-html.dark .message-action-buttons .btn-action.text-green-400:hover {
-  color: #22c55e !important;
-}
-html.dark .message-action-buttons .btn-action.text-red-400:hover {
-  color: #ef4444 !important;
-}
 @import "tailwindcss";
-@import "./styles/fileUpload.css";
 
 /* 配置Tailwind CSS v4的dark mode使用class策略 */
 @variant dark (&:where(.dark, .dark *));
@@ -574,3 +542,129 @@ body {
   @apply bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-500;
 }
 
+/* 点赞/点踩按钮颜色样式 - 确保激活状态在非hover时就显示正确颜色 */
+/* 基础激活状态 - light mode */
+.message-action-buttons .btn-action.text-green-600 {
+  color: #16a34a !important;
+}
+.message-action-buttons .btn-action.text-red-600 {
+  color: #dc2626 !important;
+}
+
+/* 基础激活状态 - dark mode */
+html.dark .message-action-buttons .btn-action.text-green-400 {
+  color: #4ade80 !important;
+}
+html.dark .message-action-buttons .btn-action.text-red-400 {
+  color: #f87171 !important;
+}
+
+/* hover状态 - light mode */
+.message-action-buttons .btn-action.text-green-600:hover {
+  color: #15803d !important;
+}
+.message-action-buttons .btn-action.text-red-600:hover {
+  color: #b91c1c !important;
+}
+
+/* hover状态 - dark mode */
+html.dark .message-action-buttons .btn-action.text-green-400:hover {
+  color: #22c55e !important;
+}
+html.dark .message-action-buttons .btn-action.text-red-400:hover {
+  color: #ef4444 !important;
+}
+
+/* 自定义模型选择器样式 */
+.model-selector-button {
+  @apply flex items-center justify-between w-full px-3 py-2 text-left;
+  @apply bg-white dark:bg-gray-700;
+  @apply border border-gray-200 dark:border-gray-600;
+  @apply rounded-md;
+  @apply text-gray-700 dark:text-gray-300;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-600;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  @apply transition-all duration-200;
+  @apply shadow-sm;
+  @apply min-w-[160px];
+}
+
+.model-selector-dropdown {
+  @apply absolute left-0 mt-1 w-full min-w-[300px] z-50;
+  @apply bg-white dark:bg-gray-800;
+  @apply border border-gray-200 dark:border-gray-600;
+  @apply rounded-lg shadow-lg;
+  @apply overflow-hidden;
+}
+
+.model-selector-dropdown-bottom {
+  @apply top-full;
+}
+
+.model-selector-dropdown-top {
+  @apply bottom-full mb-1;
+}
+
+.model-selector-list {
+  @apply max-h-64 overflow-y-auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(156 163 175) transparent;
+}
+
+.model-selector-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.model-selector-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.model-selector-list::-webkit-scrollbar-thumb {
+  background-color: rgb(156 163 175);
+  border-radius: 3px;
+}
+
+.model-selector-option {
+  @apply w-full px-3 py-3 text-left;
+  @apply text-gray-700 dark:text-gray-300;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-700;
+  @apply focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700;
+  @apply transition-colors duration-200;
+  @apply border-b border-gray-100 dark:border-gray-700 last:border-0;
+}
+
+.model-selector-option-selected {
+  @apply bg-blue-50 dark:bg-blue-900/30;
+  @apply text-blue-700 dark:text-blue-300;
+}
+
+/* 多行文本截断样式 */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 模型选择器选项内的文本颜色控制 */
+.model-selector-option .model-name {
+  @apply text-gray-900 dark:text-gray-200;
+}
+
+.model-selector-option .model-description {
+  @apply text-gray-600 dark:text-gray-400;
+}
+
+.model-selector-option-selected .model-name {
+  @apply text-blue-700 dark:text-blue-300;
+}
+
+.model-selector-option-selected .model-description {
+  @apply text-blue-600 dark:text-blue-400;
+}
+html.dark .message-action-buttons .btn-action.text-green-400:hover {
+  color: #22c55e !important;
+}
+html.dark .message-action-buttons .btn-action.text-red-400:hover {
+  color: #ef4444 !important;
+}

@@ -1,24 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { setAuthData, isAuthenticated, type AuthTokens } from "../utils/auth";
-import api from "../api/request";
-
-interface LoginResponse {
-  access_token: string;
-  session_id: string;
-  expires_in: number;
-  user: {
-    id: string;
-    username: string;
-    display_name?: string;
-    role: string;
-    status: string;
-    email?: string;
-    permissions?: string[];
-  };
-}
+import { isAuthenticated } from "../utils/auth";
+import { useUserSession } from "../hooks/useUserSession";
+import { login, type LoginRequest } from "../api/auth";
 
 const Login: React.FC = () => {
+  const { setUser } = useUserSession();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -49,28 +36,17 @@ const Login: React.FC = () => {
     console.log("Attempting login with:", username);
     
     try {
-      const response = await api.post<LoginResponse>("/api/auth/login", { 
-        username: username.trim(), 
-        password 
-      });
-      console.log("Login response:", response.data);
-      
-      const { access_token, session_id, expires_in, user } = response.data;
-      
-      // Validate response data
-      if (!access_token || !session_id || !user) {
-        throw new Error("登录响应数据不完整");
-      }
-      
-      // Store authentication data
-      const authTokens: AuthTokens = {
-        access_token,
-        session_id,
-        expires_in: expires_in || 900, // Default to 15 minutes
-        user
+      const credentials: LoginRequest = {
+        username: username.trim(),
+        password
       };
       
-      setAuthData(authTokens);
+      const response = await login(credentials);
+      console.log("Login response:", response);
+      
+      // 登录成功，用户信息已通过 setAuthData 存储并触发 authChanged 事件
+      // UserSessionContext 会自动更新用户状态
+      setUser(response.user);
       console.log("Auth data set, navigating to:", from);
       
       // 登录成功后跳转到目标页面
