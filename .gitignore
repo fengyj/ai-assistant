@@ -1,4 +1,8 @@
+
+
+# =========================
 # Python
+# =========================
 __pycache__/
 *.py[cod]
 *.pyo
@@ -7,9 +11,21 @@ __pycache__/
 *.sqlite3
 *.db
 *.log
+*.bak
+*.tmp
+*.egg
+*.egg-info/
 build/
+dist/
+.env
+.env.*
+.venv/
+*.coverage
+htmlcov/
 
-# FastAPI
+# =========================
+# FastAPI/Backend
+# =========================
 assistant-srv/.venv/
 assistant-srv/.mypy_cache/
 assistant-srv/.pytest_cache/
@@ -18,25 +34,41 @@ assistant-srv/.cache/
 assistant-srv/.DS_Store
 assistant-srv/data/
 
-# Node/Vite/React
+# =========================
+# Node/Vite/React/Frontend
+# =========================
 assistant-ui/node_modules/
 assistant-ui/dist/
 assistant-ui/.vite/
 assistant-ui/.DS_Store
+assistant-ui/coverage/
 
-# IDEs
+# =========================
+# IDEs/Editors
+# =========================
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# OS
+# =========================
+# OS/系统文件
+# =========================
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Icon?
 
-# Logs
+# =========================
+# Logs & Misc
+# =========================
 *.log
+npm-debug.log*
+yarn-error.log*
+*.orig
 
-# Misc
-*.bak
-*.tmp
+# =========================
+# 临时/备份文件
+# =========================
+*~
+#*#
