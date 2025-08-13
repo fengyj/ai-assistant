@@ -1,43 +1,8 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getUserModels, type Model } from '../api/models';
 import { useUserSession } from '../hooks/useUserSession';
-
-// 模型信息接口
-export interface ModelInfo {
-  tokenUsage?: {
-    total: number;
-    used: number;
-    remaining: number;
-  };
-  performance?: {
-    averageResponseTime: number;
-    successRate: number;
-  };
-  lastUsed?: Date;
-  // 其他模型信息可以在这里扩展
-}
-
-// Context 数据类型
-export interface ModelContextData {
-  // 模型列表
-  models: Model[];
-  isLoadingModels: boolean;
-  
-  // 当前选中的模型
-  selectedModel: Model | null;
-  selectedModelId: string | undefined;
-  
-  // 模型信息
-  modelInfo: ModelInfo | null;
-  isLoadingModelInfo: boolean;
-  
-  // 操作方法
-  selectModel: (modelId: string) => void;
-  refreshModels: () => Promise<void>;
-  refreshModelInfo: () => Promise<void>;
-}
-
-const ModelContext = createContext<ModelContextData | undefined>(undefined);
+import { ModelContext } from './ModelContext';
+import type { ModelContextData, ModelInfo } from './ModelContext';
 
 // Provider 组件
 interface ModelProviderProps {
@@ -90,7 +55,7 @@ export const ModelProvider: React.FC<ModelProviderProps> = ({ children }) => {
     } finally {
       setIsLoadingModels(false);
     }
-  }, [userId]);
+  }, [userId, selectedModelId]);
 
   // 加载模型信息（暂时为模拟实现）
   const refreshModelInfo = useCallback(async () => {

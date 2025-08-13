@@ -18,5 +18,4 @@ repos:
         entry: uv run mypy
         language: system
         types: [python]
-        exclude: ^(assistant-srv/tests/|assistant-srv/docs/|assistant/build/).*$
         args: [--config-file=pyproject.toml]
