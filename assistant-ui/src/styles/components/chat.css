@@ -105,3 +105,200 @@
 .code-block-icon--default {
   @apply text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200;
 }
+
+/* ===== 聊天徽章和状态指示器样式 ===== */
+.chat-badge-small {
+  @apply text-xs px-1.5 py-0.5 rounded-full;
+  @apply bg-gray-100 dark:bg-gray-700;
+  @apply text-gray-600 dark:text-gray-300;
+  @apply shrink-0;
+}
+
+.chat-badge-status {
+  @apply absolute -top-1 -right-1 w-2 h-2 rounded-full;
+}
+
+.chat-badge-status--active {
+  @apply bg-blue-500 animate-pulse;
+}
+
+/* ===== 聊天文件上传组件样式 ===== */
+.chat-file-upload-container {
+  @apply relative;
+}
+
+.chat-file-upload-inline {
+  @apply flex items-center flex-wrap gap-2;
+}
+
+.chat-file-upload-dropzone {
+  @apply relative inline-block;
+}
+
+.chat-file-upload-button {
+  @apply relative inline-flex items-center justify-center;
+  @apply w-8 h-8 rounded-md;
+  @apply text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+  @apply transition-colors duration-200;
+  @apply border border-transparent;
+}
+
+.chat-file-upload-button:hover {
+  @apply bg-gray-50 dark:bg-gray-800;
+}
+
+.chat-file-upload-button:focus {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-900;
+}
+
+.chat-file-count-badge {
+  @apply absolute -top-1 -right-1;
+  @apply bg-blue-500 text-white;
+  @apply text-xs font-medium;
+  @apply rounded-full;
+  @apply w-4 h-4;
+  @apply flex items-center justify-center;
+  @apply min-w-[16px];
+}
+
+.chat-file-upload-overlay {
+  @apply fixed inset-0 z-50;
+  @apply bg-blue-500/10;
+  @apply backdrop-blur-sm;
+  @apply flex items-center justify-center;
+}
+
+.chat-file-upload-overlay-content {
+  @apply bg-white dark:bg-gray-800;
+  @apply rounded-lg shadow-lg;
+  @apply p-6;
+  @apply flex flex-col items-center space-y-2;
+  @apply border-2 border-dashed border-blue-300 dark:border-blue-600;
+}
+
+.chat-file-upload-error {
+  @apply absolute top-full left-0 mt-1;
+  @apply text-xs text-red-600 dark:text-red-400;
+  @apply bg-red-50 dark:bg-red-900/20;
+  @apply px-2 py-1 rounded;
+  @apply border border-red-200 dark:border-red-800;
+}
+
+/* 水平排列的文件列表 */
+.chat-file-list-inline {
+  @apply flex items-center flex-wrap gap-2;
+  @apply max-w-full;
+}
+
+.chat-file-item-inline {
+  @apply flex items-center space-x-1.5;
+  @apply px-2 py-1 rounded-md;
+  @apply bg-gray-100 dark:bg-gray-700;
+  @apply border border-gray-200 dark:border-gray-600;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-600;
+  @apply transition-all duration-200;
+  @apply max-w-[200px];
+}
+
+.chat-file-item-inline .chat-file-item-icon {
+  @apply flex-shrink-0;
+  @apply text-gray-500 dark:text-gray-400;
+}
+
+.chat-file-item-inline .chat-file-item-info {
+  @apply flex-1 min-w-0;
+  @apply flex flex-col;
+}
+
+.chat-file-item-inline .chat-file-item-name {
+  @apply text-xs font-medium text-gray-900 dark:text-gray-100;
+  @apply truncate;
+  font-size: 10px;
+}
+
+.chat-file-item-inline .chat-file-item-size {
+  @apply text-gray-500 dark:text-gray-400;
+  @apply leading-none;
+  font-size: 9px;
+}
+
+.chat-file-item-inline .chat-file-item-remove {
+  @apply flex-shrink-0;
+  @apply p-0.5 rounded;
+  @apply text-gray-400 hover:text-red-500;
+  @apply hover:bg-red-50 dark:hover:bg-red-900/20;
+  @apply opacity-70;
+  @apply transition-all duration-200;
+}
+
+.chat-file-item-inline:hover .chat-file-item-remove {
+  @apply opacity-100;
+}
+
+.chat-file-item-inline .chat-file-item-remove:focus {
+  @apply opacity-100 outline-none ring-1 ring-red-500 ring-offset-1 dark:ring-offset-gray-700;
+}
+
+.chat-file-list {
+  @apply absolute top-full left-0 mt-2;
+  @apply w-80 max-w-sm;
+  @apply bg-white dark:bg-gray-800;
+  @apply border border-gray-200 dark:border-gray-700;
+  @apply rounded-lg shadow-lg;
+  @apply p-2;
+  @apply space-y-1;
+  @apply z-10;
+  @apply max-h-60 overflow-y-auto;
+}
+
+.chat-file-item {
+  @apply flex items-center space-x-2;
+  @apply p-2 rounded-md;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-700;
+}
+
+.chat-file-item-icon {
+  @apply flex-shrink-0;
+  @apply text-gray-500 dark:text-gray-400;
+}
+
+.chat-file-item-info {
+  @apply flex-1 min-w-0;
+  @apply flex flex-col;
+}
+
+.chat-file-item-name {
+  @apply font-medium text-gray-900 dark:text-gray-100;
+  @apply truncate;
+  font-size: 11px;
+}
+
+.chat-file-item-size {
+  @apply text-gray-500 dark:text-gray-400;
+  font-size: 10px;
+}
+
+.chat-file-item-remove {
+  @apply flex-shrink-0;
+  @apply p-1 rounded;
+  @apply text-gray-400 hover:text-red-500;
+  @apply hover:bg-red-50 dark:hover:bg-red-900/20;
+  @apply opacity-0;
+  @apply transition-all duration-200;
+}
+
+.chat-file-item:hover .chat-file-item-remove {
+  @apply opacity-100;
+}
+
+.chat-file-item-remove:focus {
+  @apply opacity-100 outline-none ring-2 ring-red-500 ring-offset-2 dark:ring-offset-gray-800;
+}
+
+/* 拖拽状态样式 */
+.chat-file-upload-dropzone.drag-active .chat-file-upload-button {
+  @apply bg-blue-50 dark:bg-blue-900/20;
+  @apply text-blue-600 dark:text-blue-400;
+  @apply border-blue-300 dark:border-blue-600;
+}

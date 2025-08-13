@@ -160,9 +160,9 @@ export const ModelInfoModal: React.FC<ModelInfoModalProps> = ({
                       {formatUsagePercentage(modelInfo.tokenUsage.used, modelInfo.tokenUsage.total)}%
                     </span>
                   </div>
-                  <div className="progress-bar-container">
+                  <div className="model-progress-bar-container">
                     <div 
-                      className="progress-bar"
+                      className="model-progress-bar"
                       data-progress={formatUsagePercentage(modelInfo.tokenUsage.used, modelInfo.tokenUsage.total)}
                       style={{ 
                         '--progress-width': `${formatUsagePercentage(modelInfo.tokenUsage.used, modelInfo.tokenUsage.total)}%` 

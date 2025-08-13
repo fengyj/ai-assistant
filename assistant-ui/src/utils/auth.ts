@@ -14,7 +14,7 @@ export interface AuthTokens {
   access_token: string;
   token_type: string;
   session_id: string;
-  expires_in: number;
+  expires_at: Date;
   user: UserInfo;
 }
 
@@ -36,7 +36,7 @@ export const setAuthData = (tokens: AuthTokens) => {
   localStorage.setItem("token_type", tokens.token_type);
   localStorage.setItem("session_id", tokens.session_id);
   localStorage.setItem("user_info", JSON.stringify(tokens.user));
-  localStorage.setItem("token_expires_at", (Date.now() + tokens.expires_in * 1000).toString());
+  localStorage.setItem("token_expires_at", tokens.expires_at.toString());
   
   // 触发自定义事件，用于通知其他组件token变化
   window.dispatchEvent(new CustomEvent('authChanged', { detail: tokens.user }));
@@ -139,12 +139,12 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     
     const newAccessToken = response.data.access_token;
     const tokenType = response.data.token_type || "Bearer";
-    const expiresIn = response.data.expires_in || 900; // 默认15分钟
-    
+    const expiresAt = new Date(response.data.expires_at);
+
     localStorage.setItem("access_token", newAccessToken);
     localStorage.setItem("token_type", tokenType);
-    localStorage.setItem("token_expires_at", (Date.now() + expiresIn * 1000).toString());
-    
+    localStorage.setItem("token_expires_at", expiresAt.toString());
+
     return newAccessToken;
     
   } catch (error) {

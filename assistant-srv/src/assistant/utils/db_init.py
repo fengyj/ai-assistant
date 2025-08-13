@@ -3,17 +3,20 @@ Database initialization and migration script.
 """
 
 import asyncio
+import logging
 import os
 
 from ..core import config
 from ..core.dependencies import get_model_service
 from ..models.model import Model
 
+logger = logging.getLogger(__name__)
+
 
 def ensure_data_directory() -> None:
     """Ensure data directory exists."""
     os.makedirs(config.data_dir, exist_ok=True)
-    print(f"Data directory ensured: {config.data_dir}")
+    logger.info(f"Data directory ensured: {config.data_dir}")
 
 
 def create_default_admin_user() -> None:
@@ -27,7 +30,7 @@ def create_default_admin_user() -> None:
         # 检查是否已有用户
         users = await user_service.get_all_users()
         if users:
-            print("Users already exist, skipping default admin creation")
+            logger.info("Users already exist, skipping default admin creation")
             return
         admin_request = UserCreateRequest(
             username="admin",
@@ -37,7 +40,8 @@ def create_default_admin_user() -> None:
             role=UserRole.ADMIN,
         )
         await user_service.create_user(admin_request)
-        print("Default admin user created: admin/admin123")
+
+    logger.info("Default admin user created: admin/admin123")
 
     asyncio.run(_init_admin())
 
@@ -50,7 +54,7 @@ def initialize_models_data() -> None:
         # 检查是否已有系统模型
         system_models = await model_service.list_system_models()
         if system_models:
-            print("Model data already exists, skipping initialization.")
+            logger.info("Model data already exists, skipping initialization.")
             return
         default_models = [
             Model(
@@ -128,20 +132,20 @@ def initialize_models_data() -> None:
 
         for m in default_models:
             await model_service.add_model(m, user_id="system", user_role=UserRole.ADMIN)
-        print("Default model data initialized via ModelService.")
+        logger.info("Default model data initialized via ModelService.")
 
     asyncio.run(_init_models())
 
 
 def initialize_database() -> None:
     """Initialize database and create default data."""
-    print("Initializing database...")
+    logger.info("Initializing database...")
 
     ensure_data_directory()
     create_default_admin_user()
     initialize_models_data()
 
-    print("Database initialization completed!")
+    logger.info("Database initialization completed!")
 
 
 if __name__ == "__main__":

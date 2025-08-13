@@ -3,9 +3,9 @@ Authentication API endpoints.
 Handles token refresh and advanced authentication operations.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from datetime import datetime, timezone
 
-from ..core.config import config
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 # Import centralized dependencies
 from ..core.dependencies import get_session_service, get_user_service
@@ -68,10 +68,8 @@ async def login(
             "permissions": getattr(user, "permissions", []),
         }
 
-        # Generate JWT token with user info (15 minutes expiration)
-        jwt_token = TokenGenerator.generate_jwt_token(
-            session.id, user.id, user_info, expire_hours=config.jwt_expire_hours
-        )
+        # Generate JWT token with user info
+        jwt_token, expires_at = TokenGenerator.generate_jwt_token(session.id, user.id, user_info)
 
         user_data = UserResponseData(
             id=user.id,
@@ -90,7 +88,7 @@ async def login(
             token_type="Bearer",
             user=user_data,
             session_id=session.id,
-            expires_in=int(config.jwt_expire_hours * 3600),
+            expires_at=expires_at.isoformat(),
         )
 
     except InvalidCredentialsError as e:
@@ -124,17 +122,14 @@ async def refresh_access_token(
 
         # 3. Optionally extend session expiration (sliding window)
         if request.extend_session:
-            # Use refresh_session method which extends expiration
-            updated_session = await session_service.refresh_session(
-                session.id, current_user.id, extend_hours=24  # Simple token format for session lookup
-            )
-            if updated_session:
-                session = updated_session
+            session.refresh()
 
         # 4. Update session access tracking
         if http_request.client and session:
             session.update_ip_tracking(http_request.client.host)
-            await session_service.session_repository.update(session)
+
+        session.last_accessed = datetime.now(timezone.utc)
+        await session_service.session_repository.update(session)
 
         # 5. Prepare user info for JWT (filter sensitive data)
         user_info = {
@@ -144,13 +139,11 @@ async def refresh_access_token(
             "permissions": getattr(user, "permissions", []),
         }
 
-        # 6. Generate new access token with user info (15 minutes)
-        new_access_token = TokenGenerator.generate_jwt_token(
-            session.id, user.id, user_info, expire_hours=config.jwt_expire_hours
-        )
+        # 6. Generate new access token with user info
+        new_access_token, expires_at = TokenGenerator.generate_jwt_token(session.id, user.id, user_info)
 
         return RefreshTokenResponseData(
-            access_token=new_access_token, expires_in=int(config.jwt_expire_hours * 3600), session_id=session.id
+            access_token=new_access_token, expires_at=expires_at.isoformat(), session_id=session.id
         )
 
     except HTTPException:

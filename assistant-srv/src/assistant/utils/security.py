@@ -4,7 +4,7 @@ Password hashing and verification utilities.
 
 import secrets
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple, cast
 
 import bcrypt
 import jwt
@@ -120,7 +120,7 @@ class TokenGenerator:
         """Get secret key from config."""
         from ..core.config import config
 
-        return config.session_secret_key
+        return config.jwt_secret_key
 
     @staticmethod
     def generate_session_id(length: int = 16) -> str:
@@ -129,19 +129,20 @@ class TokenGenerator:
 
     @classmethod
     def generate_jwt_token(
-        cls, session_id: str, user_id: str, user_info: Optional[Dict[str, Any]] = None, expire_hours: float = 0.25
-    ) -> str:
+        cls, session_id: str, user_id: str, user_info: Optional[Dict[str, Any]] = None
+    ) -> Tuple[str, datetime]:
         """Generate a JWT token with user information."""
         from ..core.config import config
 
         now = datetime.now(timezone.utc)
+        expires_at = now + timedelta(hours=config.jwt_expire_hours)
 
         # Base payload with standard claims
         payload = {
             "sub": user_id,
             "sid": session_id,
             "iat": int(now.timestamp()),
-            "exp": int((now + timedelta(hours=expire_hours)).timestamp()),
+            "exp": int(expires_at.timestamp()),
             "jti": secrets.token_urlsafe(8),
             "iss": config.jwt_issuer,
         }
@@ -166,8 +167,8 @@ class TokenGenerator:
         secret_key = cls._get_secret_key()
         token = jwt.encode(payload, secret_key, algorithm=config.jwt_algorithm)
         if isinstance(token, bytes):
-            return token.decode("utf-8")
-        return str(token)
+            return token.decode("utf-8"), expires_at
+        return str(token), expires_at
 
     @classmethod
     def decode_jwt_token(cls, token: str, verify_expiry: bool = True) -> Optional[Dict[str, Any]]:
@@ -182,7 +183,6 @@ class TokenGenerator:
                 algorithms=[config.jwt_algorithm],
                 options={"verify_exp": verify_expiry},  # Verify expiration
             )
-            from typing import Any, Dict, cast
 
             return cast(Dict[str, Any], payload)
         except jwt.ExpiredSignatureError:

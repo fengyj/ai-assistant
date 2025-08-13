@@ -12,7 +12,7 @@ export interface LoginResponse {
   access_token: string;
   token_type: string;
   session_id: string;
-  expires_in: number;
+  expires_at: string;
   user: {
     id: string;
     username: string;
@@ -33,7 +33,7 @@ export interface RefreshTokenRequest {
 export interface RefreshTokenResponse {
   access_token: string;
   token_type: string;
-  expires_in: number;
+  expires_at: string;
 }
 
 // Login function
@@ -43,7 +43,7 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
     password: credentials.password
   });
 
-  const { access_token, token_type, session_id, expires_in, user } = response.data;
+  const { access_token, token_type, session_id, expires_at, user } = response.data;
 
   // Validate response data
   if (!access_token || !session_id || !user) {
@@ -55,7 +55,7 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
     access_token,
     token_type: token_type || 'Bearer',
     session_id,
-    expires_in: expires_in || 900, // Default to 15 minutes
+    expires_at: new Date(expires_at),
     user
   };
 

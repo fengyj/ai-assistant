@@ -8,12 +8,9 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 
 # Import centralized dependencies
-from ..core.dependencies import get_session_service, get_user_service
 from ..core.exceptions import TokenExpiredError
 from ..models import UserRole, UserStatus
 from ..models.api.exceptions import ForbiddenException, UnauthorizedException
-from ..services.session_service import SessionService
-from ..services.user_service import UserService
 from .security import TokenGenerator
 
 
@@ -33,8 +30,6 @@ credentials = HTTPBearer()
 
 async def _get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(credentials),
-    session_service: SessionService = Depends(get_session_service),
-    user_service: UserService = Depends(get_user_service),
     verify_expiry: bool = True,
 ) -> CurrentUser:
     """Get current authenticated user from session token."""
@@ -74,28 +69,20 @@ async def _get_current_user(
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(credentials),
-    session_service: SessionService = Depends(get_session_service),
-    user_service: UserService = Depends(get_user_service),
 ) -> CurrentUser:
     """Get current authenticated session from session token only (no JWT required)."""
     return await _get_current_user(
         credentials=credentials,
-        session_service=session_service,
-        user_service=user_service,
         verify_expiry=True,
     )
 
 
 async def get_current_user_no_expiry_verify(
     credentials: HTTPAuthorizationCredentials = Depends(credentials),
-    session_service: SessionService = Depends(get_session_service),
-    user_service: UserService = Depends(get_user_service),
 ) -> CurrentUser:
     """Get current authenticated user without verifying token expiry."""
     return await _get_current_user(
         credentials=credentials,
-        session_service=session_service,
-        user_service=user_service,
         verify_expiry=False,
     )
 

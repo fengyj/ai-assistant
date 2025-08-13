@@ -79,7 +79,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="centered-page bg-gray-50 dark:bg-gray-900">
-      <form onSubmit={handleSubmit} className="login-card p-8 w-96">
+      <form onSubmit={handleSubmit} className="auth-login-card p-8 w-96">
         <h2 className="mb-6 text-2xl font-bold text-center text-gray-800 dark:text-gray-100">登录</h2>
         
         <div className="mb-4">

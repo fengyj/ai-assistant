@@ -87,12 +87,12 @@ export const AuthAPIDemo: React.FC = () => {
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <h3 className="text-lg font-semibold text-green-900 mb-3">测试登录 API</h3>
           <div className="space-y-3">
-            <input
+                        <input
               type="text"
               placeholder="用户名"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
+              className="auth-input-demo"
               disabled={isLoading}
             />
             <input
@@ -100,13 +100,13 @@ export const AuthAPIDemo: React.FC = () => {
               placeholder="密码"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
+              className="auth-input-demo"
               disabled={isLoading}
             />
             <button
               onClick={handleLogin}
               disabled={isLoading}
-              className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+              className="auth-btn-demo-primary"
             >
               {isLoading ? '登录中...' : '测试 login() API'}
             </button>

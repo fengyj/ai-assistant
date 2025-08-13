@@ -95,3 +95,111 @@
 .model-selector-option-selected .model-description {
   @apply text-blue-600 dark:text-blue-400;
 }
+
+/* ===== 模型设置样式 ===== */
+.model-settings-section {
+  @apply space-y-4;
+}
+
+.model-settings-title {
+  @apply text-sm font-medium text-gray-700 dark:text-gray-300;
+}
+
+.model-settings-item {
+  @apply space-y-2;
+}
+
+.model-settings-label-row {
+  @apply flex justify-between;
+}
+
+.model-settings-label {
+  @apply text-sm text-gray-600 dark:text-gray-300;
+}
+
+.model-settings-value {
+  @apply text-sm text-gray-900 dark:text-white font-mono;
+}
+
+.model-info-card {
+  @apply p-3 bg-gray-50 dark:bg-gray-700 rounded-lg;
+}
+
+.model-settings-help-text {
+  @apply text-xs text-gray-500 dark:text-gray-400 space-y-1;
+}
+
+.model-slider-base {
+  @apply w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer;
+}
+
+.model-slider-labels {
+  @apply flex justify-between text-xs text-gray-500 dark:text-gray-400;
+}
+
+/* Model info card styling */
+.model-info-card {
+  @apply p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700;
+}
+
+/* Model progress bar styling */
+.model-progress-bar-container {
+  @apply w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden;
+}
+
+.model-progress-bar {
+  @apply h-full bg-blue-500 dark:bg-blue-400 rounded-full transition-all duration-300;
+  width: var(--progress-width, 0%);
+}
+
+.model-progress-bar[data-progress]:hover::after {
+  @apply absolute -top-8 left-1/2 transform -translate-x-1/2 
+         bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap;
+  content: attr(data-progress);
+}
+
+/* Legacy model selector styles (to be refactored) */
+.model-selector {
+  min-width: 180px;
+}
+
+.model-option {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 8px;
+}
+
+.model-option .model-name {
+  font-weight: 500;
+  font-size: 1em;
+}
+
+.model-option .model-description {
+  font-size: 0.85em;
+  color: var(--tw-prose-muted, #6b7280);
+}
+
+/* Model tag styling */
+.model-tag {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 0.75em;
+  font-weight: 500;
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+@media (prefers-color-scheme: dark) {
+  .model-tag {
+    background: #312e81;
+    color: #c7d2fe;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .model-option .model-description {
+    color: #a3a3a3;
+  }
+}

@@ -5,6 +5,7 @@
 @import "./components/inputs.css";
 @import "./components/sidebar.css";
 @import "./components/chat.css";
+@import "./components/auth.css";
 @import "./components/model-selector.css";
 @import "./components/common.css";
 @import "./components/markdown.css";

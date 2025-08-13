@@ -90,7 +90,7 @@ export const ModelProvider: React.FC<ModelProviderProps> = ({ children }) => {
     } finally {
       setIsLoadingModels(false);
     }
-  }, [userId, selectedModelId]);
+  }, [userId]);
 
   // 加载模型信息（暂时为模拟实现）
   const refreshModelInfo = useCallback(async () => {

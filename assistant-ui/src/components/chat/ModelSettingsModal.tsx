@@ -76,11 +76,11 @@ export const ModelSettingsModal: React.FC<ModelSettingsModalProps> = ({
         <div className="p-4 space-y-6">
           {/* 模型信息 */}
           {model && (
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="model-settings-item">
+              <h3 className="model-settings-title">
                 当前模型
               </h3>
-              <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div className="model-info-card">
                 <div className="flex items-center space-x-2">
                   {getModelTypeIcon(model)}
                   <span className="font-medium text-gray-900 dark:text-white">
@@ -97,18 +97,18 @@ export const ModelSettingsModal: React.FC<ModelSettingsModalProps> = ({
           )}
 
           {/* 参数设置 */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <div className="model-settings-section">
+            <h3 className="model-settings-title">
               参数设置
             </h3>
 
             {/* Temperature */}
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <label className="text-sm text-gray-600 dark:text-gray-300">
+            <div className="model-settings-item">
+              <div className="model-settings-label-row">
+                <label className="model-settings-label">
                   Temperature
                 </label>
-                <span className="text-sm text-gray-900 dark:text-white font-mono">
+                <span className="model-settings-value">
                   {temperature}
                 </span>
               </div>
@@ -119,46 +119,46 @@ export const ModelSettingsModal: React.FC<ModelSettingsModalProps> = ({
                 step="0.1"
                 value={temperature}
                 onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                className="slider-base"
+                className="model-slider-base"
               />
-              <div className="slider-labels">
+              <div className="model-slider-labels">
                 <span>保守 (0)</span>
                 <span>创新 (2)</span>
               </div>
             </div>
 
             {/* Max Tokens */}
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <label className="text-sm text-gray-600 dark:text-gray-300">
+            <div className="model-settings-item">
+              <div className="model-settings-label-row">
+                <label className="model-settings-label">
                   最大 Token 数
                 </label>
-                <span className="text-sm text-gray-900 dark:text-white font-mono">
+                <span className="model-settings-value">
                   {maxTokens}
                 </span>
               </div>
-              <input
+                            <input
                 type="range"
                 min="256"
                 max="4096"
                 step="256"
                 value={maxTokens}
                 onChange={(e) => setMaxTokens(parseInt(e.target.value))}
-                className="slider-base"
+                className="model-slider-base"
               />
-              <div className="slider-labels">
+              <div className="model-slider-labels">
                 <span>256</span>
                 <span>4096</span>
               </div>
             </div>
 
             {/* Top P */}
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <label className="text-sm text-gray-600 dark:text-gray-300">
+            <div className="model-settings-item">
+              <div className="model-settings-label-row">
+                <label className="model-settings-label">
                   Top P
                 </label>
-                <span className="text-sm text-gray-900 dark:text-white font-mono">
+                <span className="model-settings-value">
                   {topP}
                 </span>
               </div>
@@ -169,9 +169,9 @@ export const ModelSettingsModal: React.FC<ModelSettingsModalProps> = ({
                 step="0.1"
                 value={topP}
                 onChange={(e) => setTopP(parseFloat(e.target.value))}
-                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                className="model-slider-base"
               />
-              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+              <div className="model-slider-labels">
                 <span>0.1</span>
                 <span>1.0</span>
               </div>
@@ -179,7 +179,7 @@ export const ModelSettingsModal: React.FC<ModelSettingsModalProps> = ({
           </div>
 
           {/* 说明文本 */}
-          <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+          <div className="help-text">
             <p><strong>Temperature:</strong> 控制输出的随机性，值越高越创新。</p>
             <p><strong>Max Tokens:</strong> 生成的最大 token 数量。</p>
             <p><strong>Top P:</strong> 核采样参数，控制词汇选择的多样性。</p>
@@ -190,20 +190,20 @@ export const ModelSettingsModal: React.FC<ModelSettingsModalProps> = ({
         <div className="flex justify-between p-4 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={handleReset}
-            className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+            className="btn-text"
           >
             重置默认
           </button>
           <div className="flex space-x-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+              className="btn-text"
             >
               取消
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              className="btn-text-primary"
             >
               保存
             </button>

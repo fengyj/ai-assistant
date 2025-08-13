@@ -139,51 +139,51 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   });
 
   return (
-    <div className={`file-upload-container ${className}`}>
-      <div className="file-upload-inline">
+    <div className={`chat-file-upload-container ${className}`}>
+      <div className="chat-file-upload-inline">
         {/* 文件上传按钮 */}
         <div
           {...getRootProps()}
-          className={`file-upload-dropzone ${
+          className={`chat-file-upload-dropzone ${
             isDragActive || dragActive ? 'drag-active' : ''
           }`}
         >
           <input {...getInputProps()} />
           <button
             type="button"
-            className="file-upload-button"
+            className="chat-file-upload-button"
             title="上传文件"
           >
             <PaperClipIcon className="w-4 h-4" />
             {files.length > 0 && (
-              <span className="file-count-badge">{files.length}</span>
+              <span className="chat-file-count-badge">{files.length}</span>
             )}
           </button>
         </div>
 
         {/* 已上传文件列表 - 水平排列 */}
         {files.length > 0 && (
-          <div className="file-list-inline">
+          <div className="chat-file-list-inline">
             {files.map((file, index) => (
-              <div key={`${file.name}-${index}`} className="file-item-inline">
-                <div className="file-item-icon">
+              <div key={`${file.name}-${index}`} className="chat-file-item-inline">
+                <div className="chat-file-item-icon">
                   {getFileIcon(file.type)}
                 </div>
-                <div className="file-item-info">
-                  <span className="file-item-name" title={file.name}>
+                <div className="chat-file-item-info">
+                  <span className="chat-file-item-name" title={file.name}>
                     {file.name.length > 15 
                       ? `${file.name.slice(0, 12)}...` 
                       : file.name
                     }
                   </span>
-                  <span className="file-item-size">
+                  <span className="chat-file-item-size">
                     {formatFileSize(file.size)}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleFileRemove(index)}
-                  className="file-item-remove"
+                  className="chat-file-item-remove"
                   title="删除文件"
                 >
                   <XMarkIcon className="w-3 h-3" />
@@ -196,8 +196,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
       {/* 拖拽覆盖层 */}
       {(isDragActive || dragActive) && (
-        <div className="file-upload-overlay">
-          <div className="file-upload-overlay-content">
+        <div className="chat-file-upload-overlay">
+          <div className="chat-file-upload-overlay-content">
             <PaperClipIcon className="w-8 h-8 text-blue-500" />
             <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
               拖拽文件到这里上传
@@ -211,7 +211,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
       {/* 错误提示 */}
       {uploadError && (
-        <div className="file-upload-error">
+        <div className="chat-file-upload-error">
           <span className="text-xs text-red-600 dark:text-red-400">
             {uploadError}
           </span>

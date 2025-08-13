@@ -25,15 +25,18 @@ Requires-Dist: pyjwt>=2.9.0
 Requires-Dist: cryptography>=45.0.5
 Requires-Dist: python-dotenv>=1.0.1
 Requires-Dist: requests>=2.32.4
+Requires-Dist: pyyaml>=6.0.2
 Provides-Extra: dev
 Requires-Dist: httpx>=0.25.0; extra == "dev"
 Requires-Dist: pytest>=8.3.5; extra == "dev"
 Requires-Dist: black>=24.8.0; extra == "dev"
 Requires-Dist: flake8>=7.0.0; extra == "dev"
 Requires-Dist: isort>=5.13.2; extra == "dev"
-Requires-Dist: pre-commit>=3.7.0; extra == "dev"
+Requires-Dist: pre-commit>=4.2.0; extra == "dev"
 Requires-Dist: mypy>=1.14.1; extra == "dev"
 Requires-Dist: pytest-asyncio>=1.1.0; extra == "dev"
+Requires-Dist: types-pyyaml>=6.0.12.20250809; extra == "dev"
+Requires-Dist: types-requests>=2.32.4.20250611; extra == "dev"
 
 # Personal AI Assistant
 

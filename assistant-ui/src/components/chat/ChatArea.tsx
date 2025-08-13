@@ -1,6 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import '../../styles/ChatArea.css';
-import '../../styles/FileUpload.css';
 import { useEditingMessage } from '../../hooks/useEditingMessage';
 import { Button } from '../ui/Button';
 import { ModelControl } from './ModelControl';

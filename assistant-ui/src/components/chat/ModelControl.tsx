@@ -58,7 +58,7 @@ export const ModelControl: React.FC<ModelControlProps> = ({ className = '' }) =>
         >
           <InformationCircleIcon className="w-3.5 h-3.5" />
           {isLoadingModelInfo && (
-            <div className="badge-status badge-status--active" />
+            <div className="chat-badge-status chat-badge-status--active" />
           )}
         </button>
         

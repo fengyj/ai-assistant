@@ -1,24 +1,14 @@
-/* ===== 登录页面样式 ===== */
-.login-card {
-  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md;
-}
+/* =============================================================================
+   COMMON COMPONENT STYLES
+   Truly universal styles used across multiple business domains
+   ============================================================================= */
 
-/* ===== 进度条组件样式 ===== */
-.progress-bar-container {
-  @apply w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2;
-}
-
-.progress-bar {
-  @apply bg-blue-500 h-2 rounded-full transition-all duration-300;
-  width: var(--progress-width, 0%);
-}
-
-/* ===== 图标容器样式 ===== */
+/* ===== 通用图标容器样式 ===== */
 .icon-container {
   @apply flex items-center justify-center rounded-lg;
 }
 
-/* ===== 表单组件样式 ===== */
+/* ===== 通用表单组件样式 ===== */
 .form-textarea-base {
   @apply w-full h-32 min-h-[128px] max-h-64 resize-y p-3;
   @apply border border-gray-300 dark:border-gray-600 rounded-lg;
@@ -28,14 +18,15 @@
   @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
 }
 
-/* ===== 模态框组件样式 ===== */
-.modal-footer {
-  @apply flex items-center justify-end space-x-3 p-4;
-  @apply border-t border-gray-200 dark:border-gray-700;
+/* ===== 模态框布局 ===== */
+
+/* ===== 通用模态框组件样式 ===== */
+.modal-overlay {
+  @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50;
 }
 
 .modal-content {
-  @apply bg-white dark:bg-gray-800 rounded-lg shadow-xl;
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-xl relative;
   @apply border border-gray-200 dark:border-gray-700;
 }
 
@@ -56,22 +47,11 @@
   @apply flex-1 p-4;
 }
 
+.modal-footer {
+  @apply flex items-center justify-end space-x-3 p-4;
+  @apply border-t border-gray-200 dark:border-gray-700;
+}
+
 .modal-help-text {
   @apply mt-2 text-xs text-gray-500 dark:text-gray-400;
-}
-
-/* ===== 标签和徽章样式 ===== */
-.badge-small {
-  @apply text-xs px-1.5 py-0.5 rounded-full;
-  @apply bg-gray-100 dark:bg-gray-700;
-  @apply text-gray-600 dark:text-gray-300;
-  @apply shrink-0;
-}
-
-.badge-status {
-  @apply absolute -top-1 -right-1 w-2 h-2 rounded-full;
-}
-
-.badge-status--active {
-  @apply bg-blue-500 animate-pulse;
 }

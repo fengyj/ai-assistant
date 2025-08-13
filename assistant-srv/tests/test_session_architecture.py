@@ -49,7 +49,7 @@ async def test_new_session_architecture():
     print()
 
     # 2. Generate JWT token
-    jwt_token = TokenGenerator.generate_jwt_token(session.id, session.user_id, {}, expire_hours=1)
+    jwt_token = TokenGenerator.generate_jwt_token(session.id, session.user_id, {})
     print("✅ Generated JWT token:")
     print(f"   Token: {jwt_token[:50]}...")
     print(f"   Length: {len(jwt_token)} characters")

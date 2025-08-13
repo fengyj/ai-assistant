@@ -22,7 +22,7 @@ def test_jwt_configuration():
     print("📊 Current JWT Settings:")
     print(f"   Issuer: {config.jwt_issuer}")
     print(f"   Algorithm: {config.jwt_algorithm}")
-    print(f"   Session Secret Key: {config.session_secret_key[:10]}...")
+    print(f"   JWT Secret Key: {config.jwt_secret_key[:10]}...")
     print()
 
     # Test data

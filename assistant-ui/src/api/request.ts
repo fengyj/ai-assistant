@@ -34,7 +34,7 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     // Skip auth for auth-related endpoints
-    const authEndpoints = ['/api/auth/login', '/api/auth/refresh', '/api/users/register'];
+    const authEndpoints = ['/api/auth/login', '/api/users/register'];
     const isAuthEndpoint = authEndpoints.some(endpoint => config.url?.includes(endpoint));
     
     if (!isAuthEndpoint) {

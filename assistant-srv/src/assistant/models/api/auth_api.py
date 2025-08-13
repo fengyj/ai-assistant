@@ -14,8 +14,8 @@ class LoginResponseData(BaseModel):
     """Login response API model."""
 
     access_token: str
-    token_type: str
-    expires_in: int  # in seconds
+    token_type: str = "Bearer"
+    expires_at: str  # datetime in iso format
     session_id: str
     user: UserResponseData
 
@@ -32,7 +32,7 @@ class RefreshTokenResponseData(BaseModel):
 
     access_token: str
     token_type: str = "Bearer"
-    expires_in: int  # in seconds
+    expires_at: str  # datetime in iso format
     session_id: str
 
 

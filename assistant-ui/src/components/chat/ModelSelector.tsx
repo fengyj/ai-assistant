@@ -159,7 +159,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
                       )}
                     </div>
                   </div>
-                  <span className="badge-small ml-2">
+                  <span className="chat-badge-small ml-2">
                     {getModelTypeLabel(model)}
                   </span>
                 </div>

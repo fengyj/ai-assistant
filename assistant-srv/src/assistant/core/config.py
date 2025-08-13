@@ -31,6 +31,7 @@ class Config:
     # Session security settings
     session_secret_key: str = "your-session-secret-key-change-this-in-production-32bytes!"
     session_expire_hours: float = 24
+    session_extend_hours: float = 12
     enable_token_encryption: bool = True
 
     # JWT settings
@@ -67,6 +68,7 @@ class Config:
                 "SESSION_SECRET_KEY", "your-session-secret-key-change-this-in-production-32bytes!"
             ),
             session_expire_hours=float(os.getenv("SESSION_EXPIRE_HOURS", "24")),
+            session_extend_hours=float(os.getenv("SESSION_EXTEND_HOURS", "24")),
             enable_token_encryption=os.getenv("ENABLE_TOKEN_ENCRYPTION", "true").lower() == "true",
             jwt_issuer=os.getenv("JWT_ISSUER", "assistant-server"),
             jwt_algorithm=os.getenv("JWT_ALGORITHM", "HS256"),

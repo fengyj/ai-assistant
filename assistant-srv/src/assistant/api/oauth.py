@@ -151,7 +151,7 @@ async def oauth_login(
         }
 
         # Generate JWT token with user info (15 minutes expiration)
-        jwt_token = TokenGenerator.generate_jwt_token(session.id, user.id, user_info, expire_hours=0.25)
+        jwt_token = TokenGenerator.generate_jwt_token(session.id, user.id, user_info)
 
         user_data = UserResponseData(
             id=user.id,

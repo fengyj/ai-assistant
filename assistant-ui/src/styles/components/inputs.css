@@ -60,10 +60,15 @@
 }
 
 /* ===== 滑块组件样式 ===== */
-.slider-base {
+.model-slider-base {
   @apply w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer;
 }
 
-.slider-labels {
+.model-slider-labels {
   @apply flex justify-between text-xs text-gray-500 dark:text-gray-400;
+}
+
+/* ===== 演示组件输入框样式 ===== */
+.auth-input-demo {
+  @apply w-full p-2 border border-gray-300 rounded;
 }

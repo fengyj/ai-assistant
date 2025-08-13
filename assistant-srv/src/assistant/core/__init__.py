@@ -3,6 +3,7 @@ Core module initialization.
 """
 
 from .config import config
+from .env import Env
 from .exceptions import (
     AssistantError,
     AuthenticationError,
@@ -17,6 +18,7 @@ from .exceptions import (
 __all__ = [
     "config",
     "AssistantError",
+    "Env",
     "UserError",
     "UserNotFoundError",
     "UserAlreadyExistsError",

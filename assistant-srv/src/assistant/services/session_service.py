@@ -63,17 +63,6 @@ class SessionService:
         else:
             return await self.session_repository.get_by_user_id(user_id)
 
-    async def refresh_session(self, session_id: str, user_id: str, extend_hours: int = 24) -> Optional[UserSession]:
-        """Refresh session expiration."""
-
-        session = await self.session_repository.get_by_session_id_and_user_id(session_id, user_id)
-
-        if session and session.is_active():
-            session.refresh(extend_hours)
-            return await self.session_repository.update(session)
-
-        return None
-
     async def terminate_session(self, session_id: str, user_id: str) -> bool:
         """Terminate a session."""
         if not session_id:

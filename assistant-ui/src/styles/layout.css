@@ -20,15 +20,6 @@
   @apply flex flex-col items-center justify-center min-h-screen;
 }
 
-/* ===== 模态框布局 ===== */
-.modal-overlay {
-  @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50;
-}
-
-.modal-content {
-  @apply bg-white dark:bg-gray-800 rounded-lg shadow-xl relative;
-}
-
 /* ===== 响应式显示控制 ===== */
 .desktop-only {
   @apply hidden md:flex;

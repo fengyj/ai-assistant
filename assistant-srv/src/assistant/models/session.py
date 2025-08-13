@@ -79,10 +79,12 @@ class UserSession:
         """Check if session is active."""
         return self.status == SessionStatus.ACTIVE and not self.is_expired()
 
-    def refresh(self, extend_hours: int = 24) -> None:
+    def refresh(self, extend_hours: int = 12) -> None:
         """Refresh session expiration."""
-        self.last_accessed = datetime.now(timezone.utc)
-        self.expires_at = datetime.now(timezone.utc) + timedelta(hours=extend_hours)
+        self.expires_at = self.expires_at + timedelta(hours=extend_hours)
+        new_expires_at = datetime.now(timezone.utc) + timedelta(hours=config.session_expire_hours)
+        if new_expires_at < self.expires_at:
+            self.expires_at = new_expires_at
 
     def terminate(self) -> None:
         """Terminate the session."""

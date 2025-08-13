@@ -2,6 +2,7 @@
 FastAPI application configuration and setup.
 """
 
+import logging
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import AsyncGenerator
@@ -16,15 +17,17 @@ from .api.sessions import router as sessions_router
 from .api.users import router as users_router
 from .models.api.general_api import HealthCheckResponseData, StatusResponseData
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan events."""
     # Startup
-    print("Starting Personal AI Assistant Server...")
+    logger.info("Started Personal AI Assistant Server")
     yield
     # Shutdown
-    print("Shutting down Personal AI Assistant Server...")
+    logger.warning("Shutting down Personal AI Assistant Server...")
 
 
 # Create FastAPI app
@@ -52,7 +55,7 @@ app.include_router(oauth_router)
 app.include_router(sessions_router)
 
 
-@app.get("/", response_model=StatusResponseData)  # type: ignore[misc]
+@app.get("/", response_model=StatusResponseData)
 async def root() -> StatusResponseData:
     """Root endpoint."""
     return StatusResponseData(
@@ -64,7 +67,7 @@ async def root() -> StatusResponseData:
     )
 
 
-@app.get("/health", response_model=HealthCheckResponseData)  # type: ignore[misc]
+@app.get("/health", response_model=HealthCheckResponseData)
 async def health_check() -> HealthCheckResponseData:
     """Health check endpoint."""
     return HealthCheckResponseData(status="healthy", timestamp=datetime.now(timezone.utc).isoformat())

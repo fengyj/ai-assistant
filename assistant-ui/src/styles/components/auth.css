@@ -1,0 +1,27 @@
+/* =============================================================================
+   AUTHENTICATION COMPONENT STYLES
+   Authentication and login related styles
+   ============================================================================= */
+
+/* ===== 登录页面样式 ===== */
+.auth-login-card {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md;
+}
+
+.auth-error-alert {
+  @apply mb-4 p-3;
+  @apply bg-red-50 dark:bg-red-900/20;
+  @apply border border-red-200 dark:border-red-800;
+  @apply text-red-700 dark:text-red-400;
+  @apply rounded-md text-sm;
+}
+
+/* ===== 进度条组件样式 ===== */
+.auth-progress-container {
+  @apply w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2;
+}
+
+.auth-progress-bar {
+  @apply bg-blue-500 h-2 rounded-full transition-all duration-300;
+  width: var(--progress-width, 0%);
+}
