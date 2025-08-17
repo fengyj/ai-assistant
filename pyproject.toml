@@ -31,6 +31,11 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "requests>=2.32.4",
     "pyyaml>=6.0.2",
+    "langchain>=0.3.27",
+    "openai>=1.99.9",
+    "httpx>=0.28.1",
+    "anthropic>=0.64.0",
+    "google-generativeai>=0.8.5",
 ]
 
 [project.optional-dependencies]
