@@ -45,7 +45,7 @@ class JsonModelRepository(ModelRepository):
 
             self._models_cache = {}
             for model_data in models_data:
-                model = Model.from_dict(model_data)
+                model = Model.model_validate(model_data)
                 self._models_cache[model.id] = model
         except (json.JSONDecodeError, KeyError, ValueError) as e:
             # If file is corrupted, start fresh
@@ -54,7 +54,7 @@ class JsonModelRepository(ModelRepository):
 
     def _save_models(self) -> None:
         """Save models to JSON file."""
-        models_data = [model.to_dict() for model in self._models_cache.values()]
+        models_data = [model.model_dump() for model in self._models_cache.values()]
 
         with open(self.models_file, "w", encoding="utf-8") as f:
             json.dump(models_data, f, indent=2, ensure_ascii=False)

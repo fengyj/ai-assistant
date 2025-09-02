@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "A Python assistant project"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     {name = "Eric Feng", email = "fengyj@live.com"}
 ]
@@ -12,42 +12,49 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "fastapi>=0.116.0",
-    "uvicorn>=0.30.0",
-    "pydantic>=2.0.0",
-    "pydantic[email]>=2.0.0",
-    "bcrypt>=4.0.0",
-    "python-jose[cryptography]>=3.3.0",
-    "passlib[bcrypt]>=1.7.4",
-    "pyjwt>=2.9.0",
-    "cryptography>=45.0.5",
-    "python-dotenv>=1.0.1",
-    "requests>=2.32.4",
-    "pyyaml>=6.0.2",
-    "langchain>=0.3.27",
-    "openai>=1.99.9",
-    "httpx>=0.28.1",
     "anthropic>=0.64.0",
+    "bcrypt>=4.0.0",
+    "cryptography>=45.0.5",
+    "fastapi>=0.116.0",
     "google-generativeai>=0.8.5",
+    "httpx>=0.28.1",
+    "langchain-anthropic>=0.3.19",
+    "langchain-community>=0.3.27",
+    "langchain-google-genai>=2.0.10",
+    "langchain-ollama>=0.3.6",
+    "langchain-openai>=0.3.30",
+    "langchain>=0.3.27",
+    "langgraph>=0.6.5",
+    "ollama>=0.5.3",
+    "openai>=1.99.9",
+    "passlib[bcrypt]>=1.7.4",
+    "pydantic[email]>=2.0.0",
+    "pydantic>=2.0.0",
+    "pyjwt>=2.9.0",
+    "python-dotenv>=1.0.1",
+    "python-jose[cryptography]>=3.3.0",
+    "pyyaml>=6.0.2",
+    "requests>=2.32.5",
+    "uvicorn>=0.30.0",
+    "langmem>=0.0.29",
+    "langsmith>=0.4.14",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "httpx>=0.25.0",
-    "pytest>=8.3.5",
     "black>=24.8.0",
     "flake8>=7.0.0",
     "isort>=6.0.1",
-    "pre-commit>=4.2.0",
     "mypy>=1.14.1",
+    "pre-commit>=4.2.0",
     "pytest-asyncio>=1.1.0",
+    "pytest>=8.3.5",
     "types-pyyaml>=6.0.12.20250809",
     "types-requests>=2.32.4.20250611",
 ]

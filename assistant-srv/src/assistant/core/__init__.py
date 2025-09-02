@@ -2,7 +2,7 @@
 Core module initialization.
 """
 
-from .config import config
+from .config import Config
 from .env import Env
 from .exceptions import (
     AssistantError,
@@ -14,6 +14,9 @@ from .exceptions import (
     UserNotFoundError,
     ValidationError,
 )
+
+Env.init()
+config = Config.from_env()
 
 __all__ = [
     "config",

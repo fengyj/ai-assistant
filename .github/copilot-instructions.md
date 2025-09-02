@@ -17,12 +17,12 @@ Major technologies used:
 
 - **Backend**
    - FastAPI (ver >=0.116.0)
-   - LangChain (ver >=0.0.1)
+   - LangChain (ver >=0.3.0)
 - **Frontend**
-   - React (ver >=17.0.0)
-   - Vite (ver >=2.0.0)
+   - React (ver >=19.0.0)
+   - Vite (ver >=7.0.0)
    - TypeScript (ver >=4.0.0)
-   - Tailwind CSS (ver >=2.0.0)
+   - Tailwind CSS (ver >=4.0.0)
 
 ## Philosophy
 

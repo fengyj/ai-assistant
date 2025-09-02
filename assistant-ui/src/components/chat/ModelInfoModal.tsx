@@ -91,9 +91,9 @@ export const ModelInfoModal: React.FC<ModelInfoModalProps> = ({
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500 dark:text-gray-400">类型:</span>
+                  <span className="text-gray-500 dark:text-gray-400">模型:</span>
                   <span className="text-gray-900 dark:text-white">
-                    {model.type}
+                    {model.provider.model}
                   </span>
                 </div>
                 <div className="flex justify-between">

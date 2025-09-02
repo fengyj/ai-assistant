@@ -18,13 +18,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 
 @pytest.mark.asyncio
-async def test_new_session_architecture():
+async def test_new_session_architecture() -> None:
     """Test the new session architecture."""
     print("🔄 Testing New Session Architecture")
     print("=" * 50)
 
     # Setup
-    repository = JsonSessionRepository("test_data")
+    repository = JsonSessionRepository()
     service = SessionService(repository)
 
     print("📊 Architecture Test:")
@@ -49,7 +49,7 @@ async def test_new_session_architecture():
     print()
 
     # 2. Generate JWT token
-    jwt_token = TokenGenerator.generate_jwt_token(session.id, session.user_id, {})
+    jwt_token, _ = TokenGenerator.generate_jwt_token(session.id, session.user_id, {})
     print("✅ Generated JWT token:")
     print(f"   Token: {jwt_token[:50]}...")
     print(f"   Length: {len(jwt_token)} characters")
@@ -99,12 +99,6 @@ async def test_new_session_architecture():
     if updated_session:
         print(f"   After update - Known IPs: {updated_session.metadata.last_known_ips}")
         print("   ✅ IP tracking works for security analysis")
-
-    # Cleanup
-    if os.path.exists("test_data"):
-        import shutil
-
-        shutil.rmtree("test_data")
 
 
 if __name__ == "__main__":

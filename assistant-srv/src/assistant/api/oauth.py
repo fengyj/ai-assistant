@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 # Import centralized dependencies
 from ..core.dependencies import get_session_service, get_user_service
+from ..core.exceptions import UserAlreadyExistsError, UserNotFoundError
 from ..models.api.oauth_api import OAuthLoginRequestData  # Import the missing type
 from ..models.api.oauth_api import (
     OAuthCleanupResponseData,
@@ -19,7 +20,7 @@ from ..models.session import UserSession
 from ..models.user import UserCreateRequest, UserRole, UserUpdateRequest
 from ..services.oauth_service import OAuthServiceManager, oauth_manager
 from ..services.session_service import SessionService
-from ..services.user_service import UserAlreadyExistsError, UserNotFoundError, UserService
+from ..services.user_service import UserService
 from ..utils.auth import CurrentUser, get_current_user
 from ..utils.security import TokenGenerator
 
@@ -151,7 +152,7 @@ async def oauth_login(
         }
 
         # Generate JWT token with user info (15 minutes expiration)
-        jwt_token = TokenGenerator.generate_jwt_token(session.id, user.id, user_info)
+        jwt_token, _ = TokenGenerator.generate_jwt_token(session.id, user.id, user_info)
 
         user_data = UserResponseData(
             id=user.id,

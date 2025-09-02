@@ -14,7 +14,7 @@ class TestUserService:
     """Test user service."""
 
     @pytest.fixture
-    def user_service(self, tmp_path):
+    def user_service(self, tmp_path: str) -> UserService:
         """Create user service with temporary repository."""
         user_repo = JsonUserRepository(str(tmp_path))
         from assistant.repositories.json_session_repository import JsonSessionRepository
@@ -23,7 +23,7 @@ class TestUserService:
         return UserService(user_repo, session_repo)
 
     @pytest.mark.asyncio
-    async def test_create_user(self, user_service):
+    async def test_create_user(self, user_service: UserService) -> None:
         """Test user creation."""
         request = UserCreateRequest(
             username="testuser",
@@ -42,7 +42,7 @@ class TestUserService:
         assert user.password_hash is not None
 
     @pytest.mark.asyncio
-    async def test_create_duplicate_user(self, user_service):
+    async def test_create_duplicate_user(self, user_service: UserService) -> None:
         """Test creating duplicate user."""
         request = UserCreateRequest(username="testuser", email="test@example.com", password="testpass123")
 
@@ -52,7 +52,7 @@ class TestUserService:
             await user_service.create_user(request)
 
     @pytest.mark.asyncio
-    async def test_authenticate_user(self, user_service):
+    async def test_authenticate_user(self, user_service: UserService) -> None:
         """Test user authentication."""
         request = UserCreateRequest(username="testuser", email="test@example.com", password="testpass123")
 
@@ -64,7 +64,7 @@ class TestUserService:
         assert authenticated_user.last_login is not None
 
     @pytest.mark.asyncio
-    async def test_authenticate_invalid_credentials(self, user_service):
+    async def test_authenticate_invalid_credentials(self, user_service: UserService) -> None:
         """Test authentication with invalid credentials."""
         request = UserCreateRequest(username="testuser", email="test@example.com", password="testpass123")
 
@@ -79,7 +79,7 @@ class TestUserService:
             await user_service.authenticate_user("wronguser", "testpass123")
 
     @pytest.mark.asyncio
-    async def test_update_user(self, user_service):
+    async def test_update_user(self, user_service: UserService) -> None:
         """Test user update."""
         request = UserCreateRequest(username="testuser", email="test@example.com", password="testpass123")
 
@@ -93,7 +93,7 @@ class TestUserService:
         assert updated_user.profile.bio == "Updated bio"
 
     @pytest.mark.asyncio
-    async def test_delete_user(self, user_service):
+    async def test_delete_user(self, user_service: UserService) -> None:
         """Test user deletion."""
         request = UserCreateRequest(username="testuser", email="test@example.com", password="testpass123")
 
@@ -108,7 +108,7 @@ class TestUserService:
         assert deleted_user is None
 
     @pytest.mark.asyncio
-    async def test_change_password(self, user_service):
+    async def test_change_password(self, user_service: UserService) -> None:
         """Test password change."""
         request = UserCreateRequest(username="testuser", email="test@example.com", password="testpass123")
 

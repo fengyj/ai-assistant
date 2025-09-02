@@ -12,7 +12,7 @@ from assistant.utils.security import TokenGenerator
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 
-def test_token_encryption():
+def test_token_encryption() -> None:
     """Test token encryption and decryption."""
     print("🔐 Testing Secure Token System...")
     print("=" * 50)
@@ -28,7 +28,7 @@ def test_token_encryption():
 
     # Generate secure token
     try:
-        secure_token = TokenGenerator.generate_jwt_token(session_id, user_id, {})
+        secure_token, _ = TokenGenerator.generate_jwt_token(session_id, user_id, {})
         print("🔒 Generated Secure Token:")
         print(f"   {secure_token}")
         print(f"   Length: {len(secure_token)} characters")

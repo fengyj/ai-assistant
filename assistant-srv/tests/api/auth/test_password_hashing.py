@@ -10,10 +10,10 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
-def test_password_hashing():
+def test_password_hashing() -> None:
     """测试密码哈希功能。"""
     # 在函数内导入以避免路径问题
-    from src.assistant.utils.security import PasswordHasher
+    from assistant.utils.security import PasswordHasher
 
     print("=== 密码哈希安全性测试 ===\n")
 

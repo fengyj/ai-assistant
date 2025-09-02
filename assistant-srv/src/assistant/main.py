@@ -76,6 +76,6 @@ async def health_check() -> HealthCheckResponseData:
 if __name__ == "__main__":
     import uvicorn
 
-    from .core.config import config
+    from .core import config
 
     uvicorn.run("assistant.main:app", host=config.host, port=config.port, reload=config.debug)

@@ -7,8 +7,8 @@ Model management service for unified model storage and secure key management.
 
 from typing import List, Optional
 
-from ..models.model import Model
-from ..models.user import UserRole  # Import UserRole for type hinting
+from ..models.model import SYSTEM_OWNER, Model
+from ..models.user import UserRole
 from ..repositories.model_repository import ModelRepository
 
 
@@ -27,7 +27,7 @@ class ModelService:
 
     async def list_system_models(self) -> List[Model]:
         """List all system models."""
-        return await self.model_repository.list_models_by_owner(Model.SYSTEM_OWNER)
+        return await self.model_repository.list_models_by_owner(SYSTEM_OWNER)
 
     async def list_models(self, user_id: str, user_role: UserRole) -> List[Model]:
         """List all models available to the user (system + user)."""
@@ -52,25 +52,27 @@ class ModelService:
             if not model.is_system_model() and model.owner != user_id:
                 return None
         if load_api_key:
-            model.api_key = await self.model_repository.get_api_key(model.owner, model.id)
+            model.provider.api_key = await self.model_repository.get_api_key(model.owner, model.id)
         else:
-            model.api_key = None
+            model.provider.api_key = None
         return model
 
     async def add_model(self, model: Model, user_id: str, user_role: UserRole) -> Model:
         """Add a new model, ensuring name uniqueness and handling api_key."""
         if await self.model_repository.model_name_exists(model.owner, model.name):
             raise ValueError(f"Model name '{model.name}' already exists " f"for owner '{model.owner}'")
+        if await self.model_repository.exists(model.id):
+            raise ValueError(f"Model ID '{model.id}' already exists")
 
-        api_key = model.api_key
-        model.api_key = None
+        api_key = model.provider.api_key
+        model.provider.api_key = None
         if user_role == UserRole.ADMIN:
-            model.owner = Model.SYSTEM_OWNER
+            model.owner = SYSTEM_OWNER
         else:
             model.owner = user_id
         result = await self.model_repository.create(model)
 
-        if api_key:
+        if api_key and isinstance(api_key, str):
             await self.model_repository.set_api_key(model.owner, result.id, api_key)
 
         return result
@@ -83,15 +85,15 @@ class ModelService:
             return None
 
         # Handle API key separately
-        api_key = model.api_key
-        model.api_key = None  # Don't store api_key in model data
+        api_key = model.provider.api_key
+        model.provider.api_key = None  # Don't store api_key in model data
 
         try:
             # Update the model (this will check name uniqueness)
             updated_model = await self.model_repository.update(model)
 
             # Update API key if provided
-            if api_key:
+            if api_key and isinstance(api_key, str):
                 await self.model_repository.set_api_key(model.owner, model.id, api_key)
 
             return updated_model

@@ -6,14 +6,14 @@ Test script for JWT configuration.
 import os
 import sys
 
-from assistant.core.config import config
+from assistant.core import config
 from assistant.utils.security import TokenGenerator
 
 # Add the src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 
-def test_jwt_configuration():
+def test_jwt_configuration() -> None:
     """Test JWT configuration settings."""
     print("🔧 JWT Configuration Test")
     print("=" * 40)
@@ -33,7 +33,7 @@ def test_jwt_configuration():
 
     try:
         # Generate JWT token
-        jwt_token = TokenGenerator.generate_jwt_token(session_id, user_id, {})
+        jwt_token, _ = TokenGenerator.generate_jwt_token(session_id, user_id, {})
         print(f"✅ Generated JWT: {jwt_token[:50]}...")
         print(f"   Length: {len(jwt_token)} characters")
         print()
@@ -85,7 +85,7 @@ def test_jwt_configuration():
     print("   ✅ Production/development isolation")
 
 
-def test_custom_issuer():
+def test_custom_issuer() -> None:
     """Test with custom issuer."""
     print("\n" + "=" * 40)
     print("🏢 Custom Issuer Test")
@@ -96,7 +96,7 @@ def test_custom_issuer():
     config.jwt_issuer = "my-custom-app-v2"
 
     try:
-        jwt_token = TokenGenerator.generate_jwt_token("test_session", "test_user")
+        jwt_token, _ = TokenGenerator.generate_jwt_token("test_session", "test_user")
         payload = TokenGenerator.decode_jwt_token(jwt_token)
 
         if payload and payload.get("iss") == "my-custom-app-v2":

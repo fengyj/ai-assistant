@@ -14,7 +14,6 @@ from ..models.api.exceptions import (
     NotFoundException,
 )
 from ..models.api.model_api import ModelDeleteResponseData, ModelRequestData, ModelResponseData
-from ..models.model import Model
 from ..services.model_service import ModelService
 from ..utils.auth import CurrentUser, get_current_user, get_owner_or_admin
 
@@ -61,7 +60,9 @@ async def add_model(
     user_id = current_user.id
     role = current_user.role
     try:
-        model = await model_service.add_model(Model.from_dict(model_data.model_dump()), user_id, role)
+        # Convert request data to Model using built-in method
+        model = model_data.to_model()
+        model = await model_service.add_model(model, user_id, role)
         return ModelResponseData.from_model(model)
     except ValueError as e:
         raise BadRequestException(detail=str(e))
@@ -84,22 +85,10 @@ async def update_model(
         if not existing_model:
             raise NotFoundException(detail="Model not found")
 
-        updated_model = Model.from_dict(updates.model_dump())
+        # Use the built-in update method
+        updated_model = updates.to_model()
         updated_model.owner = existing_model.owner
-        if not updated_model.id:
-            updated_model.id = existing_model.id
-        if not updated_model.name:
-            updated_model.name = existing_model.name
-        if not updated_model.type:
-            updated_model.type = existing_model.type
-        if not updated_model.description:
-            updated_model.description = existing_model.description
-        if not updated_model.default_params:
-            updated_model.default_params = existing_model.default_params
-        if not updated_model.api_key:
-            updated_model.api_key = existing_model.api_key
-        if not updated_model.extra:
-            updated_model.extra = existing_model.extra
+        updated_model.id = existing_model.id
         model = await model_service.update_model(updated_model)
         if not model:
             raise NotFoundException(detail="Model not found")

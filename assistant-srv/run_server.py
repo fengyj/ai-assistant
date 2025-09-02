@@ -11,12 +11,10 @@ import uvicorn
 
 from assistant.core.env import Env
 
-Env.init()
-
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from assistant.core.config import config  # noqa: E402
+from assistant.core import config  # noqa: E402
 from assistant.utils.db_init import initialize_database  # noqa: E402
 
 logger = logging.getLogger(__name__)

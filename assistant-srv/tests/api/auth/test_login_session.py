@@ -22,14 +22,14 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 
 @pytest.mark.asyncio
-async def test_login_with_session():
+async def test_login_with_session() -> None:
     """Test login API creates session correctly."""
     print("🔄 Testing Login API with Session Creation")
     print("=" * 60)
 
     # Setup services
-    user_repo = JsonUserRepository("test_data/users.json")
-    session_repo = JsonSessionRepository("test_data/sessions.json")
+    user_repo = JsonUserRepository()
+    session_repo = JsonSessionRepository()
     user_service = UserService(user_repo, session_repo)
     session_service = SessionService(session_repo)
 
@@ -44,11 +44,11 @@ async def test_login_with_session():
         print(f"✅ Created user: {user.username} ({user.id})")
     except Exception as e:
         # User might already exist
-        user = await user_service.get_user_by_username("test_login_user")
-        if user is None:
+        result = await user_service.get_user_by_username("test_login_user")
+        if result is None:
             print(f"❌ Failed to create user: {str(e)}")
             return
-        print(f"✅ Using existing user: {user.username} ({user.id})")
+        print(f"✅ Using existing user: {result.username} ({result.id})")
 
     # Simulate login request
     print("\n2. Simulating login process...")
@@ -69,7 +69,7 @@ async def test_login_with_session():
     session.update_ip_tracking("192.168.1.100")
 
     # Generate JWT token (what login API now returns)
-    jwt_token = TokenGenerator.generate_jwt_token(session_id=session.id, user_id=session.user_id, user_info={})
+    jwt_token, _ = TokenGenerator.generate_jwt_token(session_id=session.id, user_id=session.user_id, user_info={})
     print(f"✅ JWT token generated: {jwt_token[:50]}...")
 
     session = await session_service.create_session(session)
@@ -105,12 +105,6 @@ async def test_login_with_session():
     print("   ✅ JWT token generation")
     print("   ✅ Token validation and session lookup")
     print("   ✅ Complete session-based authentication flow")
-
-    # Cleanup
-    if os.path.exists("test_data"):
-        import shutil
-
-        shutil.rmtree("test_data")
 
 
 if __name__ == "__main__":

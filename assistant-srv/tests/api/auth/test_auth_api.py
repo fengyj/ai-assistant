@@ -8,7 +8,7 @@ import pytest
 BASE_URL = "http://localhost:8000"
 
 
-@pytest.mark.asyncio  # type: ignore[misc]
+@pytest.mark.asyncio
 async def test_user_api() -> None:
     """Test user API endpoints with authentication."""
 

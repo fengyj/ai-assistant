@@ -7,7 +7,7 @@ import asyncio
 import os
 import sys
 
-from assistant.core.config import config
+from assistant.core import config
 from assistant.services.oauth_service import oauth_manager
 from assistant.services.oauth_state_manager import OAuthStateManager
 

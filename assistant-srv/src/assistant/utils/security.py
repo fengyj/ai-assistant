@@ -39,7 +39,7 @@ class PasswordHasher:
 
         # Use config default if not specified
         if rounds is None:
-            from ..core.config import config
+            from ..core import config
 
             rounds = config.bcrypt_rounds
 
@@ -94,7 +94,7 @@ class PasswordHasher:
             True if the hash should be updated, False otherwise
         """
         if rounds is None:
-            from ..core.config import config
+            from ..core import config
 
             rounds = config.bcrypt_rounds
 
@@ -118,7 +118,7 @@ class TokenGenerator:
     @classmethod
     def _get_secret_key(cls) -> str:
         """Get secret key from config."""
-        from ..core.config import config
+        from ..core import config
 
         return config.jwt_secret_key
 
@@ -132,7 +132,7 @@ class TokenGenerator:
         cls, session_id: str, user_id: str, user_info: Optional[Dict[str, Any]] = None
     ) -> Tuple[str, datetime]:
         """Generate a JWT token with user information."""
-        from ..core.config import config
+        from ..core import config
 
         now = datetime.now(timezone.utc)
         expires_at = now + timedelta(hours=config.jwt_expire_hours)
@@ -174,7 +174,7 @@ class TokenGenerator:
     def decode_jwt_token(cls, token: str, verify_expiry: bool = True) -> Optional[Dict[str, Any]]:
         """Decode and verify a JWT token."""
         try:
-            from ..core.config import config
+            from ..core import config
 
             secret_key = cls._get_secret_key()
             payload = jwt.decode(

@@ -88,7 +88,7 @@ async def terminate_user_sessions(
     return SessionTerminateResponseData(message=f"Terminated {count} sessions")
 
 
-@router.post("/cleanup", status_code=status.HTTP_200_OK)  # type: ignore
+@router.post("/cleanup", status_code=status.HTTP_200_OK)
 async def cleanup_expired_sessions(
     session_service: SessionService = Depends(get_session_service),
     current_user: CurrentUser = Depends(get_admin),

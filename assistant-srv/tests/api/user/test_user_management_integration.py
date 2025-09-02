@@ -4,6 +4,7 @@ Integration test for user management module.
 
 import shutil
 import tempfile
+from typing import Generator
 
 import pytest
 
@@ -17,14 +18,14 @@ class TestUserManagementIntegration:
     """Integration tests for user management."""
 
     @pytest.fixture
-    def temp_dir(self):
+    def temp_dir(self) -> Generator[str, None, None]:
         """Create temporary directory for testing."""
         temp_dir = tempfile.mkdtemp()
         yield temp_dir
         shutil.rmtree(temp_dir)
 
     @pytest.fixture
-    def user_service(self, temp_dir) -> UserService:
+    def user_service(self, temp_dir: str) -> UserService:
         """Create user service with temporary repository."""
         user_repo = JsonUserRepository(temp_dir)
         from assistant.repositories.json_session_repository import JsonSessionRepository
@@ -33,7 +34,7 @@ class TestUserManagementIntegration:
         return UserService(user_repo, session_repo)
 
     @pytest.mark.asyncio
-    async def test_complete_user_lifecycle(self, user_service) -> None:
+    async def test_complete_user_lifecycle(self, user_service: UserService) -> None:
         """Test complete user lifecycle: create, read, update, delete."""
 
         # 1. Create user
@@ -101,7 +102,7 @@ class TestUserManagementIntegration:
         assert deleted_user is None
 
     @pytest.mark.asyncio
-    async def test_duplicate_user_prevention(self, user_service) -> None:
+    async def test_duplicate_user_prevention(self, user_service: UserService) -> None:
         """Test prevention of duplicate users."""
 
         # Create first user
@@ -122,7 +123,7 @@ class TestUserManagementIntegration:
             await user_service.create_user(create_request3)
 
     @pytest.mark.asyncio
-    async def test_authentication_failures(self, user_service) -> None:
+    async def test_authentication_failures(self, user_service: UserService) -> None:
         """Test authentication failure scenarios."""
 
         # Create user
@@ -146,7 +147,7 @@ class TestUserManagementIntegration:
             await user_service.authenticate_user("authtest", "correctpass")
 
     @pytest.mark.asyncio
-    async def test_admin_user_creation(self, user_service) -> None:
+    async def test_admin_user_creation(self, user_service: UserService) -> None:
         """Test admin user creation."""
 
         create_request = UserCreateRequest(

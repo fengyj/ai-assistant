@@ -49,8 +49,11 @@ class Config:
     apple_client_secret: Optional[str] = None
 
     # Model API Keys (temporary, should be moved to secure storage)
+    openai_api_key: Optional[str] = None
     deepseek_api_key: Optional[str] = None
     openrouter_api_key: Optional[str] = None
+    gemini_api_key: Optional[str] = None
+    anthropic_api_key: Optional[str] = None
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -80,10 +83,9 @@ class Config:
             microsoft_client_secret=os.getenv("MICROSOFT_CLIENT_SECRET"),
             apple_client_id=os.getenv("APPLE_CLIENT_ID"),
             apple_client_secret=os.getenv("APPLE_CLIENT_SECRET"),
+            openai_api_key=os.getenv("OPENAI_API_KEY"),
             deepseek_api_key=os.getenv("DEEPSEEK_API_KEY"),
             openrouter_api_key=os.getenv("OPENROUTER_API_KEY"),
+            gemini_api_key=os.getenv("GEMINI_API_KEY"),
+            anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"),
         )
-
-
-# Global configuration instance
-config = Config.from_env()

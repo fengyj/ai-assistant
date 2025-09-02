@@ -3,7 +3,7 @@
 测试装饰器权限验证的脚本
 """
 
-import requests  # type: ignore[import-untyped]
+import requests
 
 BASE_URL = "http://localhost:8000"
 
