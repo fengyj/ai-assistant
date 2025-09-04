@@ -33,6 +33,7 @@ assistant-srv/.coverage
 assistant-srv/.cache/
 assistant-srv/.DS_Store
 assistant-srv/data/
+assistant-srv/tests/data/
 
 # =========================
 # Node/Vite/React/Frontend
