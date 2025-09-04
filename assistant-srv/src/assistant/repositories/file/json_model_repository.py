@@ -9,8 +9,8 @@ from datetime import datetime, timezone
 from threading import Lock
 from typing import Any, Dict, List, Optional
 
-from ..models.model import Model
-from .model_repository import ModelRepository
+from ...models.model import Model
+from ..model_repository import ModelRepository
 
 
 class JsonModelRepository(ModelRepository):

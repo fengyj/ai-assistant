@@ -7,10 +7,10 @@ import os
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
-from ..core import config
-from ..core.exceptions import UserAlreadyExistsError, UserNotFoundError
-from ..models import OAuthProvider, User, UserStatus
-from .user_repository import UserRepository
+from ...core import config
+from ...core.exceptions import UserAlreadyExistsError, UserNotFoundError
+from ...models import OAuthProvider, User, UserStatus
+from ..user_repository import UserRepository
 
 
 class JsonUserRepository(UserRepository):
@@ -19,7 +19,7 @@ class JsonUserRepository(UserRepository):
     def __init__(self, data_dir: Optional[str] = None):
         """Initialize repository with data directory."""
         self.data_dir = data_dir or config.data_dir
-        self.users_file = os.path.join(self.data_dir, config.users_file)
+        self.users_file = os.path.join(self.data_dir, "users.json")
         self._ensure_data_dir()
         self._users_cache: Dict[str, User] = {}
         self._load_users()

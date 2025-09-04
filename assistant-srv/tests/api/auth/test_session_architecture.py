@@ -9,7 +9,7 @@ import sys
 import pytest
 
 from assistant.models.session import UserSession
-from assistant.repositories.json_session_repository import JsonSessionRepository
+from assistant.repositories.file.json_session_repository import JsonSessionRepository
 from assistant.services.session_service import SessionService
 from assistant.utils.security import TokenGenerator
 

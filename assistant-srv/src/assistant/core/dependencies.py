@@ -6,9 +6,9 @@ This module provides all dependency injection functions to avoid code duplicatio
 from functools import lru_cache
 from typing import Generator
 
-from ..repositories.json_model_repository import JsonModelRepository
-from ..repositories.json_session_repository import JsonSessionRepository
-from ..repositories.json_user_repository import JsonUserRepository
+from ..repositories.file.json_model_repository import JsonModelRepository
+from ..repositories.file.json_session_repository import JsonSessionRepository
+from ..repositories.file.json_user_repository import JsonUserRepository
 from ..services.model_service import ModelService
 from ..services.session_service import SessionService
 from ..services.user_service import UserService

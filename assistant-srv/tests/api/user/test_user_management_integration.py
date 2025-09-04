@@ -10,7 +10,7 @@ import pytest
 
 from assistant.core.exceptions import InvalidCredentialsError, UserAlreadyExistsError
 from assistant.models import UserCreateRequest, UserRole, UserStatus, UserUpdateRequest
-from assistant.repositories.json_user_repository import JsonUserRepository
+from assistant.repositories.file.json_user_repository import JsonUserRepository
 from assistant.services.user_service import UserService
 
 
@@ -28,7 +28,7 @@ class TestUserManagementIntegration:
     def user_service(self, temp_dir: str) -> UserService:
         """Create user service with temporary repository."""
         user_repo = JsonUserRepository(temp_dir)
-        from assistant.repositories.json_session_repository import JsonSessionRepository
+        from assistant.repositories.file.json_session_repository import JsonSessionRepository
 
         session_repo = JsonSessionRepository(temp_dir)
         return UserService(user_repo, session_repo)

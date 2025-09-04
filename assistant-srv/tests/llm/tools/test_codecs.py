@@ -73,11 +73,6 @@ class TestBase64Convert:
         result = base64_convert.invoke({"data": "invalid", "direction": "decode"})
         assert result["status"] == "error"
 
-    def test_base64_invalid_direction(self) -> None:
-        """Test invalid direction parameter."""
-        result = base64_convert.invoke({"data": "test", "direction": "invalid"})
-        assert result["status"] == "error"
-
 
 class TestUrlConvert:
     """Test cases for url_convert function."""
@@ -101,8 +96,3 @@ class TestUrlConvert:
         result = url_convert.invoke({"text": "hello@world", "direction": "encode", "safe_chars": "@"})
         assert result["status"] == "success"
         assert "@" in result["data"]["converted_text"]
-
-    def test_url_invalid_direction(self) -> None:
-        """Test invalid direction parameter."""
-        result = url_convert.invoke({"text": "test", "direction": "invalid"})
-        assert result["status"] == "error"

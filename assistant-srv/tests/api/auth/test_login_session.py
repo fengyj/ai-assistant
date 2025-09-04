@@ -11,8 +11,8 @@ import pytest
 
 from assistant.models.api.auth_api import LoginRequestData
 from assistant.models.user import UserCreateRequest, UserRole
-from assistant.repositories.json_session_repository import JsonSessionRepository
-from assistant.repositories.json_user_repository import JsonUserRepository
+from assistant.repositories.file.json_session_repository import JsonSessionRepository
+from assistant.repositories.file.json_user_repository import JsonUserRepository
 from assistant.services.session_service import SessionService
 from assistant.services.user_service import UserService
 from assistant.utils.security import TokenGenerator

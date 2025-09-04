@@ -19,7 +19,6 @@ class Config:
 
     # Data storage
     data_dir: str = "data"
-    users_file: str = "users.json"
 
     # Authentication
     secret_key: str = "your-secret-key-change-this-in-production"
@@ -63,7 +62,6 @@ class Config:
             port=int(os.getenv("PORT", "8000")),
             debug=os.getenv("DEBUG", "False").lower() == "true",
             data_dir=os.getenv("DATA_DIR", "data"),
-            users_file=os.getenv("USERS_FILE", "users.json"),
             secret_key=os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production"),
             access_token_expire_minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")),
             bcrypt_rounds=int(os.getenv("BCRYPT_ROUNDS", "12")),
