@@ -4,12 +4,13 @@ ChatAgent: 用于响应 API 客户端对话请求的智能体类。
 - 提供 chat 方法，接收用户消息并返回回复。
 """
 
-from typing import Annotated, Any, Dict, List, Optional, Sequence, Type, TypeVar, Union
+from typing import Annotated, Any, Callable, Dict, List, Optional, Sequence, Type, TypeVar, Union
 
 from langchain_core.messages import AnyMessage, BaseMessage, HumanMessage, RemoveMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables.base import Runnable
 from langchain_core.runnables.config import RunnableConfig
+from langchain_core.tools import BaseTool
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import create_react_agent
@@ -258,22 +259,6 @@ class SummarizationNodeWrapper(Runnable[Any, Any]):
         summarization_node: SummarizationNode,
         user_instructions: Optional[str] = None,
         max_summarization_times: Optional[int] = None,
-    ) -> None:
-        self.update_node_and_model_params(summarization_node, user_instructions, max_summarization_times)
-
-    def invoke(self, input: Any, config: Optional[RunnableConfig] = None, **kwargs: Any) -> Any:
-
-        return self._summarization_node.invoke(input, config=config, **kwargs)
-
-    async def ainvoke(self, input: Any, config: Optional[RunnableConfig] = None, **kwargs: Any) -> Any:
-
-        return await self._summarization_node.ainvoke(input, config=config, **kwargs)
-
-    def update_node_and_model_params(
-        self,
-        summarization_node: SummarizationNode,
-        user_instructions: Optional[str] = None,
-        max_summarization_times: Optional[int] = None,
         keep_last_messages_at_least: Optional[int] = None,
     ) -> None:
 
@@ -291,6 +276,14 @@ class SummarizationNodeWrapper(Runnable[Any, Any]):
             if self._user_instructions
             else DEFAULT_FINAL_SUMMARY_PROMPT
         )
+
+    def invoke(self, input: Any, config: Optional[RunnableConfig] = None, **kwargs: Any) -> Any:
+
+        return self._summarization_node.invoke(input, config=config, **kwargs)
+
+    async def ainvoke(self, input: Any, config: Optional[RunnableConfig] = None, **kwargs: Any) -> Any:
+
+        return await self._summarization_node.ainvoke(input, config=config, **kwargs)
 
     def _update_state_with_summarized_messages(
         self, state_update: dict[str, Any], messages: List[AnyMessage], last_user_messages: List[AnyMessage]
@@ -405,7 +398,7 @@ class SummarizationNodeWrapper(Runnable[Any, Any]):
         return self._add_user_instructions_if_needed(state, original_messages, system_message)
 
     @staticmethod
-    def init_or_config(
+    def create(
         model_provider_for_summarization: ProviderInfo,
         model_params_for_summarization: ModelParams,
         model_capabilities_for_summarization: ModelCapabilities,
@@ -413,7 +406,6 @@ class SummarizationNodeWrapper(Runnable[Any, Any]):
         max_summarization_times: Optional[int] = None,
         keep_last_messages_at_least: Optional[int] = None,
         user_instructions: Optional[str] = None,
-        summarization_node_wrapper: Optional["SummarizationNodeWrapper"] = None,
     ) -> "SummarizationNodeWrapper":
 
         max_tokens = int(
@@ -434,22 +426,15 @@ class SummarizationNodeWrapper(Runnable[Any, Any]):
             max_tokens=max_tokens,
             max_tokens_before_summary=max_tokens_before_summary,
             max_summary_tokens=max_summary_tokens,
-            keep_last_messages_at_least=keep_last_messages_at_least,
             output_messages_key="messages",
         )
 
-        if summarization_node_wrapper is None:
-            summarization_node_wrapper = SummarizationNodeWrapper(
-                summarization_node,
-                max_summarization_times=max_summarization_times,
-                user_instructions=user_instructions,
-            )
-        else:
-            summarization_node_wrapper.update_node_and_model_params(
-                summarization_node, max_summarization_times=max_summarization_times, user_instructions=user_instructions
-            )
-
-        return summarization_node_wrapper
+        return SummarizationNodeWrapper(
+            summarization_node,
+            max_summarization_times=max_summarization_times,
+            keep_last_messages_at_least=keep_last_messages_at_least,
+            user_instructions=user_instructions,
+        )
 
 
 class ChatAgent:
@@ -459,7 +444,7 @@ class ChatAgent:
         provider_info: ProviderInfo,
         model_params: ModelParams,
         model_capabilities: ModelCapabilities,
-        tools: Optional[list[Any]] = None,
+        tools: Optional[Sequence[Union[Dict[str, Any], type, Callable[..., Any], BaseTool]]] = None,
         checkpointer: Optional[Checkpointer] = None,
         max_summarization_times: Optional[int] = None,
         model_info_for_summarization: Optional[tuple[ProviderInfo, ModelParams, ModelCapabilities]] = None,
@@ -486,7 +471,7 @@ class ChatAgent:
         self.agent = create_react_agent(
             model=model if len(self._tools) == 0 else model.bind_tools(self._tools),
             tools=self._tools,
-            pre_model_hook=SummarizationNodeWrapper.init_or_config(
+            pre_model_hook=SummarizationNodeWrapper.create(
                 model_provider_for_summarization=model_provider_for_summarization,
                 model_params_for_summarization=model_params_for_summarization,
                 model_capabilities_for_summarization=model_capabilities_for_summarization,

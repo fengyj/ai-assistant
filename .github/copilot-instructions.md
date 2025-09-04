@@ -10,19 +10,19 @@ Project Structure
 - **Backend**: /assistant-srv
 - **Frontend**: /assistant-ui
 - **System design documents**: /doc/design/
-   - general-design.md: explain the purpose, key features, and overall design of the UI
-   - ui-design.md: the detailed design specifications for the UI components
+  - general-design.md: explain the purpose, key features, and overall design of the UI
+  - ui-design.md: the detailed design specifications for the UI components
 
 Major technologies used:
 
 - **Backend**
-   - FastAPI (ver >=0.116.0)
-   - LangChain (ver >=0.3.0)
+  - FastAPI (ver >=0.116.0)
+  - LangChain (ver >=0.3.0)
 - **Frontend**
-   - React (ver >=19.0.0)
-   - Vite (ver >=7.0.0)
-   - TypeScript (ver >=4.0.0)
-   - Tailwind CSS (ver >=4.0.0)
+  - React (ver >=19.0.0)
+  - Vite (ver >=7.0.0)
+  - TypeScript (ver >=4.0.0)
+  - Tailwind CSS (ver >=4.0.0)
 
 ## Philosophy
 
@@ -58,11 +58,11 @@ Break complex work into 3-5 stages. Document in `doc/agent-planning/{timestamp}_
 
 ### 2. Implementation Flow
 
-1. **Understand** - Study existing patterns in codebase
-2. **Test** - Write test first (red)
-3. **Implement** - Minimal code to pass (green)
-4. **Refactor** - Clean up with tests passing
-5. **Commit** - With clear message linking to plan
+1. **Understand** - Study existing patterns in codebase. It's important!
+2. **Test** - Write test first (red). Summarize the cases need to be added, explain the purpose briefly.
+3. **Implement** - Minimal code to pass (green). Follow the existing patterns.
+4. **Refactor** - Clean up with tests passing. Refactor in small steps.
+5. **Commit** - With clear message linking to plan. Don't commit the temporary files.
 
 ### 3. When Stuck (After 3 Attempts)
 
@@ -98,17 +98,23 @@ Break complex work into 3-5 stages. Document in `doc/agent-planning/{timestamp}_
 
 ### Code Quality
 
+- **When edit code**:
+  - Follow project formatting and linting
+    - Python: flows PEP8 standards
+    - JavaScript: follows ESLint standards
+    - Markdown: follows Markdownlint standards
+
+- **Before committing**:
+  - Remove the unnecessary and temporary files
+  - Run formatters and linters
+  - Self-review changes
+  - Do not include the files or folders shouldn't be uploaded to repo (by updating .gitignore)
+
 - **Every commit must**:
   - Compile successfully
   - Pass all existing tests
   - Include tests for new functionality
-  - Follow project formatting/linting
-
-- **Before committing**:
-  - Run formatters/linters
-  - Self-review changes
-  - Ensure commit message explains "why"
-  - Do not include the files/folders shouldn't be uploaded to repo (by updating .gitignore)
+  - Follow project formatting and linting
 
 ### Error Handling
 
@@ -139,6 +145,7 @@ When multiple valid approaches exist, choose based on:
 ### Tooling
 
 - Use project's existing build system
+  - Use `uv` and `pyproject.toml` to maintain the python dependencies. Execute `uv sync` and then `uv sync --extra dev` to install/uninstall packages.
 - Use project's test framework
 - Use project's formatter/linter settings
 - Don't introduce new tools without strong justification
@@ -165,12 +172,14 @@ When multiple valid approaches exist, choose based on:
 ## Important Reminders
 
 **NEVER**:
+
 - Use `--no-verify` to bypass commit hooks
 - Disable tests instead of fixing them
 - Commit code that doesn't compile
 - Make assumptions - verify with existing code
 
 **ALWAYS**:
+
 - Commit working code incrementally
 - Update plan documentation as you go
 - Learn from existing implementations
@@ -286,6 +295,7 @@ When identifying non-compliant code, provide suggestions in this format:
 ### CSS Error Handling
 
 Issue warnings for the following cases:
+
 - Inline style usage.
 - Hardcoded color values.
 - Deeply nested selectors (more than 3 levels).
@@ -295,3 +305,39 @@ Issue warnings for the following cases:
 - Custom SVG icons.
 
 Follow these rules to ensure the generated CSS code meets project architecture standards, maintains high maintainability and scalability, and strictly adheres to business-specific naming principles.
+
+## Additional Guidelines for the assistant-srv Project
+
+### Code Comment Rules
+
+- Use simple and clear English words to explain 'Why', not 'What'
+- Write comments if the name of the variables cannot explain what they are
+
+**Special Rules for LLM tool functions:**
+
+Use the sample below to write the docstring of the function. If necessary, provide some samples in the docstring.
+
+```python
+@tool("local::codecs.base64_convert", args_schema=Base64Input)
+def base64_convert(
+    data: str,
+    direction: Literal["encode", "decode"] = "encode",
+    encoding: str = "utf-8",
+    url_safe: bool = False
+) -> Dict[str, Any]:
+    """
+    Encode or decode data using Base64 with support for URL-safe variant.
+
+    Returns:
+        Dictionary containing Base64 conversion results:
+        - 'status': (string) Operation status ('success' or 'error')
+        - 'data': (dict) Result data containing:
+          - 'converted_data': (string) The converted data result
+          - 'direction': (string) Conversion direction performed (encode/decode)
+          - 'input_length': (integer) Length of input data in characters
+          - 'output_length': (integer) Length of output data in characters
+          - 'encoding': (string) Text encoding used for string operations
+          - 'url_safe': (boolean) Whether URL-safe Base64 variant was used
+        - 'error': (string, optional) Error message if operation failed
+    """
+```
