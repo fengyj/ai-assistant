@@ -66,7 +66,7 @@ class UrlInput(BaseModel):
 # =============================================================================
 
 
-@tool("local::codecs.generate_hash", args_schema=HashInput)
+@tool("generate_hash", args_schema=HashInput)
 def generate_hash(
     text: str,
     algorithm: HashAlgorithm = HashAlgorithm.SHA256,
@@ -74,7 +74,7 @@ def generate_hash(
     output_format: Literal["hex", "base64"] = "hex",
 ) -> Dict[str, Any]:
     """
-    Generate codecsgraphic hash for given text using various algorithms.
+    Use it to generate codecsgraphic hash for given text using various algorithms.
 
     Returns:
         Dictionary containing hash generation results:
@@ -116,12 +116,12 @@ def generate_hash(
         return ToolResult.failure(f"Hash generation failed: {str(e)}").model_dump()
 
 
-@tool("local::codecs.base64_convert", args_schema=Base64Input)
+@tool("base64_convert", args_schema=Base64Input)
 def base64_convert(
     data: str, direction: Literal["encode", "decode"] = "encode", encoding: str = "utf-8", url_safe: bool = False
 ) -> Dict[str, Any]:
     """
-    Encode or decode data using Base64 with support for URL-safe variant.
+    Use it to encode or decode data using Base64 with support for URL-safe variant.
 
     Returns:
         Dictionary containing Base64 conversion results:
@@ -177,12 +177,12 @@ def base64_convert(
         return ToolResult.failure(f"Base64 conversion failed: {str(e)}").model_dump()
 
 
-@tool("local::codecs.url_convert", args_schema=UrlInput)
+@tool("url_convert", args_schema=UrlInput)
 def url_convert(
     text: str, direction: Literal["encode", "decode"] = "encode", safe_chars: str = "", encoding: str = "utf-8"
 ) -> Dict[str, Any]:
     """
-    Encode or decode data using URL encoding (percent-encoding) with configurable safe characters.
+    Use it to encode or decode data using URL encoding (percent-encoding) with configurable safe characters.
 
     Returns:
         Dictionary containing URL conversion results:

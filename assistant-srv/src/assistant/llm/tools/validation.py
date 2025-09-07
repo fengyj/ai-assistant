@@ -147,10 +147,10 @@ def lint_markdown_structure(text: str) -> List[Dict[str, Any]]:
 # =============================================================================
 
 
-@tool("local::validation.validate_json", args_schema=JsonValidationInput)
+@tool("validate_json", args_schema=JsonValidationInput)
 def validate_json(data: str, strict: bool = True) -> Dict[str, Any]:
     """
-    Validate JSON data format and structure.
+    Use it to validate JSON data format and structure.
 
     Returns:
         Dictionary containing JSON validation results:
@@ -202,10 +202,10 @@ def validate_json(data: str, strict: bool = True) -> Dict[str, Any]:
         return ToolResult.failure(f"Error validating JSON: {str(e)}").model_dump()
 
 
-@tool("local::validation.validate_xml", args_schema=XmlValidationInput)
+@tool("validate_xml", args_schema=XmlValidationInput)
 def validate_xml(data: str, schema_url: Optional[str] = None) -> Dict[str, Any]:
     """
-    Validate XML data format and optionally against a schema.
+    Use it to validate XML data format and optionally against a schema.
 
     Returns:
         Dictionary containing XML validation results:
@@ -271,12 +271,12 @@ def validate_xml(data: str, schema_url: Optional[str] = None) -> Dict[str, Any]:
         return ToolResult.failure(f"Error validating XML: {str(e)}").model_dump()
 
 
-@tool("local::validation.validate_csv", args_schema=CsvValidationInput)
+@tool("validate_csv", args_schema=CsvValidationInput)
 def validate_csv(
     data: str, delimiter: str = ",", has_header: bool = True, expected_columns: Optional[int] = None
 ) -> Dict[str, Any]:
     """
-    Validate CSV data format and structure.
+    Use it to validate CSV data format and structure.
 
     Returns:
         Dictionary containing CSV validation results:
@@ -378,10 +378,10 @@ def validate_csv(
         return ToolResult.failure(f"Error validating CSV: {str(e)}").model_dump()
 
 
-@tool("local::validation.lint_markdown", args_schema=MarkdownLintInput)
+@tool("lint_markdown", args_schema=MarkdownLintInput)
 def lint_markdown(data: str, check_links: bool = False) -> Dict[str, Any]:
     """
-    Lint Markdown content for common issues and formatting problems.
+    Use it to lint Markdown content for common issues and formatting problems.
 
     Returns:
         Dictionary containing Markdown linting results:

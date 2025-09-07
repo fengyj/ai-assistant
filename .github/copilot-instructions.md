@@ -318,7 +318,7 @@ Follow these rules to ensure the generated CSS code meets project architecture s
 Use the sample below to write the docstring of the function. If necessary, provide some samples in the docstring.
 
 ```python
-@tool("local::codecs.base64_convert", args_schema=Base64Input)
+@tool("local.codecs.base64_convert", args_schema=Base64Input)
 def base64_convert(
     data: str,
     direction: Literal["encode", "decode"] = "encode",

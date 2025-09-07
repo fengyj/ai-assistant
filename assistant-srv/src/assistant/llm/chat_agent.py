@@ -4,13 +4,12 @@ ChatAgent: 用于响应 API 客户端对话请求的智能体类。
 - 提供 chat 方法，接收用户消息并返回回复。
 """
 
-from typing import Annotated, Any, Callable, Dict, List, Optional, Sequence, Type, TypeVar, Union
+from typing import Annotated, Any, Dict, List, Optional, Sequence, Type, TypeVar, Union
 
 from langchain_core.messages import AnyMessage, BaseMessage, HumanMessage, RemoveMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables.base import Runnable
 from langchain_core.runnables.config import RunnableConfig
-from langchain_core.tools import BaseTool
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import create_react_agent
@@ -23,6 +22,7 @@ from pydantic import BaseModel
 
 from ..models.model import ModelCapabilities, ModelParams, ProviderInfo
 from .chat_model_factory import get_chat_model
+from .tools.builtin import get_tools_by_names
 
 
 class ChatAgentState(AgentState):
@@ -352,7 +352,7 @@ class SummarizationNodeWrapper(Runnable[Any, Any]):
             # add the system message back to the original messages,
             # only when there is no new system message created.
             # if don't add it back, the system message added to the state, and will be treated as a new message.
-            if system_message is not None and (len(messages) == 0 or system_message.id == messages[0].id):
+            if system_message is not None and (len(messages) == 0 or system_message.id != messages[0].id):
                 original_messages.insert(0, system_message)
 
         return state
@@ -444,7 +444,7 @@ class ChatAgent:
         provider_info: ProviderInfo,
         model_params: ModelParams,
         model_capabilities: ModelCapabilities,
-        tools: Optional[Sequence[Union[Dict[str, Any], type, Callable[..., Any], BaseTool]]] = None,
+        tools: Optional[List[str]] = None,
         checkpointer: Optional[Checkpointer] = None,
         max_summarization_times: Optional[int] = None,
         model_info_for_summarization: Optional[tuple[ProviderInfo, ModelParams, ModelCapabilities]] = None,
@@ -454,10 +454,11 @@ class ChatAgent:
         self._provider_info = provider_info
         self._model_params = model_params
         self._model_capabilities = model_capabilities
-        self._tools = tools or []
+        self._tools = get_tools_by_names(tools) if tools else []
         self._checkpointer = checkpointer or InMemorySaver()
 
-        model = get_chat_model(provider_info=provider_info, model_params=model_params)
+        def retrieve_model(state: ChatAgentState, context: Any) -> Any:
+            return get_chat_model(provider_info=provider_info, model_params=model_params)
 
         model_provider_for_summarization = (
             model_info_for_summarization[0] if model_info_for_summarization else provider_info
@@ -469,7 +470,7 @@ class ChatAgent:
             model_info_for_summarization[2] if model_info_for_summarization else model_capabilities
         )
         self.agent = create_react_agent(
-            model=model if len(self._tools) == 0 else model.bind_tools(self._tools),
+            model=retrieve_model,
             tools=self._tools,
             pre_model_hook=SummarizationNodeWrapper.create(
                 model_provider_for_summarization=model_provider_for_summarization,

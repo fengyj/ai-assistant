@@ -164,6 +164,7 @@ source = { editable = "." }
 dependencies = [
     { name = "anthropic" },
     { name = "bcrypt" },
+    { name = "convertdate" },
     { name = "cryptography" },
     { name = "fastapi" },
     { name = "google-generativeai" },
@@ -217,6 +218,7 @@ requires-dist = [
     { name = "anthropic", specifier = ">=0.64.0" },
     { name = "bcrypt", specifier = ">=4.0.0" },
     { name = "black", marker = "extra == 'dev'", specifier = ">=24.8.0" },
+    { name = "convertdate", specifier = ">=2.4.0" },
     { name = "cryptography", specifier = ">=45.0.5" },
     { name = "fastapi", specifier = ">=0.116.0" },
     { name = "flake8", marker = "extra == 'dev'", specifier = ">=7.0.0" },
@@ -548,6 +550,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d8/53/6f443c9a4a8358a93a6792e2acffb9d9d5cb0a5cfd8802644b7b1c9a02e4/colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44", size = 27697, upload-time = "2022-10-25T02:36:22.414Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6", size = 25335, upload-time = "2022-10-25T02:36:20.889Z" },
+]
+
+[[package]]
+name = "convertdate"
+version = "2.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pymeeus" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/04/3d/04148ceb732dfb6f10e9b89fa5915080a91e27fe28fd982c259bc4d29ced/convertdate-2.4.0.tar.gz", hash = "sha256:770c6b2195544d3e451e230b3f1c9b121ed02680b877f896306a04cf6f26b48f", size = 40288, upload-time = "2022-01-22T18:32:33.952Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/27/65/3deecc820ce91716225ec72b584b48ba9512ed9583ad48619e3dbbbbd714/convertdate-2.4.0-py3-none-any.whl", hash = "sha256:fcffe3a67522172648cf03b0c3757cfd079726fe5ae04ce29989ad3958039e4e", size = 47923, upload-time = "2022-01-22T18:32:32.094Z" },
 ]
 
 [[package]]
@@ -2502,6 +2516,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/e7/46/bd74733ff23167559
 wheels = [
     { url = "https://files.pythonhosted.org/packages/61/ad/689f02752eeec26aed679477e80e632ef1b682313be70793d798c1d5fc8f/PyJWT-2.10.1-py3-none-any.whl", hash = "sha256:dcdd193e30abefd5debf142f9adfcdd2b58004e644f25406ffaebd50bd98dacb", size = 22997, upload-time = "2024-11-28T03:43:27.893Z" },
 ]
+
+[[package]]
+name = "pymeeus"
+version = "0.5.12"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/81/76/599896b37e60f43078afd8354b3802eb7ca257a7e7f6253cc21c4c672877/PyMeeus-0.5.12.tar.gz", hash = "sha256:548f7186bd8b96cbc069cf649a8e8e377dce49ac74486709849fe63a99cad684", size = 5752712, upload-time = "2022-12-11T11:37:48.504Z" }
 
 [[package]]
 name = "pyparsing"

@@ -25,7 +25,7 @@ class ToolResult(BaseModel):
     @classmethod
     def success(cls, data: dict[str, Any]) -> "ToolResult":
         """Create a successful result."""
-        return cls(status="success", data=data)
+        return cls(status="success", data={k: v for k, v in data.items() if v is not None}, error=None)
 
     @classmethod
     def failure(cls, error_msg: str) -> "ToolResult":

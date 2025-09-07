@@ -210,10 +210,10 @@ class SafeMathEvaluator:
 # =============================================================================
 
 
-@tool("local::math.calculate_expression", args_schema=CalculateExpressionInput)
-def calculate_expression(expression: str) -> Dict[str, Any]:
+@tool("math_calc", args_schema=CalculateExpressionInput)
+def math_calc(expression: str) -> Dict[str, Any]:
     """
-    Calculate a mathematical expression safely using supported operations and functions.
+    Use it to calculate a mathematical expression safely using supported operations and functions.
 
     Supported operations: +, -, *, /, **, %, //
     Supported functions: abs, round, min, max, sum, pow, sin, cos, tan, asin, acos, atan, atan2,
@@ -222,18 +222,9 @@ def calculate_expression(expression: str) -> Dict[str, Any]:
     Supported constants: pi, e
 
     Examples:
-        - "2 + 3 * 4" -> 14
-        - "pi * 2" -> 6.283185307179586
-        - "abs(-5)" -> 5
-        - "round(3.14159, 2)" -> 3.14
         - "(2 + 3) * (4 - 1) / 2" -> 7.5
-        - "pow(2, 3)" -> 8
+        - "round(3.14159, 2)" -> 3.14
         - "sin(pi/2)" -> 1.0
-        - "cos(0)" -> 1.0
-        - "tan(pi/4)" -> 1.0
-        - "sqrt(16)" -> 4.0
-        - "log(10)" -> 2.302585092994046
-        - "exp(1)" -> 2.718281828459045
 
     Returns:
         Dictionary containing calculation results:
@@ -494,7 +485,7 @@ def convert_temperature(value: float, from_unit: str, to_unit: str) -> float:
         return celsius
 
 
-@tool("local::math.convert_units", args_schema=ConvertUnitsInput)
+@tool("local.math.convert_units", args_schema=ConvertUnitsInput)
 def convert_units(value: float, from_unit: str, to_unit: str) -> Dict[str, Any]:
     """
     Convert a value from one unit to another across different measurement categories.
@@ -549,24 +540,13 @@ def convert_units(value: float, from_unit: str, to_unit: str) -> Dict[str, Any]:
     Examples:
         - Convert 1000 meters to kilometers: (1000, "m", "km") -> 1.0
         - Convert 32°F to Celsius: (32, "fahrenheit", "celsius") -> 0.0
-        - Convert 100°C to Fahrenheit: (100, "c", "f") -> 212.0 (c means Celsius here)
-        - Convert 1 gallon to liters: (1, "gal", "l") -> 3.78541
-        - Convert 24 hours to seconds: (24, "h", "s") -> 86400.0
-        - Convert 5 pounds to kilograms: (5, "lb", "kg") -> 2.26796
         - Convert 1GB to bytes: (1, "gb", "bytes") -> 1000000000.0
         - Convert 1GiB to bytes: (1, "gib", "bytes") -> 1073741824.0
-        - Convert 1000 square meters to acres: (1000, "m2", "acre") -> 0.247
-        - Convert 60 mph to m/s: (60, "mph", "m/s") -> 26.8224
         - Convert speed of light to mph: (1, "c", "mph") -> 670616629.0 (c means speed of light)
-        - Convert 1 atm to psi: (1, "atm", "psi") -> 14.6959
-        - Convert 1000 calories to joules: (1000, "cal", "j") -> 4184.0
-        - Convert 1 horsepower to watts: (1, "hp", "w") -> 745.7
-        - Convert 1000 Hz to kHz: (1000, "hz", "khz") -> 1.0
 
     Important notes:
     - Units are case-insensitive (e.g., "M", "m", "meter" all work)
     - Cannot convert between different categories (e.g., meters to kilograms)
-    - Temperature conversions use special formulas, not linear scaling
     - Time conversions for month/year use average values
     - Data units support both decimal (SI) and binary (IEC) prefixes
     - Bit conversions are supported (1 byte = 8 bits)
@@ -653,7 +633,7 @@ def convert_units(value: float, from_unit: str, to_unit: str) -> Dict[str, Any]:
         return ToolResult.failure(f"Error converting units: {str(e)}").model_dump()
 
 
-@tool("local::math.compare_numbers", args_schema=CompareNumbersInput)
+@tool("local.math.compare_numbers", args_schema=CompareNumbersInput)
 def compare_numbers(number_a: float, number_b: float) -> Dict[str, Any]:
     """
     Compare two numbers and analyze their mathematical relationship.

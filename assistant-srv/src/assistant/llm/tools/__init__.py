@@ -13,18 +13,26 @@ from .builtin import (
     get_tool_descriptions,
     get_tool_names,
     get_tools_by_categories,
+    get_tools_by_names,
 )
 from .codecs import base64_convert, generate_hash, url_convert
 from .data_struct import sort_list
-from .datetime import add_time_delta, convert_timezone, get_available_timezones, get_date_info
-from .math import calculate_expression, compare_numbers, convert_units
+from .datetime import (
+    add_time_delta,
+    convert_timezone,
+    date_diff,
+    get_country_timezones,
+    get_date_info,
+    get_holiday_info,
+)
+from .math import compare_numbers, convert_units, math_calc
 from .random import generate_number, generate_password, generate_string, generate_uuid
 from .text import change_case, compare_texts, get_statistics, regex_find_and_replace
 from .validation import lint_markdown, validate_csv, validate_json, validate_xml
 
 __all__ = [
     # math tools
-    "calculate_expression",
+    "math_calc",
     "convert_units",
     "compare_numbers",
     # text tools
@@ -34,9 +42,11 @@ __all__ = [
     "compare_texts",
     # datetime tools
     "get_date_info",
-    "get_available_timezones",
+    "get_country_timezones",
     "convert_timezone",
     "add_time_delta",
+    "get_holiday_info",
+    "date_diff",
     # codecs tools
     "generate_hash",
     "base64_convert",
@@ -64,4 +74,5 @@ __all__ = [
     "get_tools_by_categories",
     "get_tool_names",
     "get_tool_descriptions",
+    "get_tools_by_names",
 ]

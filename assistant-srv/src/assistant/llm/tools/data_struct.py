@@ -33,7 +33,9 @@ class SortOrder(str, Enum):
 class SortInput(BaseModel):
     """List sorting parameters."""
 
-    items: List[Union[str, int, float]] = Field(description="List of items to sort")
+    items: List[Union[str, int, float]] = Field(
+        description="List of items to sort. Can be strings, integers, or floats."
+    )
     order: SortOrder = Field(default=SortOrder.ASC, description="Sort order")
     case_sensitive: bool = Field(default=True, description="Whether to consider case in sorting")
     natural_sort: bool = Field(default=False, description="Use natural sorting for numbers")
@@ -45,7 +47,7 @@ class SortInput(BaseModel):
 # =============================================================================
 
 
-@tool("local::data.sort_list", args_schema=SortInput)
+@tool("sort_list", args_schema=SortInput)
 def sort_list(
     items: List[Union[str, int, float]],
     order: SortOrder = SortOrder.ASC,
@@ -54,7 +56,7 @@ def sort_list(
     remove_duplicates: bool = False,
 ) -> Dict[str, Any]:
     """
-    Sort a list of items with customizable options.
+    Use it to sort a list of items with customizable options.
 
     Returns:
         Dictionary containing sorting results:

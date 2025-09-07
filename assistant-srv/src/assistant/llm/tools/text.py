@@ -278,14 +278,14 @@ def filter_non_latin_chars(text: str) -> str:
 # =============================================================================
 
 
-@tool("local::text.get_statistics", args_schema=TextStatsInput)
+@tool("get_text_statistics", args_schema=TextStatsInput)
 def get_statistics(
     text: str,
     words_per_minute: Optional[int] = None,
     expected_language: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
-    Get comprehensive statistics about a text including character count, word count, reading time estimation,
+    Use it to get comprehensive statistics about a text including character count, word count, reading time estimation,
     language detection, and readability analysis for multiple languages.
 
     Supports English, Chinese, and other Latin-script languages.
@@ -377,10 +377,10 @@ def get_statistics(
         return ToolResult.failure(f"Text statistics analysis failed: {str(e)}").model_dump()
 
 
-@tool("local::text.change_case", args_schema=CaseConversionInput)
+@tool("change_character_case", args_schema=CaseConversionInput)
 def change_case(text: str, case_type: CaseType, separator: Optional[str] = None) -> Dict[str, Any]:
     """
-    Convert text case according to the specified case type.
+    Use it to convert text case according to the specified case type.
 
     Returns:
         Dictionary containing case conversion results:
@@ -428,12 +428,14 @@ def change_case(text: str, case_type: CaseType, separator: Optional[str] = None)
         return ToolResult.failure(f"Case conversion failed: {str(e)}").model_dump()
 
 
-@tool("local::text.regex_find_and_replace", args_schema=RegexFindReplaceInput)
+@tool("regex_find_and_replace", args_schema=RegexFindReplaceInput)
 def regex_find_and_replace(
     text: str, pattern: str, flags: Optional[str] = None, replacement: Optional[str] = None
 ) -> Dict[str, Any]:
     """
-    Find all matches of a regex pattern in the text, with optional replace functionality.
+    Use it to find all matches of a regex pattern in the text, with optional replace functionality.
+
+    The pattern and replacement MUST follow Python's `re` module syntax.
 
     If replacement is provided, performs find and replace operation.
     Otherwise, only finds and returns matches.
@@ -486,10 +488,10 @@ def regex_find_and_replace(
         return ToolResult.failure(f"Regex operation failed: {str(e)}").model_dump()
 
 
-@tool("local::text.compare_texts", args_schema=TextComparisonInput)
+@tool("compare_texts", args_schema=TextComparisonInput)
 def compare_texts(text1: str, text2: str, context_lines: Optional[int] = None) -> Dict[str, Any]:
     """
-    Compare two texts and generate a diff.
+    Use it to compare two texts and generate a diff.
 
     Returns:
         Dictionary containing text comparison results:

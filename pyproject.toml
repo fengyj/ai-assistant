@@ -20,6 +20,7 @@ classifiers = [
 dependencies = [
     "anthropic>=0.64.0", # Anthropic Claude AI API client
     "bcrypt>=4.0.0", # Password hashing algorithm
+    "convertdate>=2.4.0", # Date conversion utilities
     "cryptography>=45.0.5", # Cryptography and security functions
     "fastapi>=0.116.0", # Modern web framework
     "google-generativeai>=0.8.5", # Google Gemini AI API client

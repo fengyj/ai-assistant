@@ -2,29 +2,38 @@
 内置工具集合，提供便捷函数来获取不同类别的工具
 """
 
+from functools import cache
 from typing import Dict, List, Optional
 
 from langchain_core.tools import BaseTool
 
 from .codecs import base64_convert, generate_hash, url_convert
 from .data_struct import sort_list
-from .datetime import add_time_delta, convert_timezone, get_available_timezones, get_date_info
-from .math import calculate_expression, compare_numbers, convert_units
+from .datetime import (
+    add_time_delta,
+    convert_timezone,
+    date_diff,
+    get_country_timezones,
+    get_date_info,
+    get_holiday_info,
+)
+from .math import compare_numbers, convert_units, math_calc
 from .random import generate_number, generate_password, generate_uuid
 from .text import change_case, compare_texts, get_statistics, regex_find_and_replace
 from .validation import lint_markdown, validate_csv, validate_json, validate_xml
 
 
-def get_all_builtin_tools() -> List[BaseTool]:
+@cache
+def get_all_builtin_tools() -> Dict[str, BaseTool]:
     """
-    获取所有内置工具
+    获取所有内置工具，返回以工具名称为 key 的字典
 
     Returns:
-        包含所有22个内置工具的列表
+        包含所有22个内置工具的字典，key 为工具名称，value 为工具对象
     """
-    return [
+    tools = [
         # Math tools (3)
-        calculate_expression,
+        math_calc,
         convert_units,
         compare_numbers,
         # Text tools (4)
@@ -32,11 +41,13 @@ def get_all_builtin_tools() -> List[BaseTool]:
         change_case,
         regex_find_and_replace,
         compare_texts,
-        # DateTime tools (4)
+        # DateTime tools (5)
         get_date_info,
         add_time_delta,
-        get_available_timezones,
+        get_country_timezones,
         convert_timezone,
+        get_holiday_info,
+        date_diff,
         # Codecs tools (3)
         generate_hash,
         base64_convert,
@@ -52,12 +63,13 @@ def get_all_builtin_tools() -> List[BaseTool]:
         generate_uuid,
         generate_password,
     ]
+    return {tool.name: tool for tool in tools}
 
 
 def get_math_tools() -> List[BaseTool]:
     """获取数学相关工具"""
     return [
-        calculate_expression,
+        math_calc,
         convert_units,
         compare_numbers,
     ]
@@ -76,10 +88,11 @@ def get_text_tools() -> List[BaseTool]:
 def get_datetime_tools() -> List[BaseTool]:
     """获取日期时间工具"""
     return [
-        get_available_timezones,
+        get_country_timezones,
         add_time_delta,
         get_date_info,
         convert_timezone,
+        get_holiday_info,
     ]
 
 
@@ -130,7 +143,7 @@ def get_tools_by_categories(categories: Optional[List[str]] = None) -> List[Base
         指定类别的工具列表
     """
     if categories is None:
-        return get_all_builtin_tools()
+        return list(get_all_builtin_tools().values())
 
     tools = []
     category_mapping = {
@@ -156,7 +169,7 @@ def get_tool_names() -> List[str]:
     Returns:
         所有工具名称的列表
     """
-    return [tool.name for tool in get_all_builtin_tools()]
+    return list(get_all_builtin_tools().keys())
 
 
 def get_tool_descriptions() -> Dict[str, str]:
@@ -166,7 +179,24 @@ def get_tool_descriptions() -> Dict[str, str]:
     Returns:
         工具名称到描述的映射字典
     """
-    return {tool.name: tool.description for tool in get_all_builtin_tools()}
+    return {name: tool.description for name, tool in get_all_builtin_tools().items()}
+
+
+# 新增：根据工具名称列表筛选工具
+def get_tools_by_names(names: Optional[List[str]] = None) -> List[BaseTool]:
+    """
+    根据工具名称列表筛选工具
+
+    Args:
+        names: 工具名称列表。如果为 None 或空，返回所有工具
+
+    Returns:
+        工具对象列表
+    """
+    all_tools = get_all_builtin_tools()
+    if not names:
+        return list(all_tools.values())
+    return [all_tools[name] for name in names if name in all_tools]
 
 
 # 导出主要函数
@@ -181,4 +211,5 @@ __all__ = [
     "get_tools_by_categories",
     "get_tool_names",
     "get_tool_descriptions",
+    "get_tools_by_names",
 ]

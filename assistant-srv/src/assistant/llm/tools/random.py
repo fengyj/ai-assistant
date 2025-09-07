@@ -116,12 +116,12 @@ def get_character_set(character_set: CharacterSet, custom_characters: Optional[s
 # =============================================================================
 
 
-@tool("local::random.generate_number", args_schema=RandomNumberInput)
+@tool("generate_random_number", args_schema=RandomNumberInput)
 def generate_number(
     min_value: Union[int, float] = 0, max_value: Union[int, float] = 100, number_type: str = "integer", count: int = 1
 ) -> Dict[str, Any]:
     """
-    Generate one or more random numbers within specified range.
+    Use it to generate one or more random numbers within specified range.
 
     Returns:
         Dictionary containing random number generation results:
@@ -168,7 +168,7 @@ def generate_number(
         return ToolResult.failure(f"Error generating random number: {str(e)}").model_dump()
 
 
-@tool("local::random.generate_string", args_schema=RandomStringInput)
+@tool("generate_random_string", args_schema=RandomStringInput)
 def generate_string(
     length: int = 10,
     character_set: CharacterSet = CharacterSet.LETTERS_DIGITS,
@@ -176,7 +176,7 @@ def generate_string(
     count: int = 1,
 ) -> Dict[str, Any]:
     """
-    Generate one or more random strings with specified length and character set.
+    Use it to generate one or more random strings with specified length and character set.
 
     Returns:
         Dictionary containing random string generation results:
@@ -228,10 +228,10 @@ def generate_string(
         return ToolResult.failure(f"Error generating random string: {str(e)}").model_dump()
 
 
-@tool("local::random.choose_from_list", args_schema=RandomChoiceInput)
+@tool("choose_from_list_randomly", args_schema=RandomChoiceInput)
 def choose_from_list(choices: List[str], count: int = 1, replace: bool = True) -> Dict[str, Any]:
     """
-    Randomly select items from a list of choices.
+    Use it to randomly select items from a list of choices.
 
     Returns:
         Dictionary containing random choice results:
@@ -273,10 +273,10 @@ def choose_from_list(choices: List[str], count: int = 1, replace: bool = True) -
         return ToolResult.failure(f"Error selecting from choices: {str(e)}").model_dump()
 
 
-@tool("local::random.generate_boolean", args_schema=RandomBooleanInput)
+@tool("generate_random_boolean", args_schema=RandomBooleanInput)
 def generate_boolean(probability: float = 0.5, count: int = 1) -> Dict[str, Any]:
     """
-    Generate one or more random boolean values with specified probability.
+    Use it to generate one or more random boolean values with specified probability.
 
     Returns:
         Dictionary containing random boolean generation results:
@@ -315,10 +315,10 @@ def generate_boolean(probability: float = 0.5, count: int = 1) -> Dict[str, Any]
         return ToolResult.failure(f"Error generating random boolean: {str(e)}").model_dump()
 
 
-@tool("local::random.generate_uuid")
+@tool("generate_uuid")
 def generate_uuid() -> Dict[str, Any]:
     """
-    Generate a random UUID (Universally Unique Identifier).
+    Use it to generate a random UUID (Universally Unique Identifier).
 
     Returns:
         Dictionary containing UUID generation results:
@@ -346,7 +346,7 @@ def generate_uuid() -> Dict[str, Any]:
         return ToolResult.failure(f"Error generating UUID: {str(e)}").model_dump()
 
 
-@tool("local::random.generate_password", args_schema=GeneratePasswordInput)
+@tool("generate_password", args_schema=GeneratePasswordInput)
 def generate_password(
     length: int = 12,
     include_uppercase: bool = True,
@@ -357,7 +357,7 @@ def generate_password(
     count: int = 1,
 ) -> Dict[str, Any]:
     """
-    Generate one or more random passwords with specified criteria.
+    Use it to generate one or more random passwords with specified criteria.
 
     Returns:
         Dictionary containing password generation results:
