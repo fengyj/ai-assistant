@@ -51,7 +51,7 @@ class TestGetDateInfo:
         """Test getting current datetime info."""
         result = get_date_info.invoke({})
         assert result["status"] == "success"
-        assert "date" in result["data"]
+        assert "datetime" in result["data"]
         assert "timestamp" in result["data"]
 
     def test_specific_datetime(self) -> None:
@@ -73,6 +73,36 @@ class TestGetDateInfo:
         assert "chinese_lunar_date" in result["data"]
         # Expected lunar date: 农历2025年7月13日
         assert "农历2025年7月13日" in result["data"]["chinese_lunar_date"]
+
+    def test_with_timezone_current_time(self) -> None:
+        """Test getting current time in a specific timezone."""
+        result = get_date_info.invoke({"timezone": "EST"})
+        assert result["status"] == "success"
+        assert "datetime" in result["data"]
+        assert "timestamp" in result["data"]
+        # The timezone should be present in the result
+        assert result["data"]["timezone"] in ["EST", "EDT"]  # Eastern Time (could be Standard or Daylight)
+
+    def test_with_timezone_specific_datetime(self) -> None:
+        """Test parsing datetime in a specific timezone."""
+        result = get_date_info.invoke({"datetime_str": "2023-06-15 12:00:00", "timezone": "Asia/Shanghai"})
+        assert result["status"] == "success"
+        assert result["data"]["day_of_week"] == "Thursday"
+        assert result["data"]["weekday_number"] == 3
+        assert result["data"]["timezone"] == "Asia/Shanghai"  # China Standard Time
+
+    def test_with_invalid_timezone(self) -> None:
+        """Test with invalid timezone."""
+        result = get_date_info.invoke({"datetime_str": "2023-01-01 12:00:00", "timezone": "Invalid/Timezone"})
+        assert result["status"] == "error"
+        assert "Unknown timezone" in result["error"]
+
+    def test_with_utc_timezone(self) -> None:
+        """Test with UTC timezone explicitly."""
+        result = get_date_info.invoke({"datetime_str": "2023-01-01 00:00:00", "timezone": "UTC"})
+        assert result["status"] == "success"
+        assert result["data"]["timezone"] == "UTC"
+        assert result["data"]["day_of_week"] == "Sunday"
 
 
 class TestConvertTimezone:
@@ -97,7 +127,7 @@ class TestConvertTimezone:
         assert result["data"]["source_timezone"] == "UTC"
         assert result["data"]["target_timezone"] == "America/New_York"
         assert "converted_datetime" in result["data"]
-        assert result["data"]["converted_datetime"] == "2022-12-31T23:00:00-05:00"
+        assert result["data"]["converted_datetime"] == "2023-01-01T07:00:00-05:00"
 
     def test_invalid_timezone(self) -> None:
         """Test with invalid timezone."""

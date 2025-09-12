@@ -42,11 +42,6 @@ class TimezoneConversionInput(BaseModel):
     target_timezone: str = Field(description="Target timezone.")
 
 
-class DateFormatInput(BaseModel):
-    date_string: str = Field(description="Date/time to format, in ISO format")
-    target_formats: Optional[List[DateFormat]] = Field(default=None, description="List of target formats.")
-
-
 class AddTimeDeltaInput(BaseModel):
     base_datetime: str = Field(description="Base datetime, in ISO format")
     years: int = Field(default=0, description="Years to add/subtract.")
@@ -61,6 +56,11 @@ class AddTimeDeltaInput(BaseModel):
 
 class DateInfoInput(BaseModel):
     datetime_str: Optional[str] = Field(default=None, description="Date/time in ISO format (optional, None for now)")
+    timezone: Optional[str] = Field(
+        default="UTC",
+        description="Timezone for parsing datetime_str or current time."
+        "Uses IANA names (e.g., 'UTC', 'US/Eastern', 'Asia/Shanghai').",
+    )
 
 
 class HolidayInfoInput(BaseModel):
@@ -246,6 +246,7 @@ def add_time_delta(
 @tool(name_or_callable="get_date_info", args_schema=DateInfoInput)
 def get_date_info(
     datetime_str: Optional[str] = None,
+    timezone: Optional[str] = "UTC",
 ) -> Dict[str, Any]:
     """
     Use it to get basic information about current or a specific date/time.
@@ -258,15 +259,19 @@ def get_date_info(
       - Persian date (تقویم جلالی).
       - Julian date (JD).
 
-    If the user doesn't provide a date, this tool will use the current time.
+    If the user doesn't provide a date, this tool will use the current time in the specified timezone.
+    If the user doesn't provide a timezone, this tool will use UTC as the timezone.
+    When parsing a datetime string, if it's timezone-naive, it will be interpreted in the specified timezone.
+    If it's timezone-aware, it will be converted to the specified timezone.
 
     Returns:
         Dictionary containing date information:
         - 'status': (string) Operation status ('success' or 'error')
         - 'data': (dict) Result data containing:
-          - 'date': (string) datetime in ISO format
+          - 'datetime': (string) datetime in ISO format
           - 'timestamp': (float) Unix timestamp
           - 'timezone': (string, optional) Timezone
+          - 'datetime_utc': (string) datetime in UTC in ISO format
           - 'day_of_week': (string) Full day name (e.g., 'Monday')
           - 'weekday_number': (integer) Weekday number (0=Monday, 6=Sunday)
           - 'short_day_name': (string) Abbreviated day name (e.g., 'Mon')
@@ -279,22 +284,36 @@ def get_date_info(
         - 'error': (string, optional) Error message if operation failed
 
     Examples:
-        # User asks: "What day is it today?"
-        # LLM calls: get_date_info(datetime_str=None)
+        # User asks: "What day is it today in New York?"
+        # LLM calls: get_date_info(datetime_str=None, timezone="America/New_York")
 
-        # User asks: "What is the lunar date for 2025-01-01?"
-        # LLM calls: get_date_info(datetime_str="2025-01-01")
+        # User asks: "What is the lunar date for 2025-01-01 in Beijing time?"
+        # LLM calls: get_date_info(datetime_str="2025-01-01", timezone="Asia/Shanghai")
     """
     try:
+        # Parse and validate timezone
+        tz_name = timezone or "UTC"
+        try:
+            tz = pytz.timezone(tz_name)
+        except pytz.UnknownTimeZoneError:
+            return ToolResult.failure(f"Unknown timezone: {tz_name}").model_dump()
+
         if datetime_str is None:
-            dt = datetime.now()
+            # Get current time in specified timezone
+            dt = datetime.now(tz)
             format_used = None
         else:
+            # Parse the datetime string
             t, format_used = parse_datetime_string(datetime_str)
             if t is None:
                 return ToolResult.failure(f"Failed to parse datetime: {datetime_str}").model_dump()
+
+            # If parsed datetime is naive, localize it to the specified timezone
+            if t.tzinfo is None:
+                dt = tz.localize(t)
             else:
-                dt = t
+                # If parsed datetime is timezone-aware, convert to specified timezone
+                dt = t.astimezone(tz)
         day_of_week = dt.strftime("%A")
         weekday_number = dt.weekday()
         short_day_name = dt.strftime("%a")
@@ -309,9 +328,10 @@ def get_date_info(
 
         return ToolResult.success(
             {
-                "date": dt.isoformat(),
+                "datetime": dt.isoformat(),
                 "timestamp": dt.timestamp(),
-                "timezone": dt.tzname(),
+                "timezone": tz.zone,
+                "datetime_utc": dt.astimezone(pytz.utc).isoformat(),
                 "day_of_week": day_of_week,
                 "weekday_number": weekday_number,
                 "short_day_name": short_day_name,
@@ -439,7 +459,10 @@ def convert_timezone(
             return ToolResult.failure(f"Could not parse datetime: {datetime_string}").model_dump()
 
         source_tz = pytz.timezone(source_timezone)
-        localized_dt = dt.astimezone(source_tz)
+        if dt.tzinfo is None:
+            localized_dt = source_tz.localize(dt)
+        else:
+            localized_dt = dt.astimezone(source_tz)
 
         target_tz = pytz.timezone(target_timezone)
         converted_dt = localized_dt.astimezone(target_tz)

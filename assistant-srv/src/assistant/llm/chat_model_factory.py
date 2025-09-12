@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Set
 
 from langchain_anthropic import ChatAnthropic
 from langchain_core.language_models import BaseChatModel
@@ -7,7 +7,7 @@ from langchain_ollama import ChatOllama
 from langchain_openai.chat_models import ChatOpenAI
 from pydantic import SecretStr
 
-from ..models.model import Model_API_Type, ModelParams, ProviderInfo
+from ..models.model import Model_API_Type, ModelCapabilities, ModelParams, ProviderInfo
 
 
 def _adapt_params_for_openai(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -91,3 +91,34 @@ def get_chat_model(provider_info: ProviderInfo, model_params: Optional[ModelPara
         return ChatOpenAI(model=model_name, api_key=sec_api_key, base_url=base_url, **chat_params)
     else:
         raise ValueError(f"Unsupported api_type: {model_api_type}")
+
+
+def get_google_gemini_tools() -> Dict[str, Any]:
+    from google.ai.generativelanguage_v1beta.types import Tool as GeminiTools
+
+    return {
+        "code_execution": GeminiTools.code_execution,
+        "google_search": GeminiTools.google_search,
+    }
+
+
+def get_openai_tools() -> Dict[str, Any]:
+
+    return {
+        "code_interpreter": {"type": "code_interpreter"},
+        "file_search": {"type": "file_search"},
+        "dalle": {"type": "dalle"},
+    }
+
+
+def get_model_built_in_tools(
+    provider_info: ProviderInfo, model_capabilities: ModelCapabilities, enabled_list: Set[str]
+) -> List[Any]:
+
+    tools = {}
+    if provider_info.api_type == "google_genai":
+        tools = get_google_gemini_tools()
+    elif provider_info.api_type == "openai":
+        tools = get_openai_tools()
+
+    return [t for n, t in tools.items() if n in enabled_list]

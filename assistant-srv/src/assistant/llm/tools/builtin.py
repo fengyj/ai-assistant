@@ -3,7 +3,7 @@
 """
 
 from functools import cache
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence, Set
 
 from langchain_core.tools import BaseTool
 
@@ -183,7 +183,7 @@ def get_tool_descriptions() -> Dict[str, str]:
 
 
 # 新增：根据工具名称列表筛选工具
-def get_tools_by_names(names: Optional[List[str]] = None) -> List[BaseTool]:
+def get_tools_by_names(names: Optional[Sequence[str] | Set[str]] = None) -> List[BaseTool]:
     """
     根据工具名称列表筛选工具
 

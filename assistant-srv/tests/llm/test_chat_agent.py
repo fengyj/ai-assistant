@@ -116,7 +116,7 @@ def test_summarization(chat_agent: ChatAgent) -> None:
 
 def test_chat_agent_with_tool(chat_agent_with_tool: ChatAgent) -> None:
     chat_thread_cfg = RunnableConfig()
-    chat_thread_cfg["configurable"] = {"thread_id": "thread-0002", "checkpoint_ns": "demo"}
+    chat_thread_cfg["configurable"] = {"thread_id": "thread-0004", "checkpoint_ns": "demo"}
     response1 = chat_agent_with_tool.agent.invoke(
         {"messages": [HumanMessage("What date is today? And what is the Chinese lunar date today?")]},
         config=chat_thread_cfg,
@@ -179,7 +179,7 @@ def test_agent_tool() -> None:
     agent = create_react_agent(model=llm, tools=[get_date_info, get_holiday_info])
 
     chat_thread_cfg = RunnableConfig()
-    chat_thread_cfg["configurable"] = {"thread_id": "thread-0003", "checkpoint_ns": "demo"}
+    chat_thread_cfg["configurable"] = {"thread_id": "thread-0005", "checkpoint_ns": "demo"}
     response1 = agent.invoke(
         {"messages": [HumanMessage("What date is today? And what is the Chinese lunar date today?")]},
         config=chat_thread_cfg,
